@@ -1,5 +1,5 @@
 <?php 
-include("./layouts/session.php"); // include session
+include "./layouts/session.php"; // include session
 
 include 'conn.php'; // Include database connection
 
@@ -61,14 +61,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['status']) && !empty($_
 }
 
 
+
 // Updating of quotations
-if ($_SERVER['REQUEST_METHOD'] == 'POST'  && isset($_POST['product_name_edit']) && !empty($_POST['product_name_edit'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST'  && isset($_POST['discount_edit']) && !empty($_POST['discount_edit'])) {
     // Retrieve form data
     $customer_name = $conn->real_escape_string($_POST['customer_name']);
     $date = $conn->real_escape_string($_POST['date']);
-    $product_name = $conn->real_escape_string($_POST['product_name_edit']);
     $order_tax = $conn->real_escape_string($_POST['order_tax']);
-    $discount = $conn->real_escape_string($_POST['discount']);
+    $discount = $conn->real_escape_string($_POST['discount_edit']);
     $shipping = $conn->real_escape_string($_POST['shipping']);
     $status = $conn->real_escape_string($_POST['status']);
     $description = $conn->real_escape_string($_POST['description']);
@@ -79,7 +79,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'  && isset($_POST['product_name_edit']) 
     $updateQuery = "UPDATE quotation SET 
         customer_name = ?, 
         quotation_date = ?, 
-        product_name = ?, 
         order_tax = ?, 
         discount = ?, 
         shipping = ?, 
@@ -88,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'  && isset($_POST['product_name_edit']) 
         WHERE id = ? AND user_email = ?";
 
     if ($stmt = $conn->prepare($updateQuery)) {
-        $stmt->bind_param("ssssssssis", $customer_name, $date, $product_name, $order_tax, $discount, $shipping, $status, $description, $quotation_id, $user_email);
+        $stmt->bind_param("sssssssis", $customer_name, $date, $order_tax, $discount, $shipping, $status, $description, $quotation_id, $user_email);
         
         if ($stmt->execute()) {
             echo "
@@ -123,8 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'  && isset($_POST['product_name_edit']) 
             </script>";
         }
         $stmt->close(); // Close the statement
-		
-      } else {
+    } else {
         echo "
 		 <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
         <script>
@@ -174,7 +172,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'  && isset($_POST['product_name_edit']) 
 								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Pdf" href="export_quotation_pdf.php" target="_blank"><img src="assets/img/icons/pdf.svg" alt="img"></a>
 							</li>
 							<li>
-								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Csv" href="export_quotation_pdf.php" target="_blank"><img src="assets/img/icons/excel.svg" alt="img"></a>
+								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Csv" href="export_quotation_csv.php" target="_blank"><img src="assets/img/icons/excel.svg" alt="img"></a>
 							</li>
 							<li>
 								<a data-bs-toggle="tooltip" data-bs-placement="top" class="refresh" title="Refresh"><i data-feather="rotate-ccw" class="feather-rotate-ccw"></i></a>
@@ -501,43 +499,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'  && isset($_POST['product_name_edit']) 
 												</div>
 											  </div>
 
-												<div class="col-lg-4 col-sm-6 col-12">
-												<div class="input-blocks">
-													<label>Product Name</label>
-													<div class="row">
-														<div class="col-lg-10 col-sm-10 col-">
-														<select name="product_name_edit" class="select">
-													<?php
-													$user_email = $_SESSION['email']; // user's email
-
-													// Fetch products from the products table
-													$productQuery = "SELECT product_name FROM products
-													 WHERE email = '$user_email' ORDER BY product_name ASC"; // Sorts product in alphabetical order
-
-													$result = $conn->query($productQuery);
-
-													// Check if there are products available
-													if ($result->num_rows > 0) {
-														while ($product = $result->fetch_assoc()) {
-															// Display each product name and set the id as the value
-															echo "<option value='" . $product['product_name'] . "'>" . htmlspecialchars($product['product_name']) . "</option>";
-														}
-													} else {
-														echo "<option value=''>No products available</option>";
-													}
-													?>
-												   </select>
-														</div>
-														<div class="col-lg-2 col-sm-2 col-2 ps-0">
-															<a href="./product-list.php">
-															<div class="add-icon">
-																<span class="choose-add"><i data-feather="plus-circle" class="plus"></i></span>
-															</div>
-															</a>
-														</div>
+											  <div class="col-lg-4 col-sm-6 col-12">
+												<div class="input-blocks mb-3">
+													<label>Order Tax (₦)</label>
+													<div class="input-groupicon">
+													<input type="text" id="order-tax-input" name="order_tax" placeholder="0" required>
 													</div>
 												</div>
-												</div>
+											</div>
 										</div>
 			
 										<div class="row">
@@ -564,24 +533,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'  && isset($_POST['product_name_edit']) 
 										<div class="row">
 											<div class="col-lg-3 col-sm-6 col-12">
 												<div class="input-blocks mb-3">
-													<label>Order Tax</label>
+													<label>Discount (₦)</label>
 													<div class="input-groupicon">
-													<input type="text" id="order-tax-input" name="order_tax" placeholder="0" required>
-													</div>
-													
-												</div>
-											</div>
-											<div class="col-lg-3 col-sm-6 col-12">
-												<div class="input-blocks mb-3">
-													<label>Discount</label>
-													<div class="input-groupicon">
-													 <input type="text" id="discount-input" name="discount" placeholder="0" required>
+													 <input type="text" id="discount-input" name="discount_edit" placeholder="0" required>
 													</div>
 												</div>
 											</div>
 											<div class="col-lg-3 col-sm-6 col-12">
 												<div class="input-blocks mb-3">
-													<label>Shipping</label>
+													<label>Shipping (₦)</label>
 													<div class="input-groupicon">
 													  <input type="text" name="shipping" id="shipping-input" placeholder="0" required>
 													</div>
