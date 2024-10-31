@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['name']) && isset($_POS
 		 $zipcode = $_POST['zipcode'];
 		 $user_email = $_SESSION['email'];
 
-		// Prepare a	nd bind
+		// Prepare and bind parameters
 		$stmt = $conn->prepare("INSERT INTO warehouse (user_email, name, contact_person, phone, email, address_1, address_2, country, state, city, zip_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		$stmt->bind_param("sssssssssss", $user_email, $name, $contact, $phone_1, $email, $address_1, $address_2, $country, $state, $city, $zipcode);
 
@@ -87,10 +87,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['name']) && isset($_POS
 						</div>
 						<ul class="table-top-head">
 							<li>
-								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Pdf"><img src="assets/img/icons/pdf.svg" alt="img"></a>
+								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Pdf" href="export_warehouse_pdf.php" target="_blank"><img src="assets/img/icons/pdf.svg" alt="img"></a>
 							</li>
 							<li>
-								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Csv"><img src="assets/img/icons/excel.svg" alt="img"></a>
+								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Csv" href="export_warehouse_csv.php" target="_blank"><img src="assets/img/icons/excel.svg" alt="img"></a>
 							</li>
 							<li>
 								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Refresh" class="refresh"><i data-feather="rotate-ccw" class="feather-rotate-ccw"></i></a>
