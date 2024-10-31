@@ -416,7 +416,7 @@ $conn = connectMainDB();
 							 <td>
 								 <div class="productimgname">
 									 <a href="javascript:void(0);" class="product-img stock-img">
-										 <img class="image_url" src="uploads/${product.image_url}" alt="product">
+										 <img class="image_url" src="uploads/${product.image_url}" alt="product image">
 									 </a>
 									 <a href="javascript:void(0);" class="product-name">${product.name}</a>
 								 </div>
@@ -684,8 +684,8 @@ delete_btns_return.forEach(delete_btn => {
             text: "You won't be able to revert this!",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
@@ -725,7 +725,6 @@ delete_btns_return.forEach(delete_btn => {
         });
     });
 });
-
 </script>
 </body>
 </html>

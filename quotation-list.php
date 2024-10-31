@@ -61,7 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['status']) && !empty($_
 }
 
 
-
 // Updating of quotations
 if ($_SERVER['REQUEST_METHOD'] == 'POST'  && isset($_POST['product_name_edit']) && !empty($_POST['product_name_edit'])) {
     // Retrieve form data
@@ -123,8 +122,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'  && isset($_POST['product_name_edit']) 
                 });
             </script>";
         }
-        $stmt->close();
-    } else {
+        $stmt->close(); // Close the statement
+		
+      } else {
         echo "
 		 <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
         <script>
