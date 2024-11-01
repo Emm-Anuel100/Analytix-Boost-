@@ -51,9 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['coupon_name_insert'])
                 });
             });
           </script>";
-}
+			}
 
-?>
+			?>
 
 
 <!DOCTYPE html>
@@ -122,10 +122,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['coupon_name_insert'])
 								<?php
 							// Fetch coupons from the coupons table
 							$couponQuery = "
-								SELECT product_name, name, code, type, discount_value, coupon_limit, end_date, status 
+								SELECT id, product_name, name, code, type, discount_value, coupon_limit, end_date, status 
 								FROM coupons 
 								WHERE user_email = ? 
-								ORDER BY name ASC";
+								ORDER BY id ASC";
 
 							$stmt = $conn->prepare($couponQuery);
 							$stmt->bind_param("s", $user_email);
@@ -167,6 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['coupon_name_insert'])
 										$coupon_limit = htmlspecialchars($row['coupon_limit']);
 										$end_date = htmlspecialchars($row['end_date']);
 										$status = htmlspecialchars($row['status']);
+										$id = htmlspecialchars($row['id']);
 								
 										// Determine status badge
 										$status_class = ($status === 'Active') ? 'badge-linesuccess' : 'badge-bgdanger';
@@ -194,7 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['coupon_name_insert'])
 													<a class='me-2 p-2' href='#' data-bs-toggle='modal' data-bs-target='#edit-units'>
 														<i data-feather='edit' class='feather-edit'></i>
 													</a>
-													<a class='confirm-tex p-2' href='javascript:void(0);'>
+													<a class='confirm-tex p-2 delete-coupon' data-id='{$id}' href='javascript:void(0);'>
 														<i data-feather='trash-2' class='feather-trash-2'></i>
 													</a>
 												</div>
@@ -222,7 +223,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['coupon_name_insert'])
 										</td>
 										<td class='action-table-data'>
 											<div class='edit-delete-action'>
-												<a class='me-2 p-2' href='#' data-bs-toggle='modal' data-bs-target='#edit-units'>
+												<a class='me-2 p-2' href='#' data-bs-toggle='modal' data-bs-target='#edit-unit'>
 													<i data-feather='edit' class='feather-edit'></i>
 												</a>
 												<a class='confirm-tex p-2' href='javascript:void(0);'>
@@ -243,7 +244,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['coupon_name_insert'])
 			</div>
 
     </div>
-<!-- end main Wrapper-->
+	<!-- end main Wrapper-->
 
 	<!-- Add coupons -->
     <div class="modal fade" id="add-units">
@@ -371,7 +372,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['coupon_name_insert'])
 								</button>
 							</div>
 							<div class="modal-body custom-modal-body">
-								<form action="coupons.php">
+								<form action="coupons.php" method="POST">
 									<div class="row">
 										<div class="col-lg-6">
 											<div class="input-blocks">
@@ -483,6 +484,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['coupon_name_insert'])
 <script async>
 
   $.fn.dataTable.ext.errMode = 'none'; // Disable all error alerts globally in DataTable
+
+  // Ajax Function for Coupon Deletion
+  $('.delete-coupon').click(function() {
+    var couponId = $(this).data('id');
+    console.log("Coupon ID:", couponId);  // Console log to verify ID
+
+    if (couponId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6 ',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // AJAX call
+                $.ajax({
+                    url: 'delete_coupon.php',
+                    type: 'POST',
+                    data: JSON.stringify({ id: couponId }), // Send data as JSON
+                    contentType: 'application/json', // Set content type to JSON
+                    dataType: 'json',
+                    success: function(response) {
+						console.log(response); // Log entire response for debugging
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Deleted!',
+                                text: 'The coupon has been deleted successfully.',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: response.message || 'An error occurred while deleting the coupon.',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Failed to communicate with the server.',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                });
+            }
+        });
+    } else {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Warning!',
+            text: 'Coupon ID is missing.',
+            confirmButtonText: 'OK'
+        });
+    }
+});
+
+
+  // Ajax Function for Coupon Updating
 
 </script>
 </body>
