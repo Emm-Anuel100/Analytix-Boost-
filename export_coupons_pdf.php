@@ -29,6 +29,11 @@ $pdf->SetFont('Arial', 'B', 16);
 $pdf->Cell(0, 10, 'Coupon List', 0, 1, 'C'); // Centered title with bold font
 $pdf->Ln(5); // Line break after title
 
+// Add the "Generated at" timestamp below the title
+$pdf->SetFont('Arial', 'I', 10);
+$pdf->Cell(0, 10, 'Generated at: ' . date('Y-m-d H:i:s a'), 0, 1, 'C'); // Centered timestamp
+$pdf->Ln(5); // Line break after timestamp
+
 // Set font for table header
 $pdf->SetFont('Arial', 'B', 12);
 
@@ -64,5 +69,5 @@ while ($row = $result->fetch_assoc()) {
 }
 
 // Output PDF
-$pdf->Output('I', 'coupons.pdf');
-?>
+$pdf->Output('I', 'coupons_List.pdf'); // 'I' for inline view
+
