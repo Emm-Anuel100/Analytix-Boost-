@@ -52,9 +52,32 @@ $conn = connectMainDB();
 							</li>
 						</ul>
 					</div>
+
 					<!-- /product list -->
 					<div class="card table-list-card">
 						<div class="card-body">
+
+						<div class="table-top">
+								<div class="search-set">
+									<div class="search-input">
+										<a href="javascript:void(0);" class="btn btn-searchset"><i data-feather="search" class="feather-search"></i></a>
+									</div>
+								</div>
+							 
+								<div class="form-sort">
+								<form method="POST" action="">
+									<i data-feather="sliders" class="info-img"></i>
+									 <?php
+										// Check if a sort order is set, otherwise default to 'newest'
+										$sortOrder = isset($_POST['sort']) ? $_POST['sort'] : 'newest';
+									 ?>
+									<select name="sort" class="select" onchange="this.form.submit()">
+										<option value="newest" <?php echo ($sortOrder == 'newest') ? 'selected' : ''; ?>>Newest</option>
+										<option value="oldest" <?php echo ($sortOrder == 'oldest') ? 'selected' : ''; ?>>Oldest</option>
+									</select>
+								</form>
+							</div>
+							</div>
 			
 							<div class="table-responsive">
 								<table class="table datanew">
@@ -160,7 +183,7 @@ $conn = connectMainDB();
 											<td>
 												<div class='productimgname'>
 													<a href='javascript:void(0);' class='product-img stock-img'>
-														<img src='uploads/default_product.jpg' alt='product image'> <!-- Replace with your demo image -->
+														<img src='uploads/default_product.jpg' alt='product image'>
 													</a>
 													<a href='javascript:void(0);'>Demo Expired Product</a> <!-- Demo product name -->
 												</div>
@@ -171,7 +194,6 @@ $conn = connectMainDB();
 											<td>" . date('Y-m-d') . "</td> <!-- Demo expiry date -->
 										</tr>";
 									}									
-
 									?>
 							</tbody>
 								</table>

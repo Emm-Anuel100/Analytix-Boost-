@@ -24,7 +24,7 @@ $query = "SELECT id, email, product_name, slug, store, sku, category, expiry_on,
     $stmt = $conn->prepare($query);
     $stmt->bind_param("s", $email);  // "s" denotes string type
     $stmt->execute();
-    $result = $stmt->get_result();;
+    $result = $stmt->get_result();
 
 // Output CSV headers
 header('Content-Type: text/csv');

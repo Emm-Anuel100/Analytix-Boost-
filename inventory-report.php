@@ -74,11 +74,12 @@ $conn = connectMainDB();
 								</div>
 								<div class="form-sort">
 									<i data-feather="sliders" class="info-img"></i>
-									<select class="select">
-										<option>Sort by Date</option>
-										<option>25 9 23</option>
-										<option>12 9 23</option>
-									</select>
+									 <form method="POST">
+										<select class="select">
+											<option>Newest</option>
+											<option>Oldest</option>
+										</select>
+									 </form>
 								</div>
 							</div>
 							<!-- /Filter -->
