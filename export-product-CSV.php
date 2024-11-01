@@ -4,7 +4,7 @@ session_start();
 date_default_timezone_set('Africa/Lagos');
 
 // Ensure the session has a valid email
-if (!isset($_SESSION['email']) || !$_SESSION['authenticated'] ) {
+if (!isset($_SESSION['email']) || !$_SESSION['authenticated']) {
 	header('Location: signin.php');
 }
 
@@ -34,7 +34,7 @@ header('Content-Disposition: attachment; filename="product-list.csv"');
 $output = fopen('php://output', 'w');
 
 // Set the header row
-fputcsv($output, ['ID', 'Name', 'Slug', 'Store','SKU', 'Category', 'Expiry', 'Price', 'Unit', 'Quantity']);
+fputcsv($output, ['id', 'Name', 'Slug', 'Store','SKU', 'Category', 'Expiry', 'Price', 'Unit', 'Quantity']);
 
 // Add data to the CSV file
 $counter = 1; // To create sequential IDs
@@ -58,4 +58,3 @@ while ($row = $result->fetch_assoc()) {
 fclose($output);
 exit;
 
-?>
