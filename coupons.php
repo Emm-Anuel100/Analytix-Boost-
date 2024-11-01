@@ -11,7 +11,7 @@ $conn = connectMainDB();
 $message = '';
 $alertType = 'success'; // Default alert type
 
-// Check if the form is submitted
+// Check if the form is submitted for insertion of coupons
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['coupon_name_insert']) && !empty($_POST['coupon_name_insert'])) {
     $coupon_name = $_POST['coupon_name_insert'];
     $coupon_code = $_POST['coupon_code'];
@@ -42,18 +42,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['coupon_name_insert'])
     
     // Echo the SweetAlert script for feedback
     echo "<script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: '$alertType',
-                    title: '" . ($alertType === 'success' ? 'Success' : 'Error') . "',
-                    text: '$message',
-                    confirmButtonText: 'OK'
-                });
-            });
-          </script>";
-			}
+	document.addEventListener('DOMContentLoaded', function() {
+		Swal.fire({
+			icon: '$alertType',
+			title: '" . ($alertType === 'success' ? 'Success' : 'Error') . "',
+			text: '$message',
+			confirmButtonText: 'OK'
+		});
+	});
+	</script>";
+	}
 
-			?>
+
+	// Script to updating Coupons
+	if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id']) && !empty($_POST['coupon_name'])) {
+		$id = $_POST['id'];
+		$name = $_POST['coupon_name'];
+		$code = $_POST['code'];
+		$type = $_POST['type'];
+		$discount_value = $_POST['discount_value'];
+		$limit = $_POST['limit'];
+		$start_date = $_POST['start_date'];
+		$end_date = $_POST['end_date'];
+		$product_name = $_POST['product_name'];
+		$status = isset($_POST['status']) ? 'Active' : 'Inactive';
+		$user_email = $_SESSION['email']; // user's email
+
+		$query = "UPDATE coupons SET name=?, code=?, type=?, discount_value=?, coupon_limit=?, product_name=?, start_date=?, end_date=?, status=? WHERE id=? AND user_email = '$user_email'";
+		$stmt = $conn->prepare($query);
+		$stmt->bind_param("sssssssssi", $name, $code, $type, $discount_value, $limit, $product_name, $start_date, $end_date, $status, $id);
+    
+    if ($stmt->execute()) {
+		$message = "Coupon updated successfully!";
+        $alertType = 'success'; // Set alert type for success
+    } else {
+        $message = "Error: " . addslashes($stmt->error);
+        $alertType = 'error'; // Set alert type for error
+    }
+
+	// Close the statement
+	$stmt->close();
+
+	// Echo the SweetAlert script for feedback
+	echo "<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		Swal.fire({
+			icon: '$alertType',
+			title: '" . ($alertType === 'success' ? 'Success' : 'Error') . "',
+			text: '$message',
+			confirmButtonText: 'OK'
+		});
+	});
+	</script>";
+ }
+
+?>
 
 
 <!DOCTYPE html>
@@ -110,14 +153,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['coupon_name_insert'])
 								<div class="form-sort">
 									<i data-feather="sliders" class="info-img"></i>
 									<form action="" method="get">
-										<select class="select">
-											<option>Newest</option>
-											<option>Oldest</option>
-										</select>
-									</form>
+									<select name="sort" class="select" onchange="this.form.submit()">
+										<option value="newest" <?= isset($_GET['sort']) && $_GET['sort'] === 'newest' ? 'selected' : '' ?>>Newest</option>
+										<option value="oldest" <?= isset($_GET['sort']) && $_GET['sort'] === 'oldest' ? 'selected' : '' ?>>Oldest</option>
+									</select>
+								</form>
 								</div>
 							</div>
-							
+
+								<?php
+								// Default sorting order
+								$order = 'DESC';  // Newest first
+
+								// Check if a sorting option is set in the URL
+								if (isset($_GET['sort'])) {
+									$sortOption = $_GET['sort'];
+									$order = $sortOption === 'oldest' ? 'ASC' : 'DESC';
+								}
+								?>	
+
 							<div class="table-responsive">
 								<?php
 							// Fetch coupons from the coupons table
@@ -125,7 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['coupon_name_insert'])
 								SELECT id, product_name, name, code, type, discount_value, coupon_limit, end_date, status 
 								FROM coupons 
 								WHERE user_email = ? 
-								ORDER BY id ASC";
+								ORDER BY id $order";
 
 							$stmt = $conn->prepare($couponQuery);
 							$stmt->bind_param("s", $user_email);
@@ -192,7 +246,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['coupon_name_insert'])
 											</td>
 											<td class='action-table-data'>
 												<div class='edit-delete-action'>
-													<a class='me-2 p-2' href='#' data-bs-toggle='modal' data-bs-target='#edit-units'>
+													<a class='me-2 p-2 edit-coupon' href='#' data-bs-toggle='modal' data-id='{$id}' data-bs-target='#edit-units'>
 														<i data-feather='edit' class='feather-edit'></i>
 													</a>
 													<a class='confirm-tex p-2 delete-coupon' data-id='{$id}' href='javascript:void(0);'>
@@ -322,7 +376,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['coupon_name_insert'])
 										<select name="product_name" class="select" required>
 											<?php
 											$user_email = $_SESSION['email']; // User's email
-											$productQuery = "SELECT product_name FROM products WHERE email = '$user_email' ORDER BY product_name ASC"; // Fetch products
+											$productQuery = "SELECT product_name FROM products WHERE email = '$user_email' ORDER BY product_name ASC"; // Fetch products alphabetically
 
 											$result = $conn->query($productQuery);
 											if ($result->num_rows > 0) {
@@ -373,23 +427,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['coupon_name_insert'])
 							</div>
 							<div class="modal-body custom-modal-body">
 								<form action="coupons.php" method="POST">
+									<input type="hidden" name="id" id="editCouponId"> <!-- hidden input field to store id -->
 									<div class="row">
 										<div class="col-lg-6">
 											<div class="input-blocks">
 												<label>Name</label>
-												<input type="text" placeholder="Coupons 21" required>
+												<input type="text" name="coupon_name" placeholder="Coupons 21" required id="edit-name">
 											</div>
 										</div>
 										<div class="col-lg-6">
 											<div class="input-blocks">
 												<label>Code</label>
-												<input type="text" placeholder="Christmas" required>
+												<input type="text" name="code" placeholder="Christmas" required id="edit-code">
 											</div>
 										</div>
 										<div class="col-lg-6">
 											<div class="input-blocks">
 												<label>Type</label>
-												<select class="select">
+												<select class="select" name="type" id="edit-type">
 													<option>Fixed</option>
 													<option>Percentage</option>
 												</select>
@@ -398,13 +453,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['coupon_name_insert'])
 										<div class="col-lg-6">
 											<div class="input-blocks">
 												<label>Discount Value</label>
-												<input type="text" placeholder="20" required>
+												<input type="text" name="discount_value" placeholder="20" required id="edit-discount">
 											</div>
 										</div>
 										<div class="col-lg-12">
 											<div class="input-blocks">
 												<label>Limit</label>
-												<input type="text" placeholder="4" required>
+												<input type="text" name="limit" placeholder="4" required id="edit-limit">
 												<span class="unlimited-text">0 for Unlimited</span>
 											</div>
 											
@@ -414,7 +469,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['coupon_name_insert'])
 												<label>Start Date</label>
 												<div class="input-groupicon calender-input">
 													<i data-feather="calendar" class="info-img"></i>
-													<input type="text" class="datetimepicker form-control" placeholder="Select Date" required>
+													<input type="text" name="start_date" class="datetimepicker form-control" id="edit-start" placeholder="Select Date" required>
 												</div>
 											</div>
 										</div>
@@ -423,7 +478,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['coupon_name_insert'])
 												<label>End Date</label>
 												<div class="input-groupicon calender-input">
 													<i data-feather="calendar" class="info-img"></i>
-													<input type="text" class="datetimepicker form-control" placeholder="Select Date" required>
+													<input type="text" name="end_date" class="datetimepicker form-control" id="edit-end" placeholder="Select Date" required>
 												</div>
 											</div>
 										</div>
@@ -457,7 +512,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['coupon_name_insert'])
 										<div class="input-blocks m-0">
 											<div class="status-toggle modal-status d-flex justify-content-between align-items-center">
 												<span class="status-label">Status</span>
-												<input type="checkbox" id="user6" class="check" checked>
+												<input type="checkbox" id="user6" name="status" class="check" checked>
 												<label for="user6" class="checktoggle">	</label>
 											</div>
 										</div>
@@ -551,6 +606,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['coupon_name_insert'])
 
 
   // Ajax Function for Coupon Updating
+  $(document).on('click', '.edit-coupon', function () {
+    const couponId = $(this).data('id');
+
+    // Set coupon ID to a hidden input or variable
+    $('#editCouponId').val(couponId);
+
+    // Make an AJAX request to fetch coupon details
+    $.ajax({
+        url: 'get_coupon_details.php',
+        type: 'GET',
+        data: { id: couponId },
+        success: function (data) {
+            const coupon = JSON.parse(data);
+            // Populate form fields with fetched coupon details
+            $('#edit-name').val(coupon.name);
+            $('#edit-code').val(coupon.code);
+            $('#edit-type').val(coupon.type);
+            $('#edit-discount').val(coupon.discount_value);
+            $('#edit-limit').val(coupon.coupon_limit);
+            $('#edit-start').val(coupon.start_date);
+            $('#edit-end').val(coupon.end_date);
+        },
+        error: function () {
+            console.log('Failed to fetch coupon details.');
+        }
+    });
+});
 
 </script>
 </body>
