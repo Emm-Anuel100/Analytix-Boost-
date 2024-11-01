@@ -1,4 +1,8 @@
 <?php 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 include "./layouts/session.php";
 
 include 'conn.php'; // Include database connection
@@ -74,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['customer_name']) && !e
     <body>
 		
 		<div id="global-loader" >
-			<div class="whirly-loader"> </div>
+			<div class="whirlyloader"> </div>
 		</div>
 	
 		 
@@ -134,6 +138,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['customer_name']) && !e
 							
 							<div class="table-responsive">
 							<?php  
+							$user_email = $_SESSION['email'];  // user email
+
 							// Determine sort order based on form submission
 							$sortOrder = isset($_POST['sort_order']) ? $_POST['sort_order'] : 'newest';
 
@@ -141,7 +147,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['customer_name']) && !e
 							$orderClause = ($sortOrder === 'oldest') ? 'ASC' : 'DESC';
 
 							// Fetch sales data from the database with the dynamic order clause
-							$salesQuery = "SELECT * FROM sales ORDER BY id $orderClause"; 
+							$salesQuery = "SELECT * FROM sales WHERE user_email = '$user_email' ORDER BY id $orderClause"; 
 							$salesResult = $conn->query($salesQuery);
 							?>
 							<table class="table datanew">
@@ -166,37 +172,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['customer_name']) && !e
 									</tr>
 								</thead>
 								<tbody class="sales-list">
-									<?php if ($salesResult->num_rows > 0): ?>
-										<?php while ($sale = $salesResult->fetch_assoc()): ?>
-										    <!-- Check if the logged-in user matches the user_email -->
-											<?php if ($sale['user_email'] === $_SESSION['email']): ?>
-											<tr>
-												<td>
-													<label class="checkboxs">
-														<input type="checkbox">
-														<span class="checkmarks"></span>
-													</label>
-												</td>
-												<td><?= htmlspecialchars($sale['customer']) ?></td>
-												<td><?= htmlspecialchars($sale['reference']) ?></td>
-												<td><?= htmlspecialchars($sale['date']) ?></td>
-												<td>
+								<?php if ($salesResult->num_rows > 0) { ?>
+									<?php while ($sale = $salesResult->fetch_assoc()) { ?>
+										<tr>
+											<td>
+												<label class="checkboxs">
+													<input type="checkbox">
+													<span class="checkmarks"></span>
+												</label>
+											</td>
+											<td><?= htmlspecialchars($sale['customer']) ?></td>
+											<td><?= htmlspecialchars($sale['reference']) ?></td>
+											<td><?= htmlspecialchars($sale['date']) ?></td>
+											<td>
 												<?php 
-													// Set badge class based on status
-													$badgeClass = ($sale['status'] === 'In Progress') ? 'badge badge-warning' : 'badge badge-bgsuccess'; 
-													?>
-													<span class="<?= $badgeClass ?>"><?= htmlspecialchars($sale['status']) ?></span>
-											   </td>
-												<td><?= htmlspecialchars($sale['grand_total']) ?></td>
-												<td><?= htmlspecialchars($sale['payment_by']) ?></td>
-												<td><?= htmlspecialchars($sale['amount_paid']) ?></td>
-												<td><?= htmlspecialchars($sale['amount_due']) ?></td>
-												<td><?= htmlspecialchars($sale['change_element']) ?></td>
-												<td class="text-center">
-													<a class="action-set" href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="true">
-														<i class="fa fa-ellipsis-v" aria-hidden="true"></i>
-													</a>
-													<ul class="dropdown-menu">
+												// Set badge class based on status
+												$badgeClass = ($sale['status'] === 'In Progress') ? 'badge badge-warning' : 'badge badge-bgsuccess'; 
+												?>
+												<span class="<?= $badgeClass ?>"><?= htmlspecialchars($sale['status']) ?></span>
+											</td>
+											<td><?= htmlspecialchars($sale['grand_total']) ?></td>
+											<td><?= htmlspecialchars($sale['payment_by']) ?></td>
+											<td><?= htmlspecialchars($sale['amount_paid']) ?></td>
+											<td><?= htmlspecialchars($sale['amount_due']) ?></td>
+											<td><?= htmlspecialchars($sale['change_element']) ?></td>
+											<td class="text-center">
+												<a class="action-set" href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="true">
+													<i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+												</a>
+												<ul class="dropdown-menu">
 													<li>
 														<a href="#" class="dropdown-item" 
 														id="sales_anchor"
@@ -213,7 +217,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['customer_name']) && !e
 														data-products="<?= $sale['products'] ?>"
 														data-bs-target="#sales-details-new"
 														onclick="storeSalesData(this)">
-														<i data-feather="eye" class="info-img"></i> Sale Detail
+															<i data-feather="eye" class="info-img"></i> Sale Detail
 														</a>
 													</li>
 													<li>
@@ -227,24 +231,64 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['customer_name']) && !e
 														data-amount-due="<?= $sale['amount_due'] ?>" 
 														data-date="<?= $sale['date'] ?>" 
 														data-change-element="<?= $sale['change_element'] ?>" 
-														data-id="<?= htmlspecialchars($sale['id']) ?>" data-bs-target="#edit-sales-new"><i data-feather="edit" class="info-img"></i>Edit Detail</a>
+														data-id="<?= htmlspecialchars($sale['id']) ?>" 
+														data-bs-target="#edit-sales-new">
+															<i data-feather="edit" class="info-img"></i>Edit Detail
+														</a>
 													</li>
 													<li>
 														<a href="javascript:void(0);" class="dropdown-item confirm-tet mb-0" data-id="<?= htmlspecialchars($sale['id']) ?>">
 															<i data-feather="trash-2" class="info-img"></i>Delete Sale
 														</a>
 													</li>
-													</ul>
-												</td>
-											</tr>
-											 <?php endif; ?>
-											<?php endwhile; ?>
-										<?php else: ?>
-										<tr>
-											<td colspan="11" class="text-center">No sales data available.</td>
+												</ul>
+											</td>
 										</tr>
-									<?php endif; ?>
-								</tbody>
+									<?php } ?>
+								<?php } else { ?>
+									<tr>
+										<td>
+											<label class="checkboxs">
+												<input type="checkbox">
+												<span class="checkmarks"></span>
+											</label>
+										</td>
+										<td>Demo Customer</td>
+										<td>Demo Reference</td>
+										<td><?= date('Y-m-d') ?></td>
+										<td>
+											<span class="badge badge-warning">Demo Status</span>
+										</td>
+										<td>100.00</td>
+										<td>Cash</td>
+										<td>100.00</td>
+										<td>0.00</td>
+										<td>0.00</td>
+										<td class="text-center">
+											<a class="action-set" href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="true">
+												<i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+											</a>
+											<ul class="dropdown-menu">
+												<li>
+													<a href="#" class="dropdown-item" data-bs-toggle="modal">
+														<i data-feather="eye" class="info-img"></i> Sale Detail
+													</a>
+												</li>
+												<li>
+													<a href="#" class="dropdown-item" data-bs-toggle="modal">
+														<i data-feather="edit" class="info-img"></i>Edit Detail
+													</a>
+												</li>
+												<li>
+													<a href="javascript:void(0);" class="dropdown-item confirm-te mb-0">
+														<i data-feather="trash-2" class="info-img"></i>Delete Sale
+													</a>
+												</li>
+											</ul>
+										</td>
+									</tr>
+								<?php } ?>
+							</tbody>
 							</table>
 							</div>
 						</div>

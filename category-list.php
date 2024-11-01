@@ -113,14 +113,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['name'])) {
 							</div>
 
 							<div class="table-responsive">
-							<?php
-							// Assuming you already have a connection to the database in $conn
-							$query = "SELECT name, slug, timestamp, status FROM categories";
-							$result = $conn->query($query);
-
-							if ($result->num_rows > 0) {
-							// Start outputting the table
-							echo '<table class="table datanew">
+							<table class="table datanew">
 							<thead>
 								<tr>
 									<th class="no-sort">
@@ -136,6 +129,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['name'])) {
 									<th class="no-sort">Action</th>
 								</tr>
 							</thead>
+							<?php
+							// Assuming you already have a connection to the database in $conn
+							$query = "SELECT name, slug, timestamp, status FROM categories";
+							$result = $conn->query($query);
+
+							if ($result->num_rows > 0) {
+							// Start outputting the table
+							echo '
 							<tbody>';
 						
 							// Loop through the results and output each row
@@ -172,12 +173,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['name'])) {
 							</tr>';
 							}
 							
-							echo '</tbody></table>';
+							echo '</tbody>';
 						} else {
 							// If no data found
 							// echo '<p>No categories found.</p>';
 						}
 						?>
+						</table>
 						</div>
 						</div>
 					</div>

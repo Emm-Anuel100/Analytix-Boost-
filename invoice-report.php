@@ -104,56 +104,73 @@ $conn = connectMainDB();
 							</tr>
 						</thead>
 						<tbody>
-							<?php
-							$user_email = $_SESSION['email'];  // user email
+						<?php
+						$user_email = $_SESSION['email'];  // user email
 
-							// Fetch sales data from the database with the selected order
-							$sql = "SELECT reference, customer, date, grand_total, amount_paid, amount_due, change_element, status 
-							FROM sales WHERE user_email = ? ORDER BY id $order";
+						// Fetch sales data from the database with the selected order
+						$sql = "SELECT reference, customer, date, grand_total, amount_paid, amount_due, change_element, status 
+								FROM sales WHERE user_email = ? ORDER BY id $order";
 
-							$stmt = $conn->prepare($sql);
-							$stmt->bind_param("s", $user_email);
-							$stmt->execute();
-							$result = $stmt->get_result();
+						$stmt = $conn->prepare($sql);
+						$stmt->bind_param("s", $user_email);
+						$stmt->execute();
+						$result = $stmt->get_result();
 
-							if ($result->num_rows > 0) {
-								// Output data for each row
-								while ($row = $result->fetch_assoc()) {
-									// Assuming you store amounts in your database as integers or decimals without the currency symbol
-									$reference = htmlspecialchars($row['reference']);
-									$customer = htmlspecialchars($row['customer']);
-									$dueDate = htmlspecialchars($row['date']); // Format date if needed
-									$grandTotal = number_format($row['grand_total'], 2);
-									$amountPaid = number_format($row['amount_paid'], 2);
-									$amountDue = number_format($row['amount_due'], 2);
-									$changeElement = number_format($row['change_element'], 2);
-									$status = htmlspecialchars($row['status']);
+						if ($result->num_rows > 0) {
+							// Output data for each row
+							while ($row = $result->fetch_assoc()) {
+								// Assuming you store amounts in your database as integers or decimals without the currency symbol
+								$reference = htmlspecialchars($row['reference']);
+								$customer = htmlspecialchars($row['customer']);
+								$dueDate = htmlspecialchars($row['date']); // Format date if needed
+								$grandTotal = number_format($row['grand_total'], 2);
+								$amountPaid = number_format($row['amount_paid'], 2);
+								$amountDue = number_format($row['amount_due'], 2);
+								$changeElement = number_format($row['change_element'], 2);
+								$status = htmlspecialchars($row['status']);
 
-									// Determine badge class based on status
-									$badgeClass = ($status == 'In Progress') ? 'badges-warning' : 'badge-linesuccess';
+								// Determine badge class based on status
+								$badgeClass = ($status == 'In Progress') ? 'badge-warning' : 'badge-linesuccess';
 
-									echo "<tr>
-										<td>
-											<label class='checkboxs'>
-												<input type='checkbox'>
-												<span class='checkmarks'></span>
-											</label>
-										</td>
-										<td>$reference</td>
-										<td>$customer</td>
-										<td>$dueDate</td>
-										<td>$grandTotal</td>
-										<td>$amountPaid</td>
-										<td>$amountDue</td>
-										<td>$changeElement</td>
-										<td><span class='badge $badgeClass'>$status</span></td>
-												</tr>";
-											}
-										} else {
-											echo "<tr><td colspan='9'>No sales records found.</td></tr>";
-										}
-										?>
-									</tbody>
+								echo "<tr>
+									<td>
+										<label class='checkboxs'>
+											<input type='checkbox'>
+											<span class='checkmarks'></span>
+										</label>
+									</td>
+									<td>$reference</td>
+									<td>$customer</td>
+									<td>$dueDate</td>
+									<td>$grandTotal</td>
+									<td>$amountPaid</td>
+									<td>$amountDue</td>
+									<td>$changeElement</td>
+									<td><span class='badge $badgeClass'>$status</span></td>
+								</tr>";
+							}
+						} else {
+							// Display demo data when no records are found
+							echo "<tr>
+								<td>
+									<label class='checkboxs'>
+										<input type='checkbox'>
+										<span class='checkmarks'></span>
+									</label>
+								</td>
+								<td>Demo Reference</td>
+								<td>Demo Customer</td>
+								<td>" . date('Y-m-d') . "</td>
+								<td>" . number_format(100.00, 2) . "</td>
+								<td>" . number_format(100.00, 2) . "</td>
+								<td>" . number_format(0.00, 2) . "</td>
+								<td>" . number_format(0.00, 2) . "</td>
+								<td><span class='badge badge-warning'>Demo Status</span></td>
+							</tr>";
+						}
+						?>
+					</tbody>
+
 								</table>
 									</div>
 								</div>
@@ -163,6 +180,8 @@ $conn = connectMainDB();
 					</div>
 					</div>
 		<!-- end main Wrapper-->
+
+
 <?php include 'layouts/customizer.php'; ?>
 <!-- JAVASCRIPT -->
 <?php include 'layouts/vendor-scripts.php'; ?>

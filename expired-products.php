@@ -123,7 +123,7 @@ $conn = connectMainDB();
 											$manufactured_date = $row['manufactured_date'];
 											$expiry_on = $row['expiry_date'];
 											$image = $row['image'];
-
+									
 											// Display the expired product in the table
 											echo "
 											<tr>
@@ -144,13 +144,33 @@ $conn = connectMainDB();
 												<td>$store</td>
 												<td>$sku</td>
 												<td>$manufactured_date</td>
-
 												<td>$expiry_on</td>
 											</tr>";
 										}
 									} else {
-										echo "<tr><td colspan='6'>No expired products found.</td></tr>";
-									}
+										// Display demo data when no expired products are found
+										echo "
+										<tr>
+											<td>
+												<label class='checkboxs'>
+													<input type='checkbox'>
+													<span class='checkmarks'></span>
+												</label>
+											</td>
+											<td>
+												<div class='productimgname'>
+													<a href='javascript:void(0);' class='product-img stock-img'>
+														<img src='uploads/default_product.jpg' alt='product image'> <!-- Replace with your demo image -->
+													</a>
+													<a href='javascript:void(0);'>Demo Expired Product</a> <!-- Demo product name -->
+												</div>
+											</td>
+											<td>Demo Store</td>
+											<td>Demo SKU</td>
+											<td>" . date('Y-m-d', strtotime('-30 days')) . "</td> <!-- Demo manufactured date -->
+											<td>" . date('Y-m-d') . "</td> <!-- Demo expiry date -->
+										</tr>";
+									}									
 
 									?>
 							</tbody>
