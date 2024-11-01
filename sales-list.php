@@ -72,13 +72,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['customer_name']) && !e
 <!DOCTYPE html>
 <html lang="en">
     <head>
-	<?php include 'layouts/title-meta.php'; ?>
- <?php include 'layouts/head-css.php'; ?>		
+	  <?php include 'layouts/title-meta.php'; ?>
+      <?php include 'layouts/head-css.php'; ?>		
     </head>
     <body>
 		
 		<div id="global-loader" >
-			<div class="whirlyloader"> </div>
+			<div class="whirly-loader"> </div>
 		</div>
 	
 		 

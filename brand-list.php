@@ -44,8 +44,9 @@ if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
 
 				// Collect other brand data from the form
 				$brand_name = htmlspecialchars(trim($_POST['brand_name']));
-				$status = isset($_POST['status']) && $_POST['status'] === 'active' ? 'active' : 'inactive';
-				$user_email = $_SESSION['email'];
+				
+				$status = isset($_POST['status']) ? 'Active' : 'Inactive';
+				$user_email = $_SESSION['email']; // user's email
 
 				// Prepare SQL query to insert the brand data including the image name
 				$stmt = $conn->prepare("INSERT INTO brands (user_email, name, image, status) VALUES (?, ?, ?, ?)");
@@ -86,24 +87,24 @@ if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
 					});
 				</script>";
 			}
+		}
+	  }
 	}
-}
-}
 
-// Check for message in URL and display SweetAlert if present
-if (isset($_GET['message']) && $_GET['message'] == 'success') {
-echo "<script>
-			document.addEventListener('DOMContentLoaded', function() {
-				Swal.fire({
-					icon: 'success',
-					title: 'Success!',
-					text: 'Brand added successfully!',
-					confirmButtonText: 'Ok'
+	// Check for message in URL and display SweetAlert if present
+	if (isset($_GET['message']) && $_GET['message'] == 'success') {
+	echo "<script>
+				document.addEventListener('DOMContentLoaded', function() {
+					Swal.fire({
+						icon: 'success',
+						title: 'Success!',
+						text: 'Brand added successfully!',
+						confirmButtonText: 'Ok'
+					});
 				});
-			});
-		</script>";
-}
-?>
+			</script>";
+	}
+	?>
 
 
 <!DOCTYPE html>
@@ -204,7 +205,7 @@ echo "<script>
         $status = htmlspecialchars($row['status']); // Sanitize status
 
 		  // Assign badge class based on status
-        $badgeClass = ($status === 'active') ? 'badge-linesuccess' : 'badge-linedanger';
+        $badgeClass = ($status == 'Active') ? 'badge-linesuccess' : 'badge-linedanger';
 
         echo '<tr>
                 <td>
@@ -214,7 +215,8 @@ echo "<script>
                     </label>
                 </td>
                 <td>' . $brand_name . '</td>
-                <td><span class="d-flex"><img src="uploads/' . $logo . '" alt=""></span></td>
+                <!--- <td><span class="d-flex"><img src="uploads/' . $logo . '" alt="brand image" height="20px" width="50px"></span></td> --->
+				// <td><span class="d-flex"><img src="uploads/' . $logo . '" alt="brand image"></span></td>
                 <td>' . date("d M Y", strtotime($created_on)) . '</td>
                 <td><span class="badge ' . $badgeClass . '">' . ucfirst($status) . '</span></td>
                 <td class="action-table-data">
@@ -243,13 +245,13 @@ echo "<script>
 			// Close the statement
 			$stmt->close();
 			?>
-						</div>
-					</div>
-				</div>
-				<!-- /product list -->
 			</div>
 		</div>
 	</div>
+	<!-- /product list -->
+</div>
+</div>
+</div>
 <!-- end main Wrapper-->
 
 <!-- Add Brand -->

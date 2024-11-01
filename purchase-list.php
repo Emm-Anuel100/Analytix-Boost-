@@ -40,19 +40,15 @@ $conn = connectMainDB();
 					</div>
 					<ul class="table-top-head">
 						<li>
-							<a data-bs-toggle="tooltip" data-bs-placement="top" title="Pdf"><img
+							<a data-bs-toggle="tooltip" data-bs-placement="top" title="Pdf" href="export_purchace_pdf.php" target="_blank"><img
 									src="assets/img/icons/pdf.svg" alt="img"></a>
 						</li>
 						<li>
-							<a data-bs-toggle="tooltip" data-bs-placement="top" title="Excel"><img
+							<a data-bs-toggle="tooltip" data-bs-placement="top" title="Csv" href="export_purchace_csv.php" target="_blank"><img
 									src="assets/img/icons/excel.svg" alt="img"></a>
 						</li>
 						<li>
-							<a data-bs-toggle="tooltip" data-bs-placement="top" title="print"><img
-									src="assets/img/icons/printer.svg" alt="img"></a>
-						</li>
-						<li>
-							<a data-bs-toggle="tooltip" data-bs-placement="top" title="Refresh"><i
+							<a data-bs-toggle="tooltip" data-bs-placement="top" title="Refresh" class="refresh"><i
 									data-feather="rotate-ccw" class="feather-rotate-ccw"></i></a>
 						</li>		
 						<li>
@@ -82,80 +78,18 @@ $conn = connectMainDB();
 											class="feather-search"></i></a>
 								</div>
 							</div>
-							<div class="search-path">
-								<a class="btn btn-filter" id="filter_search">
-									<i data-feather="filter" class="filter-icon"></i>
-									<span><img src="assets/img/icons/closes.svg" alt="img"></span>
-								</a>
-							</div>
+							
 							<div class="form-sort">
 								<i data-feather="sliders" class="info-img"></i>
-								<select class="select">
-									<option>Sort by Date</option>
-									<option>Newest</option>
-									<option>Oldest</option>
-								</select>
+								<form action="" method="post">
+									<select class="select">
+										<option>Newest</option>
+										<option>Oldest</option>
+									</select>
+								</form>
 							</div>
 						</div>
-						<!-- /Filter -->
-						<div class="card" id="filter_inputs">
-							<div class="card-body pb-0">
-								<div class="row">
-									<div class="col-lg-2 col-sm-6 col-12">
-										<div class="input-blocks">
-											<i data-feather="user" class="info-img"></i>
-											<select class="select">
-												<option>Choose Supplier Name</option>
-												<option>Apex Computers</option>
-												<option>Beats Headphones</option>
-												<option>Dazzle Shoes</option>
-												<option>Best Accessories</option>
-											</select>
-										</div>
-									</div>
-									<div class="col-lg-2 col-sm-6 col-12">
-										<div class="input-blocks">
-											<i data-feather="stop-circle" class="info-img"></i>
-											<select class="select">
-												<option>Choose Status</option>
-												<option>Received</option>
-												<option>Ordered</option>
-												<option>Pending</option>
-											</select>
-										</div>
-									</div>
-									<div class="col-lg-2 col-sm-6 col-12">
-										<div class="input-blocks">
-											<i data-feather="file" class="info-img"></i>
-											<select class="select">
-												<option>Enter Reference</option>
-												<option>PT001</option>
-												<option>PT002</option>
-												<option>PT003</option>
-											</select>
-										</div>
-									</div>
-									<div class="col-lg-2 col-sm-6 col-12">
-										<div class="input-blocks">
-											<i class="fas fa-money-bill info-img"></i>
-											<select class="select">
-												<option>Choose Payment Status</option>
-												<option>Paid</option>
-												<option>Partial</option>
-												<option>Unpaid</option>
-											</select>
-										</div>
-									</div>
-									<div class="col-lg-4 col-sm-6 col-12 ms-auto">
-										<div class="input-blocks">
-											<a class="btn btn-filters ms-auto"> <i data-feather="search"
-													class="feather-search"></i> Search </a>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<!-- /Filter -->
+						
 						<div class="table-responsive product-list">
 							<table class="table  datanew list">
 								<thead>
@@ -195,9 +129,6 @@ $conn = connectMainDB();
 										<td><span class="badge-linesuccess">Paid</span></td>
 										<td class="action-table-data">
 											<div class="edit-delete-action">
-												<a class="me-2 p-2" href="javascript:void(0);">
-													<i data-feather="eye" class="action-eye"></i>
-												</a>
 												<a class="me-2 p-2" data-bs-toggle="modal" data-bs-target="#edit-units">
 													<i data-feather="edit" class="feather-edit"></i>
 												</a>
@@ -207,272 +138,9 @@ $conn = connectMainDB();
 											</div>
 										</td>
 									</tr>
-									<tr>
-										<td>
-											<label class="checkboxs">
-												<input type="checkbox">
-												<span class="checkmarks"></span>
-											</label>
-										</td>
-										<td>Beats Headphones</td>
-										<td>PT002 </td>
-										<td>27 Jan 2023</td>
-										<td><span class="badges status-badge">Received</span></td>
-										<td>$370</td>
-										<td>$370</td>
-										<td>$0.00</td>
-										<td><span class="badge-linesuccess">Paid</span></td>
-										<td class="action-table-data">
-											<div class="edit-delete-action">
-												<a class="me-2 p-2" href="javascript:void(0);">
-													<i data-feather="eye" class="action-eye"></i>
-												</a>
-												<a class="me-2 p-2" data-bs-toggle="modal" data-bs-target="#edit-units">
-													<i data-feather="edit" class="feather-edit"></i>
-												</a>
-												<a class="confirm-text p-2" href="javascript:void(0);">
-													<i data-feather="trash-2" class="feather-trash-2"></i>
-												</a>
-											</div>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<label class="checkboxs">
-												<input type="checkbox">
-												<span class="checkmarks"></span>
-											</label>
-										</td>
-										<td>Dazzle Shoes</td>
-										<td>PT003 </td>
-										<td>08 Feb 2023</td>
-										<td><span class="badges status-badge ordered">Ordered</span></td>
-										<td>$400</td>
-										<td>$400</td>
-										<td>$200</td>
-										<td><span class="badges-warning">Partial</span></td>
-										<td class="action-table-data">
-											<div class="edit-delete-action">
-												<a class="me-2 p-2" href="javascript:void(0);">
-													<i data-feather="eye" class="action-eye"></i>
-												</a>
-												<a class="me-2 p-2" data-bs-toggle="modal" data-bs-target="#edit-units">
-													<i data-feather="edit" class="feather-edit"></i>
-												</a>
-												<a class="confirm-text p-2" href="javascript:void(0);">
-													<i data-feather="trash-2" class="feather-trash-2"></i>
-												</a>
-											</div>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<label class="checkboxs">
-												<input type="checkbox">
-												<span class="checkmarks"></span>
-											</label>
-										</td>
-										<td>Best Accessories</td>
-										<td>PT004 </td>
-										<td>16 Feb 2023</td>
-										<td><span class="badges unstatus-badge">Pending</span></td>
-										<td>$560</td>
-										<td>$0.00</td>
-										<td>$560</td>
-										<td><span class="badge badge-linedangered">Unpaid</span></td>
-										<td class="action-table-data">
-											<div class="edit-delete-action">
-												<a class="me-2 p-2" href="javascript:void(0);">
-													<i data-feather="eye" class="action-eye"></i>
-												</a>
-												<a class="me-2 p-2" data-bs-toggle="modal" data-bs-target="#edit-units">
-													<i data-feather="edit" class="feather-edit"></i>
-												</a>
-												<a class="confirm-text p-2" href="javascript:void(0);">
-													<i data-feather="trash-2" class="feather-trash-2"></i>
-												</a>
-											</div>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<label class="checkboxs">
-												<input type="checkbox">
-												<span class="checkmarks"></span>
-											</label>
-										</td>
-										<td>A-Z Store</td>
-										<td>PT005</td>
-										<td>12 Mar 2023</td>
-										<td><span class="badges unstatus-badge">Pending</span></td>
-										<td>$240</td>
-										<td>$0.00</td>
-										<td>$240</td>
-										<td><span class="badge badge-linedangered">Unpaid</span></td>
-										<td class="action-table-data">
-											<div class="edit-delete-action">
-												<a class="me-2 p-2" href="javascript:void(0);">
-													<i data-feather="eye" class="action-eye"></i>
-												</a>
-												<a class="me-2 p-2" data-bs-toggle="modal" data-bs-target="#edit-units">
-													<i data-feather="edit" class="feather-edit"></i>
-												</a>
-												<a class="confirm-text p-2" href="javascript:void(0);">
-													<i data-feather="trash-2" class="feather-trash-2"></i>
-												</a>
-											</div>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<label class="checkboxs">
-												<input type="checkbox">
-												<span class="checkmarks"></span>
-											</label>
-										</td>
-										<td>Hatimi Hardwares</td>
-										<td>PT006</td>
-										<td>24 Mar 2023</td>
-										<td><span class="badges status-badge">Received</span></td>
-										<td>$170</td>
-										<td>$170</td>
-										<td>$0.00</td>
-										<td><span class="badge-linesuccess">Paid</span></td>
-										<td class="action-table-data">
-											<div class="edit-delete-action">
-												<a class="me-2 p-2" href="javascript:void(0);">
-													<i data-feather="eye" class="action-eye"></i>
-												</a>
-												<a class="me-2 p-2" data-bs-toggle="modal" data-bs-target="#edit-units">
-													<i data-feather="edit" class="feather-edit"></i>
-												</a>
-												<a class="confirm-text p-2" href="javascript:void(0);">
-													<i data-feather="trash-2" class="feather-trash-2"></i>
-												</a>
-											</div>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<label class="checkboxs">
-												<input type="checkbox">
-												<span class="checkmarks"></span>
-											</label>
-										</td>
-										<td>Aesthetic Bags</td>
-										<td>PT007</td>
-										<td>06 Apr 2023</td>
-										<td><span class="badges unstatus-badge">Pending</span></td>
-										<td>$230</td>
-										<td>$0.00</td>
-										<td>$230</td>
-										<td><span class="badge badge-linedangered">Unpaid</span></td>
-										<td class="action-table-data">
-											<div class="edit-delete-action">
-												<a class="me-2 p-2" href="javascript:void(0);">
-													<i data-feather="eye" class="action-eye"></i>
-												</a>
-												<a class="me-2 p-2" data-bs-toggle="modal" data-bs-target="#edit-units">
-													<i data-feather="edit" class="feather-edit"></i>
-												</a>
-												<a class="confirm-text p-2" href="javascript:void(0);">
-													<i data-feather="trash-2" class="feather-trash-2"></i>
-												</a>
-											</div>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<label class="checkboxs">
-												<input type="checkbox">
-												<span class="checkmarks"></span>
-											</label>
-										</td>
-										<td>Alpha Mobiles</td>
-										<td>PT008</td>
-										<td>14 Apr 2023</td>
-										<td><span class="badges status-badge ordered">Ordered</span></td>
-										<td>$300</td>
-										<td>$150</td>
-										<td>$300</td>
-										<td><span class="badges-warning">Partial</span></td>
-										<td class="action-table-data">
-											<div class="edit-delete-action">
-												<a class="me-2 p-2" href="javascript:void(0);">
-													<i data-feather="eye" class="action-eye"></i>
-												</a>
-												<a class="me-2 p-2" data-bs-toggle="modal" data-bs-target="#edit-units">
-													<i data-feather="edit" class="feather-edit"></i>
-												</a>
-												<a class="confirm-text p-2" href="javascript:void(0);">
-													<i data-feather="trash-2" class="feather-trash-2"></i>
-												</a>
-											</div>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<label class="checkboxs">
-												<input type="checkbox">
-												<span class="checkmarks"></span>
-											</label>
-										</td>
-										<td>Sigma Chairs</td>
-										<td>PT009</td>
-										<td>02 May 2023</td>
-										<td><span class="badges unstatus-badge">Pending</span></td>
-										<td>$620</td>
-										<td>$0.00</td>
-										<td>$620</td>
-										<td><span class="badge badge-linedangered">Unpaid</span></td>
-										<td class="action-table-data">
-											<div class="edit-delete-action">
-												<a class="me-2 p-2" href="javascript:void(0);">
-													<i data-feather="eye" class="action-eye"></i>
-												</a>
-												<a class="me-2 p-2" data-bs-toggle="modal" data-bs-target="#edit-units">
-													<i data-feather="edit" class="feather-edit"></i>
-												</a>
-												<a class="confirm-text p-2" href="javascript:void(0);">
-													<i data-feather="trash-2" class="feather-trash-2"></i>
-												</a>
-											</div>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<label class="checkboxs">
-												<input type="checkbox">
-												<span class="checkmarks"></span>
-											</label>
-										</td>
-										<td>Zenith Bags</td>
-										<td>PT010</td>
-										<td>23 May 2023</td>
-										<td><span class="badges status-badge">Received</span></td>
-										<td>$200</td>
-										<td>$200</td>
-										<td>$0.00</td>
-										<td><span class="badge-linesuccess">Paid</span></td>
-										<td class="action-table-data">
-											<div class="edit-delete-action">
-												<a class="me-2 p-2" href="javascript:void(0);">
-													<i data-feather="eye" class="action-eye"></i>
-												</a>
-												<a class="me-2 p-2" data-bs-toggle="modal" data-bs-target="#edit-units">
-													<i data-feather="edit" class="feather-edit"></i>
-												</a>
-												<a class="confirm-text p-2" href="javascript:void(0);">
-													<i data-feather="trash-2" class="feather-trash-2"></i>
-												</a>
-											</div>
-										</td>
-									</tr>
-
 								</tbody>
 							</table>
 						</div>
-
 					</div>
 				</div>
 				<!-- /product list -->
@@ -504,15 +172,12 @@ $conn = connectMainDB();
 											<div class="row">
 												<div class="col-lg-10 col-sm-10 col-10">
 													<select class="select">
-														<option>Select Customer</option>
-														<option>Apex Computers</option>
-														<option>Dazzle Shoes</option>
-														<option>Best Accessories</option>
+														<option>Demo supplier</option>
 													</select>
 												</div>
 												<div class="col-lg-2 col-sm-2 col-2 ps-0">
 													<div class="add-icon tab">
-														<a href="javascript:void(0);"><i data-feather="plus-circle" class="feather-plus-circles"></i></a>
+														<a href="suppliers.php"><i data-feather="plus-circle" class="feather-plus-circles"></i></a>
 													</div>
 												</div>
 											</div>
@@ -531,28 +196,37 @@ $conn = connectMainDB();
 									<div class="col-lg-3 col-md-6 col-sm-12">
 										<div class="input-blocks">
 											<label>Product Name</label>
-											<select class="select">
-												<option>Choose</option>
-												<option>Shoe</option>
-												<option>Mobile</option>
+											<select name="product_name" class="select" required>
+												<?php
+												$user_email = $_SESSION['email']; // user's email
 
+												// Fetch products from the products table
+												$productQuery = "SELECT product_name FROM products
+													WHERE email = '$user_email' ORDER BY product_name ASC"; // Sorts product in alphabetical order
+
+												$result = $conn->query($productQuery);
+
+												// Check if there are products available
+												if ($result->num_rows > 0) {
+													while ($product = $result->fetch_assoc()) {
+														// Display each product name and set the id as the value
+														echo "<option value='" . $product['product_name'] . "'>" . htmlspecialchars($product['product_name']) . "</option>";
+													}
+												} else {
+													echo "<option value=''>No products available</option>";
+												}
+												?>
 											</select>
 										</div>
 									</div>
-									<div class="col-lg-3 col-md-6 col-sm-12">
+									<!-- <div class="col-lg-3 col-md-6 col-sm-12">
 										<div class="input-blocks">
 											<label>Reference No</label>
 											<input type="text" class="form-control">
 										</div>
-									</div>
+									</div> -->
 								</div>
 								<div class="row">
-									<div class="col-lg-12">
-										<div class="input-blocks">
-											<label>Product Name</label>
-											<input type="text" placeholder="Please type product code and select">
-										</div>
-									</div>
 									<div class="col-lg-12">
 										<div class="modal-body-table">
 											<div class="table-responsive">
@@ -664,9 +338,7 @@ $conn = connectMainDB();
 												<div class="row">
 													<div class="col-lg-10 col-sm-10 col-10">
 														<select class="select">
-															<option>Dazzle Shoes</option>
-															<option>Apex Computers</option>
-															<option>Beats Headphones</option>
+															<option>Demo supplier</option>
 														</select>
 													</div>
 													<div class="col-lg-2 col-sm-2 col-2 ps-0">
@@ -688,20 +360,20 @@ $conn = connectMainDB();
 												</div>
 											</div>
 										</div>
-										<div class="col-lg-3 col-sm-6 col-12">
+										<!-- <div class="col-lg-3 col-sm-6 col-12">
 											<div class="input-blocks">
 												<label>Product Name</label>
 												<select class="select">
 													<option>Nike Jordan</option>
 												</select>
 											</div>
-										</div>
-										<div class="col-lg-3 col-sm-6 col-12">
+										</div> -->
+										<!-- <div class="col-lg-3 col-sm-6 col-12">
 											<div class="input-blocks">
 												<label>Reference No.</label>
 												<input type="text" value="010203">
 											</div>
-										</div>
+										</div> -->
 										<div class="col-lg-12 col-sm-6 col-12">
 											<div class="input-blocks">
 												<label>Product</label>
@@ -954,6 +626,13 @@ $conn = connectMainDB();
 	<!-- /Import Purchase -->
 	<?php include 'layouts/customizer.php'; ?>
 	<?php include 'layouts/vendor-scripts.php'; ?>
-</body>
 
+
+<script src="assets/js/refresh.js"></script>
+<script>
+$.fn.dataTable.ext.errMode = 'none'; // Disable all error alerts globally in DataTable
+
+
+</script>
+</body>
 </html>

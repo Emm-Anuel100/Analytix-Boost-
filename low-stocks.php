@@ -80,17 +80,16 @@ $conn = connectMainDB();
 
 									<div class="form-sort">
 										<i data-feather="sliders" class="info-img"></i>
-										<form method="GET" action="">
+										<form method="POST" action="">
 										<select class="select" name="order_by" onchange="this.form.submit()">
-											<option value="newest" <?php if (isset($_GET['order_by']) && $_GET['order_by'] == 'newest') echo 'selected'; ?>>Newest</option>
-											<option value="oldest" <?php if (isset($_GET['order_by']) && $_GET['order_by'] == 'oldest') echo 'selected'; ?>>Oldest</option>
+											<option value="newest" <?php if (isset($_POST['order_by']) && $_POST['order_by'] == 'newest') echo 'selected'; ?>>Newest</option>
+											<option value="oldest" <?php if (isset($_POST['order_by']) && $_POST['order_by'] == 'oldest') echo 'selected'; ?>>Oldest</option>
 										</select>
 									</form>
 									</div>
 								</div>
 
-								<div class="table-responsive">
-
+							<div class="table-responsive">
 							<table class="table datanew">
 							<thead>
 								<tr>
@@ -107,7 +106,7 @@ $conn = connectMainDB();
 									<th>Category</th>
 									<th>SKU</th>
 									<th>Qty</th>
-									<th>Price</th>
+									<th>Price (₦)</th>
 									<th>Date Uploaded</th>
 								</tr>
 							 </thead>
@@ -116,7 +115,7 @@ $conn = connectMainDB();
 								$email = trim($conn->real_escape_string($_SESSION['email']));
 
 								// Default to "newest" if no option is selected
-								$order_by = isset($_GET['order_by']) ? $_GET['order_by'] : 'newest';
+								$order_by = isset($_POST['order_by']) ? $_POST['order_by'] : 'newest';
 
 								// Set the ORDER BY clause based on the selected option
 								$order_sql = $order_by == 'oldest' ? 'ASC' : 'DESC'; // Oldest = ASC, Newest = DESC
@@ -175,7 +174,7 @@ $conn = connectMainDB();
 											<td><?php echo htmlspecialchars($row['category']); ?></td>
 											<td><?php echo htmlspecialchars($row['sku']); ?></td>
 											<td><?php echo htmlspecialchars($row['quantity']); ?></td>
-											<td>₦<?php echo number_format($row['price'], 2); ?></td>
+											<td><?php echo number_format($row['price'], 2); ?></td>
 											<td><?php echo date("jS M Y", strtotime($row['created_at'])); ?></td>
 										</tr>
 										<?php
@@ -183,15 +182,36 @@ $conn = connectMainDB();
 								  } else {
 									?>
 									<tr>
-										<td colspan="9">No products found.</td>
-									</tr>
+										<td>
+											<label class="checkboxs">
+												<input type="checkbox">
+												<span class="checkmarks"></span>
+											</label>
+										</td>
+										<td>demo warehouse</td>
+										<td>demo store</td>
+										<td>
+											<div class="productimgname">
+												<a href="javascript:void(0);" class="product-img stock-img">
+												<img src="uploads/default_product.jpg" alt="demo image">
+												</a>
+												<a href="javascript:void(0);">product name</a>
+											</div>
+										</td>
+										<td><span style="font-size: 11px;" class="badge badge-linesuccess">In stock</span></td>
+										<td>category</td>
+										<td>sku</td>
+										<td>10</td>
+										<td>100.00</td>
+										<td>19th Oct 2024</td>
+										</tr>
 									<?php
 								}
 								?>
 							</tbody>
-						</table>
-								</div>
+						  </table>
 							</div>
+						</div>
 						</div>
 						<!-- /product list -->
 					</div>
@@ -201,8 +221,6 @@ $conn = connectMainDB();
 	</div>
 </div>
 <!-- end main Wrapper-->
-
-
 
 
 <?php include 'layouts/customizer.php'; ?>

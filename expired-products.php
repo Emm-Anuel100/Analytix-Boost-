@@ -70,6 +70,9 @@ $conn = connectMainDB();
 									 <?php
 										// Check if a sort order is set, otherwise default to 'newest'
 										$sortOrder = isset($_POST['sort']) ? $_POST['sort'] : 'newest';
+
+										// Determine the ORDER BY clause based on the sort order
+										$orderClause = $sortOrder === 'oldest' ? 'ASC' : 'DESC';
 									 ?>
 									<select name="sort" class="select" onchange="this.form.submit()">
 										<option value="newest" <?php echo ($sortOrder == 'newest') ? 'selected' : ''; ?>>Newest</option>
@@ -101,7 +104,8 @@ $conn = connectMainDB();
 								    $email = trim($conn->real_escape_string($_SESSION['email']));
 
 									// Check for expired products and insert them into the expired_products table
-									$query = "SELECT * FROM products WHERE DATEDIFF(STR_TO_DATE(expiry_on, '%d-%m-%Y'), CURDATE()) BETWEEN 0 AND 30 AND email = '$email'";
+									$query = "SELECT * FROM products WHERE DATEDIFF(STR_TO_DATE(expiry_on, '%d-%m-%Y'), CURDATE())
+									 BETWEEN 0 AND 30 AND email = '$email'";
 
 									$result = $conn->query($query);
 
@@ -134,7 +138,7 @@ $conn = connectMainDB();
 									}
 
 									// Fetch expired products from the expired_products table for display
-									$fetch_expired_query = "SELECT * FROM expired_products WHERE email = '$email'";
+									$fetch_expired_query = "SELECT * FROM expired_products WHERE email = '$email' ORDER BY id $orderClause";
 									$fetch_expired_result = $conn->query($fetch_expired_query);
 
 									if ($fetch_expired_result->num_rows > 0) {
