@@ -1,4 +1,3 @@
-
 <?php
 // Include database connection
 require 'conn.php';
@@ -11,11 +10,10 @@ $currentDate = date('Y-m-d'); // Current date in YYYY-MM-DD format
 
 // Query to select products that have expired more than 7 days ago
 $query = "DELETE FROM expired_products 
-          WHERE STR_TO_DATE(expiry_date, '%d-%m-%Y') < DATE_SUB(?, INTERVAL 7 DAY)";
+          WHERE STR_TO_DATE(expiry_date, '%d-%m-%Y') < DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
 
 // Prepare and execute the statement
 $stmt = $conn->prepare($query);
-$stmt->bind_param('s', $currentDate); // Bind the current date
 $stmt->execute();
 
 // Prepare response
@@ -35,4 +33,5 @@ $conn->close();
 // Return JSON response
 header('Content-Type: application/json');
 echo json_encode($response);
+
 

@@ -125,18 +125,18 @@ $conn = connectMainDB();
 											while ($row = $result->fetch_assoc()) {
 												// Parse products string from the `products` column
 												$products = explode('; ', $row['products']); // Separate products
-
+										
 												foreach ($products as $product_str) {
 													// Extract product details using regex
 													preg_match('/(.*) \(quantity: (\d+), price: ([\d.]+), image: (.*), discount type: (.*), discount value: ([\d.]+), tax: ([\d.]+), unit: (.*), total cost: ([\d.]+)\)/', $product_str, $matches);
-
+										
 													if ($matches) {
 														// Generate a new row for each product
 														echo '<tr>';
-
+										
 														// Checkbox
 														echo '<td><label class="checkboxs"><input type="checkbox"><span class="checkmarks"></span></label></td>';
-
+										
 														// Product name and image
 														echo '<td>';
 														echo '<div class="productimgname">';
@@ -146,36 +146,59 @@ $conn = connectMainDB();
 														echo '<a href="javascript:void(0);">' . $matches[1] . '</a>'; // Product name
 														echo '</div>';
 														echo '</td>';
-
+										
 														// Shared sale details
 														echo '<td>' . $row['date'] . '</td>';
 														echo '<td>' . $row['customer'] . '</td>';
 														echo '<td>' . $row['reference'] . '</td>';
 														echo '<td><span class="badges bg-lightgreen">' . $row['status'] . '</span></td>';
-
+										
 														// Grand Total, Paid, Due, and Amount Returned
 														echo '<td>' . $row['grand_total_returned'] . '</td>';
 														echo '<td>' . $row['amount_returned'] . '</td>';
 														echo '<td>' . $row['return_reason'] . '</td>';
-
+										
 														// Quantity Column (Qty)
 														echo '<td>' . $matches[2] . '</td>'; // Display the quantity from the product
-
+										
 														// Action (Delete button)
 														echo '<td class="action-table-data">';
 														echo '<div class="edit-delete-action">';
-														echo '<a class="confirm-tex p-2 delete_btn" href="javascript:void(0);" data-id="' . $row['id'] . '"  onclick="delete_return();"><i data-feather="trash-2" class="feather-trash-2"></i></a>';
-
+														echo '<a class="confirm-tex p-2 delete_btn" href="javascript:void(0);" data-id="' . $row['id'] . '" onclick="delete_return();"><i data-feather="trash-2" class="feather-trash-2"></i></a>';
 														echo '</div>';
 														echo '</td>';
-
+										
 														echo '</tr>';
 													}
 												}
 											}
 										} else {
-											echo '<tr><td colspan="11">No records found.</td></tr>';
-										}
+											// Display demo data when no records are found
+											echo '<tr>';
+											echo '<td><label class="checkboxs"><input type="checkbox"><span class="checkmarks"></span></label></td>';
+											echo '<td>';
+											echo '<div class="productimgname">';
+											echo '<a href="javascript:void(0);" class="product-img">';
+											echo '<img src="uploads/default_product.jpg" alt="product image" height="40px" width="40px" style="border-radius: 5px">'; // Demo image
+											echo '</a>';
+											echo '<a href="javascript:void(0);">Demo Product</a>'; // Demo product name
+											echo '</div>';
+											echo '</td>';
+											echo '<td>' . date('Y-m-d') . '</td>'; // Current date
+											echo '<td>Demo Customer</td>';
+											echo '<td>Demo Reference</td>';
+											echo '<td><span class="badges bg-lightgreen">Demo Status</span></td>';
+											echo '<td>' . number_format(50.00, 2) . '</td>'; // Demo grand total returned
+											echo '<td>' . number_format(50.00, 2) . '</td>'; // Demo amount returned
+											echo '<td>Demo Reason</td>'; // Demo return reason
+											echo '<td>1</td>'; // Demo quantity
+											echo '<td class="action-table-data">';
+											echo '<div class="edit-delete-action">';
+											echo '<a class="confirm-tex p-2 delete_btn" href="javascript:void(0);" data-id="demo" onclick="delete_return();"><i data-feather="trash-2" class="feather-trash-2"></i></a>';
+											echo '</div>';
+											echo '</td>';
+											echo '</tr>';
+										}										
 										?>
 									</tbody>
 									</table>
@@ -416,7 +439,7 @@ $conn = connectMainDB();
 							 <td>
 								 <div class="productimgname">
 									 <a href="javascript:void(0);" class="product-img stock-img">
-										 <img class="image_url" src="uploads/${product.image_url}" alt="product">
+										 <img class="image_url" src="uploads/${product.image_url}" alt="product image">
 									 </a>
 									 <a href="javascript:void(0);" class="product-name">${product.name}</a>
 								 </div>
@@ -684,8 +707,8 @@ delete_btns_return.forEach(delete_btn => {
             text: "You won't be able to revert this!",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
@@ -725,7 +748,6 @@ delete_btns_return.forEach(delete_btn => {
         });
     });
 });
-
 </script>
 </body>
 </html>

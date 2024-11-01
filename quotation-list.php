@@ -1,145 +1,11 @@
 <?php 
-include("./layouts/session.php"); // include session
+include "./layouts/session.php"; // include session
 
 include 'conn.php'; // Include database connection
 
 // Establish the connection
 $conn = connectMainDB();
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['status']) && !empty($_POST['product_name'])) {
-    // Retrieve form data and escape to prevent SQL injection
-    $customer_name = $conn->real_escape_string($_POST['customer_name']);
-    $quotation_date = $conn->real_escape_string($_POST['quotation_date']);
-    $product_name = $conn->real_escape_string($_POST['product_name']);
-    $order_tax = $conn->real_escape_string($_POST['order_tax']);
-    $discount = $conn->real_escape_string($_POST['discount']);
-    $shipping = $conn->real_escape_string($_POST['shipping']);
-    $status = $conn->real_escape_string($_POST['status']);
-    $description = $conn->real_escape_string($_POST['description']);
-    $user_email = $_SESSION['email']; // Get user email from session
-
-    // Generate a 10-character alphanumeric reference
-    $reference = substr(str_shuffle('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 10);
-
-    // Prepare and bind the SQL statement with the new reference column
-    $stmt = $conn->prepare("INSERT INTO quotation (customer_name, quotation_date, product_name, order_tax, discount, shipping, status, description, user_email, reference) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssiiissss", $customer_name, $quotation_date, $product_name, $order_tax, $discount, $shipping, $status, $description, $user_email, $reference);
-
-    // Execute the statement and check for success
-    if ($stmt->execute()) {
-        echo "
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: 'Quotation added successfully!',
-                    confirmButtonText: 'OK'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = 'quotation-list.php';
-                    }
-                });
-            });
-        </script>";
-      } else {
-        echo "
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Error adding quotation: " . $stmt->error . "',
-                    confirmButtonText: 'OK'
-                });
-            });
-        </script>";
-    }
-
-    // Close the statement
-    $stmt->close();
-}
-
-
-
-// Updating of quotations
-if ($_SERVER['REQUEST_METHOD'] == 'POST'  && isset($_POST['product_name_edit']) && !empty($_POST['product_name_edit'])) {
-    // Retrieve form data
-    $customer_name = $conn->real_escape_string($_POST['customer_name']);
-    $date = $conn->real_escape_string($_POST['date']);
-    $product_name = $conn->real_escape_string($_POST['product_name_edit']);
-    $order_tax = $conn->real_escape_string($_POST['order_tax']);
-    $discount = $conn->real_escape_string($_POST['discount']);
-    $shipping = $conn->real_escape_string($_POST['shipping']);
-    $status = $conn->real_escape_string($_POST['status']);
-    $description = $conn->real_escape_string($_POST['description']);
-    $quotation_id = $conn->real_escape_string($_POST['quotation_id']); // ID to identify which quotation to update
-    $user_email = $conn->real_escape_string(( $_SESSION['email']));
-
-    // Update the quotation in the database
-    $updateQuery = "UPDATE quotation SET 
-        customer_name = ?, 
-        quotation_date = ?, 
-        product_name = ?, 
-        order_tax = ?, 
-        discount = ?, 
-        shipping = ?, 
-        status = ?, 
-        description = ?
-        WHERE id = ? AND user_email = ?";
-
-    if ($stmt = $conn->prepare($updateQuery)) {
-        $stmt->bind_param("ssssssssis", $customer_name, $date, $product_name, $order_tax, $discount, $shipping, $status, $description, $quotation_id, $user_email);
-        
-        if ($stmt->execute()) {
-            echo "
-			 <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: 'Quotation updated successfully!',
-                        confirmButtonText: 'OK'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = 'quotation-list.php';
-                        }
-                    });
-                });
-            </script>";
-			 exit; // Stop further output
-        } else {
-            echo "
-			 <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Failed to update quotation.',
-                        confirmButtonText: 'OK'
-                    });
-                });
-            </script>";
-        }
-        $stmt->close();
-    } else {
-        echo "
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-		 <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Database error.',
-                    confirmButtonText: 'OK'
-                });
-            });
-        </script>";
-    }
-}
 
 ?>
 
@@ -153,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'  && isset($_POST['product_name_edit']) 
     <body>
 		
 		<div id="global-loader" >
-			<div class="whirlyloader"> </div>
+			<div class="whirly-loader"> </div>
 		</div>
 		 
 		<!-- Main Wrapper -->
@@ -175,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'  && isset($_POST['product_name_edit']) 
 								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Pdf" href="export_quotation_pdf.php" target="_blank"><img src="assets/img/icons/pdf.svg" alt="img"></a>
 							</li>
 							<li>
-								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Csv" href="export_quotation_pdf.php" target="_blank"><img src="assets/img/icons/excel.svg" alt="img"></a>
+								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Csv" href="export_quotation_csv.php" target="_blank"><img src="assets/img/icons/excel.svg" alt="img"></a>
 							</li>
 							<li>
 								<a data-bs-toggle="tooltip" data-bs-placement="top" class="refresh" title="Refresh"><i data-feather="rotate-ccw" class="feather-rotate-ccw"></i></a>
@@ -295,21 +161,49 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'  && isset($_POST['product_name_edit']) 
 													<a class='me-2 p-2 mb-0' data-bs-toggle='modal' data-bs-target='#edit-units' onclick='confirmUpdate({$row['id']})'>
 														<i data-feather='edit' class='feather-edit'></i>
 													</a>
-													 <a class='me-2 confirm-tex p-2 mb-0' href='javascript:void(0);' onclick='confirmDelete({$row['id']})'>
+													<a class='me-2 confirm-tex p-2 mb-0' href='javascript:void(0);' onclick='confirmDelete({$row['id']})'>
 														<i data-feather='trash-2' class='feather-trash-2'></i>
 													</a>
 												</div>
 											</td>
 										</tr>
 										";
-									}
-								   } else {
-									echo "
-									<tr>
-										<td colspan='6' class='text-center'>No quotations available.</td>
-									</tr>
+										}
+									  } else {
+										// Display demo data when no quotations are found
+										echo "
+										<tr>
+											<td>
+												<label class='checkboxs'>
+													<input type='checkbox'>
+													<span class='checkmarks'></span>
+												</label>
+											</td>
+											<td class='productimgname'>
+												<div class='view-product me-2'>
+													<a href='javascript:void(0);'>
+														<img src='uploads/default_product.jpg' alt='product image' height='40px' width='40px' style='border-radius: 5px'>
+													</a>
+												</div>
+												<a href='javascript:void(0);'>demo product</a>
+											</td>
+											<td>demo reference</td>
+											<td>demo customer</td>
+											<td><span class='badges status-badge'>Approved</span></td>
+											<td>hello user</td>
+											<td class='action-table-data'>
+												<div class='edit-delete-action data-row'>
+													<a class='me-2 p-2 mb-0' data-bs-toggle='modal' data-bs-target='#edit-unit''>
+														<i data-feather='edit' class='feather-edit'></i>
+													</a>
+													<a class='me-2 confirm-tex p-2 mb-0' href='javascript:void(0);''>
+														<i data-feather='trash-2' class='feather-trash-2'></i>
+													</a>
+												</div>
+											</td>
+										</tr>
 									";
-								}		
+								}								
 								?>
 							</tbody>
 						   </table>
@@ -502,43 +396,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'  && isset($_POST['product_name_edit']) 
 												</div>
 											  </div>
 
-												<div class="col-lg-4 col-sm-6 col-12">
-												<div class="input-blocks">
-													<label>Product Name</label>
-													<div class="row">
-														<div class="col-lg-10 col-sm-10 col-">
-														<select name="product_name_edit" class="select">
-													<?php
-													$user_email = $_SESSION['email']; // user's email
-
-													// Fetch products from the products table
-													$productQuery = "SELECT product_name FROM products
-													 WHERE email = '$user_email' ORDER BY product_name ASC"; // Sorts product in alphabetical order
-
-													$result = $conn->query($productQuery);
-
-													// Check if there are products available
-													if ($result->num_rows > 0) {
-														while ($product = $result->fetch_assoc()) {
-															// Display each product name and set the id as the value
-															echo "<option value='" . $product['product_name'] . "'>" . htmlspecialchars($product['product_name']) . "</option>";
-														}
-													} else {
-														echo "<option value=''>No products available</option>";
-													}
-													?>
-												   </select>
-														</div>
-														<div class="col-lg-2 col-sm-2 col-2 ps-0">
-															<a href="./product-list.php">
-															<div class="add-icon">
-																<span class="choose-add"><i data-feather="plus-circle" class="plus"></i></span>
-															</div>
-															</a>
-														</div>
+											  <div class="col-lg-4 col-sm-6 col-12">
+												<div class="input-blocks mb-3">
+													<label>Order Tax (₦)</label>
+													<div class="input-groupicon">
+													<input type="text" id="order-tax-input" name="order_tax" placeholder="0" required>
 													</div>
 												</div>
-												</div>
+											</div>
 										</div>
 			
 										<div class="row">
@@ -565,24 +430,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'  && isset($_POST['product_name_edit']) 
 										<div class="row">
 											<div class="col-lg-3 col-sm-6 col-12">
 												<div class="input-blocks mb-3">
-													<label>Order Tax</label>
+													<label>Discount (₦)</label>
 													<div class="input-groupicon">
-													<input type="text" id="order-tax-input" name="order_tax" placeholder="0" required>
-													</div>
-													
-												</div>
-											</div>
-											<div class="col-lg-3 col-sm-6 col-12">
-												<div class="input-blocks mb-3">
-													<label>Discount</label>
-													<div class="input-groupicon">
-													 <input type="text" id="discount-input" name="discount" placeholder="0" required>
+													 <input type="text" id="discount-input" name="discount_edit" placeholder="0" required>
 													</div>
 												</div>
 											</div>
 											<div class="col-lg-3 col-sm-6 col-12">
 												<div class="input-blocks mb-3">
-													<label>Shipping</label>
+													<label>Shipping (₦)</label>
 													<div class="input-groupicon">
 													  <input type="text" name="shipping" id="shipping-input" placeholder="0" required>
 													</div>
@@ -692,5 +548,144 @@ document.getElementById('order-tax-input').addEventListener('keyup', function ()
 }
 
 </script>
+
+
+
+<?php
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['status']) && !empty($_POST['product_name'])) {
+    // Retrieve form data and escape to prevent SQL injection
+    $customer_name = $conn->real_escape_string($_POST['customer_name']);
+    $quotation_date = $conn->real_escape_string($_POST['quotation_date']);
+    $product_name = $conn->real_escape_string($_POST['product_name']);
+    $order_tax = $conn->real_escape_string($_POST['order_tax']);
+    $discount = $conn->real_escape_string($_POST['discount']);
+    $shipping = $conn->real_escape_string($_POST['shipping']);
+    $status = $conn->real_escape_string($_POST['status']);
+    $description = $conn->real_escape_string($_POST['description']);
+    $user_email = $_SESSION['email']; // Get user email from session
+
+    // Generate a 10-character alphanumeric reference
+    $reference = substr(str_shuffle('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 10);
+
+    // Prepare and bind the SQL statement with the new reference column
+    $stmt = $conn->prepare("INSERT INTO quotation (customer_name, quotation_date, product_name, order_tax, discount, shipping, status, description, user_email, reference) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssiiissss", $customer_name, $quotation_date, $product_name, $order_tax, $discount, $shipping, $status, $description, $user_email, $reference);
+
+    // Execute the statement and check for success
+    if ($stmt->execute()) {
+        echo "
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Quotation added successfully!',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'quotation-list.php';
+                    }
+                });
+            });
+        </script>";
+      } else {
+        echo "
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error adding quotation: " . $stmt->error . "',
+                    confirmButtonText: 'OK'
+                });
+            });
+        </script>";
+    }
+
+    // Close the statement
+    $stmt->close();
+}
+
+
+
+// Updating of quotations
+if ($_SERVER['REQUEST_METHOD'] == 'POST'  && isset($_POST['discount_edit']) && !empty($_POST['discount_edit'])) {
+    // Retrieve form data
+    $customer_name = $conn->real_escape_string($_POST['customer_name']);
+    $date = $conn->real_escape_string($_POST['date']);
+    $order_tax = $conn->real_escape_string($_POST['order_tax']);
+    $discount = $conn->real_escape_string($_POST['discount_edit']);
+    $shipping = $conn->real_escape_string($_POST['shipping']);
+    $status = $conn->real_escape_string($_POST['status']);
+    $description = $conn->real_escape_string($_POST['description']);
+    $quotation_id = $conn->real_escape_string($_POST['quotation_id']); // ID to identify which quotation to update
+    $user_email = $conn->real_escape_string(( $_SESSION['email']));
+
+    // Update the quotation in the database
+    $updateQuery = "UPDATE quotation SET 
+        customer_name = ?, 
+        quotation_date = ?, 
+        order_tax = ?, 
+        discount = ?, 
+        shipping = ?, 
+        status = ?, 
+        description = ?
+        WHERE id = ? AND user_email = ?";
+
+    if ($stmt = $conn->prepare($updateQuery)) {
+        $stmt->bind_param("sssssssis", $customer_name, $date, $order_tax, $discount, $shipping, $status, $description, $quotation_id, $user_email);
+        
+        if ($stmt->execute()) {
+            echo "
+			 <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Quotation updated successfully!',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = 'quotation-list.php';
+                        }
+                    });
+                });
+            </script>";
+			 exit; // Stop further output
+        } else {
+            echo "
+			 <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to update quotation.',
+                        confirmButtonText: 'OK'
+                    });
+                });
+            </script>";
+        }
+        $stmt->close(); // Close the statement
+    } else {
+        echo "
+		 <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Database error.',
+                    confirmButtonText: 'OK'
+                });
+            });
+        </script>";
+    }
+}
+
+
+?>
 </body>
 </html>
