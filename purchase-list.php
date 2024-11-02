@@ -6,7 +6,37 @@ include 'conn.php'; // Include database connection
 // Establish the connection to the user's database
 $conn = connectMainDB();
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !empty($_POST['supplier_name_'])) {
+    // Capture and sanitize form data
+    $supplierName = $_POST['supplier_name_'];
+    $purchaseDate = $_POST['purchase_date'];
+    $productName = $_POST['product_name'];
+    $costPerUnit = $_POST['cost_per_unit'];
+    $packQuantity = $_POST['pack_quantity'];
+    $itemsPerPack = $_POST['items_per_pack'];
+    $status = $_POST['status'];
+    $orderTax = $_POST['order_tax'];
+    $amountPaid = $_POST['amount_paid'];
+    $amountDue = $_POST['amount_due'];
+    $notes = $_POST['notes'];
+    $grandTotal = $_POST['grand_total']; // Retrieve the hidden grand total field
+    $user_email = $_SESSION['email']; // user's email
 
+    // Insert into the database
+    $query = "INSERT INTO purchases (user_email, supplier_name, purchase_date, product_name, cost_per_unit, pack_quantity, items_per_pack, status, order_tax, amount_paid, amount_due, notes, grand_total)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ssssiissiiisd", $user_email, $supplierName, $purchaseDate, $productName, $costPerUnit, $packQuantity, $itemsPerPack, $status, $orderTax, $amountPaid, $amountDue, $notes, $grandTotal);
+
+    if ($stmt->execute()) {
+        echo "Purchase added successfully!";
+    } else {
+        echo "Error: " . $stmt->error;
+    }
+
+    $stmt->close(); // close the statement
+}
 
 ?>
 
@@ -104,10 +134,9 @@ $conn = connectMainDB();
 										<th>Reference</th>
 										<th>Date</th>
 										<th>Status</th>
-										<th>Grand Total</th>
-										<th>Paid</th>
-										<th>Due</th>
-										<th>Created by</th>
+										<th>Grand Total (₦)</th>
+										<th>Paid (₦)</th>
+										<th>Due (₦)</th>
 										<th class="no-sort">Action</th>
 									</tr>
 								</thead>
@@ -123,10 +152,9 @@ $conn = connectMainDB();
 										<td>PT001 </td>
 										<td>19 Jan 2023</td>
 										<td><span class="badges status-badge">Received</span></td>
-										<td>$550</td>
-										<td>$550</td>
-										<td>$0.00</td>
-										<td><span class="badge-linesuccess">Paid</span></td>
+										<td>550</td>
+										<td>550</td>
+										<td>0.00</td>
 										<td class="action-table-data">
 											<div class="edit-delete-action">
 												<a class="me-2 p-2" data-bs-toggle="modal" data-bs-target="#edit-units">
@@ -164,14 +192,14 @@ $conn = connectMainDB();
 							</button>
 						</div>
 						<div class="modal-body custom-modal-body">
-							<form action="purchase-list.php">
+							<form action="purchase-list.php" method="POST">
 								<div class="row">
 									<div class="col-lg-3 col-md-6 col-sm-12">
 										<div class="input-blocks add-product">
 											<label>Supplier Name</label>
 											<div class="row">
 												<div class="col-lg-10 col-sm-10 col-10">
-													<select class="select">
+												    <select name="supplier_name_" class="select">
 														<option>Demo supplier</option>
 													</select>
 												</div>
@@ -189,7 +217,7 @@ $conn = connectMainDB();
 
 											<div class="input-groupicon calender-input">
 												<i data-feather="calendar" class="info-img"></i>
-												<input type="text" class="datetimepicker" placeholder="Choose">
+												<input type="text" name="purchase_date" class="datetimepicker" placeholder="Choose" required>
 											</div>
 										</div>
 									</div>
@@ -219,84 +247,77 @@ $conn = connectMainDB();
 											</select>
 										</div>
 									</div>
-									<!-- <div class="col-lg-3 col-md-6 col-sm-12">
+									<div class="col-lg-3 col-md-6 col-sm-12">
 										<div class="input-blocks">
-											<label>Reference No</label>
-											<input type="text" class="form-control">
+											<label>Cost per unit (₦)</label>
+											<input type="text" name="cost_per_unit" id="cost_per_unit" class="form-control" placeholder="100" required>
 										</div>
-									</div> -->
+									</div>
 								</div>
 								<div class="row">
 									<div class="col-lg-12">
-										<div class="modal-body-table">
-											<div class="table-responsive">
-												<table class="table  datanew">
-													<thead>
-														<tr>
-															<th>Product</th>
-															<th>Qty</th>
-															<th>Purchase Price($)</th>
-															<th>Discount($)</th>
-															<th>Tax(%)</th>
-															<th>Tax Amount($)</th>
-															<th>Unit Cost($)</th>
-															<th>Total Cost(%)</th>
-														</tr>
-													</thead>
-
-													<tbody>
-														<tr>
-															<td class="p-5"></td>
-															<td class="p-5"></td>
-															<td class="p-5"></td>
-															<td class="p-5"></td>
-															<td class="p-5"></td>
-															<td class="p-5"></td>
-															<td class="p-5"></td>
-															<td class="p-5"></td>
-														</tr>
-													</tbody>
-												</table>
+										<div class="row">
+										<div class="col-lg-12 float-md-right">
+											<div class="total-order">
+												<ul>
+													<li class="total">
+														<h4>Grand Total</h4>
+														<h5><span class="grand_total" id="grand_total_display">₦</span></h5>
+													</li>
+												</ul>
 											</div>
 										</div>
-
+										 <!-- Hidden input for Grand Total -->
+										<input type="hidden" name="grand_total" id="grand_total">
+									</div>
 									</div>
 									<div class="row">
 										<div class="col-lg-3 col-md-6 col-sm-12">
 											<div class="input-blocks">
-												<label>Order Tax</label>
-												<input type="text" value="0">
+												<label>Order Tax (₦)</label>
+												<input type="text" name="order_tax" id="order_tax" placeholder="0" required>
 											</div>
 										</div>
 										<div class="col-lg-3 col-md-6 col-sm-12">
 											<div class="input-blocks">
-												<label>Discount</label>
-												<input type="text" value="0">
+												<label>Pack Quantity</label>
+												<input type="text" name="pack_quantity" id="pack_quantity" placeholder="1" required>
 											</div>
 										</div>
 										<div class="col-lg-3 col-md-6 col-sm-12">
 											<div class="input-blocks">
-												<label>Shipping</label>
-												<input type="text" value="0">
+												<label>Items per pack</label>
+												<input type="text" placeholder="10" required name="items_per_pack" id="items_per_pack">
 											</div>
 										</div>
 										<div class="col-lg-3 col-md-6 col-sm-12">
 											<div class="input-blocks">
 												<label>Status</label>
-												<select class="select">
-													<option>Choose</option>
+												<select class="select" name="status">
 													<option>Received</option>
 													<option>Pending</option>
 												</select>
 											</div>
 										</div>
+										<div class="col-lg-3 col-md-6 col-sm-12">
+										  <div class="input-blocks">
+											<label>Amount Paid (₦)</label>
+											<input type="text" class="form-control" placeholder="100" required name="amount_paid">
+										  </div>
+									    </div>
+										<div class="col-lg-3 col-md-6 col-sm-12">
+										  <div class="input-blocks">
+											<label>Amount Due (₦)</label>
+											<input type="text" class="form-control" placeholder="100" required name="amount_due">
+										  </div>
+									    </div>
 									</div>
 								</div>
 
 								<div class="col-lg-12">
 									<div class="input-blocks summer-description-box">
 										<label>Notes</label>
-										<div id="summernote"></div>
+										<textarea name="notes" cols="30" placeholder="Enter your note .." required></textarea>
 									</div>
 								</div>
 								<div class="col-lg-12">
@@ -329,181 +350,130 @@ $conn = connectMainDB();
 							</button>
 						</div>
 						<div class="modal-body custom-modal-body">
-							<form action="purchase-list.php">							
-								<div>
-									<div class="row">
-										<div class="col-lg-3 col-sm-6 col-12">
-											<div class="input-blocks">
-												<label>Supplier Name</label>
-												<div class="row">
-													<div class="col-lg-10 col-sm-10 col-10">
-														<select class="select">
-															<option>Demo supplier</option>
-														</select>
-													</div>
-													<div class="col-lg-2 col-sm-2 col-2 ps-0">
-														<div class="add-icon tab">
-															<a href="javascript:void(0);"><i data-feather="plus-circle" class="feather-plus-circles"></i></a>
-														</div>
-													</div>
+						<form action="purchase-list.php" method="POST">
+								<div class="row">
+									<div class="col-lg-3 col-md-6 col-sm-12">
+										<div class="input-blocks add-product">
+											<label>Supplier Name</label>
+											<div class="row">
+												<div class="col-lg-10 col-sm-10 col-10">
+													<select class="select">
+														<option>Demo supplier</option>
+													</select>
 												</div>
-											</div>
-										</div>
-										<div class="col-lg-3 col-sm-6 col-12">
-											<div class="input-blocks">
-												<label>Purchase Date </label>
-												<div class="input-groupicon">
-													<input type="text" placeholder="19 Jan 2023" class="datetimepicker">
-													<div class="addonset">
-														<img src="assets/img/icons/calendars.svg" alt="img">
-													</div>
-												</div>
-											</div>
-										</div>
-										<!-- <div class="col-lg-3 col-sm-6 col-12">
-											<div class="input-blocks">
-												<label>Product Name</label>
-												<select class="select">
-													<option>Nike Jordan</option>
-												</select>
-											</div>
-										</div> -->
-										<!-- <div class="col-lg-3 col-sm-6 col-12">
-											<div class="input-blocks">
-												<label>Reference No.</label>
-												<input type="text" value="010203">
-											</div>
-										</div> -->
-										<div class="col-lg-12 col-sm-6 col-12">
-											<div class="input-blocks">
-												<label>Product</label>
-												<div class="input-groupicon">
-													<input type="text"
-														placeholder="Scan/Search Product by code and select">
-													<div class="addonset">
-														<img src="assets/img/icons/scanners.svg" alt="img">
+												<div class="col-lg-2 col-sm-2 col-2 ps-0">
+													<div class="add-icon tab">
+														<a href="suppliers.php"><i data-feather="plus-circle" class="feather-plus-circles"></i></a>
 													</div>
 												</div>
 											</div>
 										</div>
 									</div>
-									<div class="row">
-										<div class="col-lg-12">
-										<div class="modal-body-table">
-											<div class="table-responsive">
-												<table class="table">
-													<thead>
-														<tr>
-															<th>Product Name</th>
-															<th>QTY</th>
-															<th>Purchase Price($) </th>
-															<th>Discount($) </th>
-															<th>Tax %</th>
-															<th>Tax Amount($)</th>
-															<th class="text-end">Unit Cost($)</th>
-															<th class="text-end">Total Cost ($) </th>
-															<th></th>
-														</tr>
-													</thead>
-													<tbody>
-														<tr>
-															<td>
-																<div class="productimgname">
-																	<a href="javascript:void(0);" class="product-img stock-img">
-																		<img src="assets/img/products/stock-img-02.png" alt="product">
-																	</a>
-																	<a href="javascript:void(0);">Nike Jordan</a>
-																</div>
-															</td>
-															<td><div class="product-quantity">
-																<span class="quantity-btn">+<i data-feather="plus-circle" class="plus-circle"></i></span>
-																<input type="text" class="quntity-input" value="10">
-																<span class="quantity-btn"><i data-feather="minus-circle" class="feather-search"></i></span>
-															</div></td>
-															<td>2000</td>
-															<td>500.00</td>
-															<td>0.00</td>
-															<td>0.00</td>
-															<td>0.00</td>
-															<td>1500</td>
-															<td>
-																<a class="delete-set"><img
-																		src="assets/img/icons/delete.svg" alt="svg"></a>
-															</td>
-														</tr>
-													</tbody>
-												</table>
+									<div class="col-lg-3 col-md-6 col-sm-12">
+										<div class="input-blocks">
+											<label>Purchase Date</label>
+
+											<div class="input-groupicon calender-input">
+												<i data-feather="calendar" class="info-img"></i>
+												<input type="text" class="datetimepicker" placeholder="Choose" required>
 											</div>
 										</div>
+									</div>
+									<div class="col-lg-3 col-md-6 col-sm-12">
+										<div class="input-blocks">
+											<label>Product Name</label>
+											<select name="product_name" class="select" required>
+												<?php
+												$user_email = $_SESSION['email']; // user's email
+
+												// Fetch products from the products table
+												$productQuery = "SELECT product_name FROM products
+													WHERE email = '$user_email' ORDER BY product_name ASC"; // Sorts product in alphabetical order
+
+												$result = $conn->query($productQuery);
+
+												// Check if there are products available
+												if ($result->num_rows > 0) {
+													while ($product = $result->fetch_assoc()) {
+														// Display each product name and set the id as the value
+														echo "<option value='" . $product['product_name'] . "'>" . htmlspecialchars($product['product_name']) . "</option>";
+													}
+												} else {
+													echo "<option value=''>No products available</option>";
+												}
+												?>
+											</select>
 										</div>
 									</div>
-									<div class="row">
+									<div class="col-lg-3 col-md-6 col-sm-12">
+										<div class="input-blocks">
+											<label>Cost per unit (₦)</label>
+											<input type="text" class="form-control" placeholder="100" required>
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-lg-12">
+										<div class="row">
 										<div class="col-lg-12 float-md-right">
 											<div class="total-order">
 												<ul>
-													<li>
-														<h4>Order Tax</h4>
-														<h5>$ 0.00</h5>
-													</li>
-													<li>
-														<h4>Discount</h4>
-														<h5>$ 0.00</h5>
-													</li>
-													<li>
-														<h4>Shipping</h4>
-														<h5>$ 0.00</h5>
-													</li>
 													<li class="total">
 														<h4>Grand Total</h4>
-														<h5>$1500.00</h5>
+														<h5><span class="grand_total">₦</span>1500.00</h5>
 													</li>
 												</ul>
 											</div>
 										</div>
 									</div>
+									</div>
 									<div class="row">
-										<div class="col-lg-3 col-sm-6 col-12">
+									<div class="col-lg-3 col-md-6 col-sm-12">
 											<div class="input-blocks">
-												<label>Order Tax</label>
-												<input type="text" value="0">
+												<label>Pack Quantity</label>
+												<input type="text" placeholder="1" value="1" required>
 											</div>
 										</div>
-										<div class="col-lg-3 col-sm-6 col-12">
+										<div class="col-lg-3 col-md-6 col-sm-12">
 											<div class="input-blocks">
-												<label>Discount</label>
-												<input type="text" value="0">
+												<label>Items per pack</label>
+												<input type="text" placeholder="10" required>
 											</div>
 										</div>
-										<div class="col-lg-3 col-sm-6 col-12">
-											<div class="input-blocks">
-												<label>Shipping</label>
-												<input type="text" value="0">
-											</div>
-										</div>
-										<div class="col-lg-3 col-sm-6 col-12">
+										<div class="col-lg-3 col-md-6 col-sm-12">
 											<div class="input-blocks">
 												<label>Status</label>
 												<select class="select">
-													<option>Sent</option>
-													<option>Ordered</option>
+													<option>Received</option>
+													<option>Pending</option>
 												</select>
 											</div>
 										</div>
+										<div class="col-lg-3 col-md-6 col-sm-12">
+										  <div class="input-blocks">
+											<label>Amount Paid (₦)</label>
+											<input type="text" class="form-control" placeholder="100" required>
+										  </div>
+									    </div>
+										<div class="col-lg-3 col-md-6 col-sm-12">
+										  <div class="input-blocks">
+											<label>Amount Due (₦)</label>
+											<input type="text" class="form-control" placeholder="100" required>
+										  </div>
+									    </div>
 									</div>
 								</div>
 
 								<div class="col-lg-12">
 									<div class="input-blocks summer-description-box">
-										<label>Description</label>
-										<div id="summernote2">
-											<p>These shoes are made with the highest quality materials. </p>
-										</div>
+										<label>Notes</label>
+										<textarea name="" cols="30" placeholder="Enter your note .." required></textarea>
 									</div>
 								</div>
 								<div class="col-lg-12">
 									<div class="modal-footer-btn">
 										<button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Cancel</button>
-										<button type="submit" class="btn btn-submit">Save Changes</button>
+										<button type="submit" class="btn btn-submit">Submit</button>
 									</div>
 								</div>
 							</form>
@@ -632,7 +602,30 @@ $conn = connectMainDB();
 <script>
 $.fn.dataTable.ext.errMode = 'none'; // Disable all error alerts globally in DataTable
 
+// JavaScript for Grand Total Calculation 
+// Elements
+ const costPerUnit = document.getElementById('cost_per_unit');
+const packQuantity = document.getElementById('pack_quantity');
+const itemsPerPack = document.getElementById('items_per_pack');
+const grandTotalDisplay = document.getElementById('grand_total_display');
+const grandTotalInput = document.getElementById('grand_total'); // Hidden input for grand total
 
+// Calculate and update grand total
+function calculateGrandTotal() {
+	const unitCost = parseFloat(costPerUnit.value) || 0;
+	const packs = parseInt(packQuantity.value) || 0;
+	const items = parseInt(itemsPerPack.value) || 0;
+	const grandTotal = unitCost * packs * items;
+
+	// Update the displayed and hidden grand total values
+	grandTotalDisplay.textContent = '₦' + grandTotal.toFixed(2);
+	grandTotalInput.value = grandTotal.toFixed(2); // Set the hidden input's value
+}
+
+// Event Listeners
+costPerUnit.addEventListener('input', calculateGrandTotal);
+packQuantity.addEventListener('input', calculateGrandTotal);
+itemsPerPack.addEventListener('input', calculateGrandTotal);
 </script>
 </body>
 </html>
