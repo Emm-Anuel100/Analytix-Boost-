@@ -22,7 +22,7 @@ $conn = connectMainDB();
 </head>
 <body>
 <div id="global-loader" >
-<div class="whirly-loadr"> </div>
+<div class="whirly-loader"> </div>
 </div>
 <!-- main Wrapper-->
 <div class="main-wrapper">

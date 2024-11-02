@@ -6,6 +6,7 @@ include 'conn.php'; // Include database connection
 // Establish the connection to the user's database
 $conn = connectMainDB();
 
+// If value is posted
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !empty($_POST['supplier_name_'])) {
     // Capture and sanitize form data
     $supplierName = $_POST['supplier_name_'];
@@ -22,22 +23,44 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !
     $grandTotal = $_POST['grand_total']; // Retrieve the hidden grand total field
     $user_email = $_SESSION['email']; // user's email
 
+    // Generate a 10-digit alphanumeric reference code
+    $referenceCode = substr(str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 10);
+
     // Insert into the database
-    $query = "INSERT INTO purchases (user_email, supplier_name, purchase_date, product_name, cost_per_unit, pack_quantity, items_per_pack, status, order_tax, amount_paid, amount_due, notes, grand_total)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $query = "INSERT INTO purchases (user_email, supplier_name, purchase_date, product_name, cost_per_unit, pack_quantity, items_per_pack, status, order_tax, amount_paid, amount_due, notes, grand_total, reference)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("ssssiissiiisd", $user_email, $supplierName, $purchaseDate, $productName, $costPerUnit, $packQuantity, $itemsPerPack, $status, $orderTax, $amountPaid, $amountDue, $notes, $grandTotal);
+    $stmt->bind_param("ssssiissiiisds", $user_email, $supplierName, $purchaseDate, $productName, $costPerUnit, $packQuantity, $itemsPerPack, $status, $orderTax, $amountPaid, $amountDue, $notes, $grandTotal, $referenceCode);
 
     if ($stmt->execute()) {
-        echo "Purchase added successfully!";
+        // Success message using SweetAlert
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Purchase added successfully!',
+                    // text: 'Reference Code: {$referenceCode}',
+                    confirmButtonText: 'OK'
+                });
+            });
+        </script>";
     } else {
-        echo "Error: " . $stmt->error;
+        // Error message using SweetAlert
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: '{$stmt->error}',
+                    confirmButtonText: 'OK'
+                });
+            });
+        </script>";
     }
 
     $stmt->close(); // close the statement
 }
-
 ?>
 
 
@@ -71,15 +94,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !
 					<ul class="table-top-head">
 						<li>
 							<a data-bs-toggle="tooltip" data-bs-placement="top" title="Pdf" href="export_purchace_pdf.php" target="_blank"><img
-									src="assets/img/icons/pdf.svg" alt="img"></a>
+									src="assets/img/icons/pdf.svg" alt="img">
+							</a>
 						</li>
 						<li>
 							<a data-bs-toggle="tooltip" data-bs-placement="top" title="Csv" href="export_purchace_csv.php" target="_blank"><img
-									src="assets/img/icons/excel.svg" alt="img"></a>
+									src="assets/img/icons/excel.svg" alt="img">
+							</a>
 						</li>
 						<li>
 							<a data-bs-toggle="tooltip" data-bs-placement="top" title="Refresh" class="refresh"><i
-									data-feather="rotate-ccw" class="feather-rotate-ccw"></i></a>
+									data-feather="rotate-ccw" class="feather-rotate-ccw"></i>
+							</a>
 						</li>		
 						<li>
 							<a data-bs-toggle="tooltip" data-bs-placement="top" title="Collapse" id="collapse-header"><i data-feather="chevron-up" class="feather-chevron-up"></i></a>
@@ -105,69 +131,129 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !
 							<div class="search-set">
 								<div class="search-input">
 									<a href="" class="btn btn-searchset"><i data-feather="search"
-											class="feather-search"></i></a>
+										class="feather-search"></i></a>
 								</div>
 							</div>
 							
 							<div class="form-sort">
 								<i data-feather="sliders" class="info-img"></i>
+								<?php 
+									 $order = isset($_POST['sort_order']) && $_POST['sort_order'] === 'Oldest' ? 'ASC' : 'DESC';
+								 ?>
 								<form action="" method="post">
-									<select class="select">
-										<option>Newest</option>
-										<option>Oldest</option>
-									</select>
-								</form>
+								<select name="sort_order" class="select" onchange="this.form.submit()">
+									<option value="Newest" <?php if ($order === 'DESC') echo 'selected'; ?>>Newest</option>
+									<option value="Oldest" <?php if ($order === 'ASC') echo 'selected'; ?>>Oldest</option>
+								</select>
+							</form>
 							</div>
 						</div>
 						
 						<div class="table-responsive product-list">
-							<table class="table  datanew list">
-								<thead>
-									<tr>
-										<th class="no-sort">
-											<label class="checkboxs">
-												<input type="checkbox" id="select-all">
-												<span class="checkmarks"></span>
-											</label>
-										</th>
-										<th>Supplier Name</th>
-										<th>Reference</th>
-										<th>Date</th>
-										<th>Status</th>
-										<th>Grand Total (₦)</th>
-										<th>Paid (₦)</th>
-										<th>Due (₦)</th>
-										<th class="no-sort">Action</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr>
-										<td>
-											<label class="checkboxs">
-												<input type="checkbox">
-												<span class="checkmarks"></span>
-											</label>
-										</td>
-										<td>Apex Computers</td>
-										<td>PT001 </td>
-										<td>19 Jan 2023</td>
-										<td><span class="badges status-badge">Received</span></td>
-										<td>550</td>
-										<td>550</td>
-										<td>0.00</td>
-										<td class="action-table-data">
-											<div class="edit-delete-action">
-												<a class="me-2 p-2" data-bs-toggle="modal" data-bs-target="#edit-units">
-													<i data-feather="edit" class="feather-edit"></i>
+							<?php
+							
+							// Check if the user selected a sorting order; default to 'Newest'
+							$order = isset($_POST['sort_order']) && $_POST['sort_order'] === 'Oldest' ? 'ASC' : 'DESC';
+
+							$email = htmlspecialchars($_SESSION['email']); // user's email
+							// query
+							$query = "SELECT * FROM purchases
+							 WHERE user_email = '$email' ORDER BY id $order";
+							$result = $conn->query($query);
+						   ?>
+
+						<table class="table datanew list">
+							<thead>
+								<tr>
+									<th class="no-sort">
+										<label class="checkboxs">
+											<input type="checkbox" id="select-all">
+											<span class="checkmarks"></span>
+										</label>
+									</th>
+									<th>Supplier Name</th>
+									<th>Product Name</th>
+									<th>Order Tax (₦)</th>
+									<th>Reference</th>
+									<th>Date</th>
+									<th>Status</th>
+									<th>Grand Total (₦)</th>
+									<th>Paid (₦)</th>
+									<th>Due (₦)</th>
+									<th class="no-sort">Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php
+								if ($result->num_rows > 0) {
+									// Fetch and display each row
+									while ($row = $result->fetch_assoc()) {
+										echo "<tr>";
+										echo "<td>
+												<label class='checkboxs'>
+													<input type='checkbox'>
+													<span class='checkmarks'></span>
+												</label>
+											</td>";
+										echo "<td>" . htmlspecialchars($row['supplier_name']) . "</td>";
+										echo "<td>" . htmlspecialchars($row['product_name']) . "</td>";
+										echo "<td>" . htmlspecialchars($row['order_tax']) . "</td>";
+										echo "<td>" . htmlspecialchars($row['reference']) . "</td>";
+										echo "<td>" . date("d M Y", strtotime($row['purchase_date'])) . "</td>";
+										
+										// Display status with appropriate styling
+										$statusClass = ($row['status'] === 'Received') ? 'status-badge' : 'order-badge';
+										echo "<td><span class='badges {$statusClass}'>" . htmlspecialchars($row['status']) . "</span></td>";
+										
+										echo "<td>" . number_format($row['grand_total']) . "</td>";
+										echo "<td>" . number_format($row['amount_paid']) . "</td>";
+										echo "<td>" . number_format($row['amount_due']) . "</td>";
+										
+										echo "<td class='action-table-data'>
+											<div class='edit-delete-action'>
+												<a class='me-2 p-2 edit-btn' data-id='" . $row['id'] . "' data-bs-toggle='modal' data-bs-target='#edit-units'>
+													<i data-feather='edit' class='feather-edit'></i>
 												</a>
-												<a class="confirm-text p-2" href="javascript:void(0);">
-													<i data-feather="trash-2" class="feather-trash-2"></i>
+												<a class='confirm-tex p-2 delete-btn' href='javascript:void(0);' data-id='" . $row['id'] . "'>
+													<i data-feather='trash-2' class='feather-trash-2'></i>
 												</a>
 											</div>
-										</td>
-									</tr>
-								</tbody>
-							</table>
+										</td>";
+										echo "</tr>";
+									  }
+							    	} else {
+									// Display demo data if there are no records
+									echo "<tr>
+									<td>
+										<label class='checkboxs'>
+											<input type='checkbox'>
+											<span class='checkmarks'></span>
+										</label>
+									</td>
+									<td>Demo Supplier</td>
+									<td>Demo Product</td>
+									<td>0</td>
+									<td>Demo-Ref</td>
+									<td>" . date("d M Y") . "</td>
+									<td><span class='badges status-badge'>Received</span></td>
+									<td>" . number_format(1000) . "</td>
+									<td>" . number_format(1000) . "</td>
+									<td>" . number_format(0) . "</td>
+									<td class='action-table-data'>
+										<div class='edit-delete-action'>
+											<a class='me-2 p-2 edit-bt'  data-bs-toggle='modal' data-bs-target='#edit-unit'>
+												<i data-feather='edit' class='feather-edit'></i>
+											</a>
+											<a class='confirm-tex p-2 delete-bt' href='javascript:void(0);'>
+												<i data-feather='trash-2' class='feather-trash-2'></i>
+											</a>
+										</div>
+									</td>
+								  </tr>";
+								}
+								?>
+							</tbody>
+						</table>
 						</div>
 					</div>
 				</div>
@@ -175,7 +261,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !
 			</div>
 		</div>
 	</div>
-	<!-- /Main Wrapper -->
+	<!-- /Main Wrapper -->	
 
 	<!-- Add Purchase -->
 	<div class="modal fade" id="add-units">
@@ -317,7 +403,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !
 								<div class="col-lg-12">
 									<div class="input-blocks summer-description-box">
 										<label>Notes</label>
-										<textarea name="notes" cols="30" placeholder="Enter your note .." required></textarea>
+										<textarea name="notes" maxlength="30" cols="30" placeholder="Enter your note .." required></textarea>
 									</div>
 								</div>
 								<div class="col-lg-12">
@@ -357,7 +443,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !
 											<label>Supplier Name</label>
 											<div class="row">
 												<div class="col-lg-10 col-sm-10 col-10">
-													<select class="select">
+													<select class="select" name="supplier_name">
 														<option>Demo supplier</option>
 													</select>
 												</div>
@@ -375,14 +461,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !
 
 											<div class="input-groupicon calender-input">
 												<i data-feather="calendar" class="info-img"></i>
-												<input type="text" class="datetimepicker" placeholder="Choose" required>
+												<input type="text" name="purchase_date_" class="datetimepicker" placeholder="Choose" required id="purchase_date">
 											</div>
 										</div>
 									</div>
 									<div class="col-lg-3 col-md-6 col-sm-12">
 										<div class="input-blocks">
 											<label>Product Name</label>
-											<select name="product_name" class="select" required>
+											<select name="product_name_" class="select" required>
 												<?php
 												$user_email = $_SESSION['email']; // user's email
 
@@ -408,42 +494,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !
 									<div class="col-lg-3 col-md-6 col-sm-12">
 										<div class="input-blocks">
 											<label>Cost per unit (₦)</label>
-											<input type="text" class="form-control" placeholder="100" required>
+											<input type="text" name="cost_per_unit_" class="form-control" placeholder="100" required id="cost_per_unit_">
 										</div>
 									</div>
 								</div>
 								<div class="row">
-									<div class="col-lg-12">
-										<div class="row">
-										<div class="col-lg-12 float-md-right">
-											<div class="total-order">
-												<ul>
-													<li class="total">
-														<h4>Grand Total</h4>
-														<h5><span class="grand_total">₦</span>1500.00</h5>
-													</li>
-												</ul>
-											</div>
-										</div>
-									</div>
-									</div>
 									<div class="row">
 									<div class="col-lg-3 col-md-6 col-sm-12">
 											<div class="input-blocks">
 												<label>Pack Quantity</label>
-												<input type="text" placeholder="1" value="1" required>
+												<input type="text" name="pack_quantity_" id="pack_quantity" placeholder="1" value="1" required>
 											</div>
 										</div>
 										<div class="col-lg-3 col-md-6 col-sm-12">
 											<div class="input-blocks">
 												<label>Items per pack</label>
-												<input type="text" placeholder="10" required>
+												<input type="text" name="items_per_pack_" placeholder="10" required id="items_per_pack_">
 											</div>
 										</div>
 										<div class="col-lg-3 col-md-6 col-sm-12">
 											<div class="input-blocks">
 												<label>Status</label>
-												<select class="select">
+												<select class="select" name="status_">
 													<option>Received</option>
 													<option>Pending</option>
 												</select>
@@ -452,13 +524,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !
 										<div class="col-lg-3 col-md-6 col-sm-12">
 										  <div class="input-blocks">
 											<label>Amount Paid (₦)</label>
-											<input type="text" class="form-control" placeholder="100" required>
+											<input type="text" name="amount_paid_" id="amount_paid" class="form-control" placeholder="100" required>
 										  </div>
 									    </div>
 										<div class="col-lg-3 col-md-6 col-sm-12">
 										  <div class="input-blocks">
 											<label>Amount Due (₦)</label>
-											<input type="text" class="form-control" placeholder="100" required>
+											<input type="text" id="amount_due" name="amount_due_" class="form-control" placeholder="100" required>
+										  </div>
+									    </div>
+										<div class="col-lg-3 col-md-6 col-sm-12">
+										  <div class="input-blocks">
+											<label>Order Tax (₦)</label>
+											<input type="text" id="tax" name="tax_" class="form-control" placeholder="10" required>
+										  </div>
+									    </div>
+										<div class="col-lg-3 col-md-6 col-sm-12">
+										  <div class="input-blocks">
+											<label>Grand Total (₦)</label>
+											<input type="text" id="total" name="total_" class="form-control" placeholder="100" required>
 										  </div>
 									    </div>
 									</div>
@@ -467,7 +551,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !
 								<div class="col-lg-12">
 									<div class="input-blocks summer-description-box">
 										<label>Notes</label>
-										<textarea name="" cols="30" placeholder="Enter your note .." required></textarea>
+										<textarea name="notes_" id="notes" maxlength="30" cols="30" placeholder="Enter your note .." required></textarea>
 									</div>
 								</div>
 								<div class="col-lg-12">
@@ -502,48 +586,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !
 						<div class="modal-body custom-modal-body">
 							<form action="purchase-list.php">
 								<div class="row">
-									<div class="col-lg-6 col-sm-6 col-12">
-										<div class="input-blocks">
-											<label>Supplier Name</label>
-											<div class="row">
-												<div class="col-lg-10 col-sm-10 col-10">
-													<select class="select">
-														<option>Choose</option>
-														<option>Apex Computers</option>
-														<option>Apex Computers</option>
-													</select>
-												</div>
-												<div class="col-lg-2 col-sm-2 col-2 ps-0">
-													<div class="add-icon tab">
-														<a href="javascript:void(0);"><i data-feather="plus-circle" class="feather-plus-circles"></i></a>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-									<div class="col-lg-6 col-sm-6 col-12">
-										<div class="input-blocks">
-											<label>Purchase Status </label>
-											<select class="select">
-												<option>Choose</option>
-												<option>Received</option>
-												<option>Ordered</option>
-												<option>Pending</option>
-											</select>
-										</div>
-									</div>
 									<div class="col-lg-12 col-sm-6 col-12">
 										<div class="row">
 											<div>
-												<!-- <div class="input-blocks download">
-													<a class="btn btn-submit">Download Sample File</a>
-												</div> -->
 												<div class="modal-footer-btn download-file">
-													<a href="javascript:void(0)" class="btn btn-submit">Download Sample File</a>
+													<a href="purchase_record.csv" download="" class="btn btn-submit">Download Sample File</a>
 												</div>
 											</div>
 										</div>
-									</div>
+									</div> 
 									<div class="col-lg-12">
 										<div class="input-blocks image-upload-down">
 											<label>	Upload CSV File</label>
@@ -556,31 +607,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !
 											</div>
 										</div>
 									</div>
-									<div class="col-lg-4 col-sm-6 col-12">
-										<div class="input-blocks">
-											<label>Order Tax</label>
-											<input type="text" value="0">
-										</div>
-									</div>
-									<div class="col-lg-4 col-sm-6 col-12">
-										<div class="input-blocks">
-											<label>Discount</label>
-											<input type="text" value="0" >
-										</div>
-									</div>
-									<div class="col-lg-4 col-sm-6 col-12">
-										<div class="input-blocks">
-											<label>Shipping</label>
-											<input type="text" value="0">
-										</div>
-									</div>
 								</div>
-								<div class="input-blocks summer-description-box transfer">
-									<label>Description</label>
-									<div id="summernote3">
-									</div>
-									<p>Maximum 60 Characters</p>
-								</div>	
+	
 								<div class="modal-footer-btn">
 									<button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Cancel</button>
 									<button type="submit" class="btn btn-submit">Submit</button>
@@ -603,8 +631,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !
 $.fn.dataTable.ext.errMode = 'none'; // Disable all error alerts globally in DataTable
 
 // JavaScript for Grand Total Calculation 
-// Elements
- const costPerUnit = document.getElementById('cost_per_unit');
+const costPerUnit = document.getElementById('cost_per_unit');
 const packQuantity = document.getElementById('pack_quantity');
 const itemsPerPack = document.getElementById('items_per_pack');
 const grandTotalDisplay = document.getElementById('grand_total_display');
@@ -626,6 +653,125 @@ function calculateGrandTotal() {
 costPerUnit.addEventListener('input', calculateGrandTotal);
 packQuantity.addEventListener('input', calculateGrandTotal);
 itemsPerPack.addEventListener('input', calculateGrandTotal);
+
+
+
+// Purchase deletion begins here
+document.addEventListener("DOMContentLoaded", function() {
+    // Attach event listeners to all delete buttons
+    document.querySelectorAll(".delete-btn").forEach(button => {
+        button.addEventListener("click", function() {
+            const purchaseId = this.getAttribute("data-id");
+
+            // SweetAlert confirmation dialog
+            Swal.fire({
+                title: "Are you sure?",
+                text: "This action cannot be undone!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Send AJAX request to delete record
+                    fetch("delete_purchase.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: "id=" + purchaseId
+                    })
+                    .then(response => response.text())
+                    .then(data => {
+                        if (data === "success") {
+                            Swal.fire("Deleted!", "Purchase has been deleted.", "success")
+                            .then(() => location.reload());
+                        } else {
+                            Swal.fire("Error!", "There was an issue deleting the record.", "error");
+                        }
+                    })
+                    .catch(error => console.error("Error:", error));
+                }
+            });
+        });
+    });
+});
+
+
+// Function to populate purchase editing form
+document.addEventListener("DOMContentLoaded", function() {
+    // Attach event listeners to all edit buttons
+    document.querySelectorAll(".edit-btn").forEach(button => {
+        button.addEventListener("click", function() {
+            const purchaseId = this.getAttribute("data-id");
+            
+            // Fetch purchase details using AJAX
+            fetch("get_purchase_details.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: "id=" + purchaseId
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Populate modal form fields with data
+                document.querySelector("#purchase_date").value = data.purchase_date;
+                document.querySelector("#cost_per_unit_").value = data.cost_per_unit;
+                document.querySelector("#pack_quantity").value = data.pack_quantity;
+                document.querySelector("#items_per_pack_").value = data.items_per_pack;
+                document.querySelector("#amount_paid").value = data.amount_paid;
+                document.querySelector("#amount_due").value = data.amount_due;
+				document.querySelector("#tax").value = data.order_tax;
+				document.querySelector("#total").value = data.grand_total;
+                document.querySelector("#notes").value = data.notes;
+                
+                // Store the ID in a hidden field within the form
+                document.querySelector("#edit-units form").setAttribute("data-id", purchaseId);
+            })
+            .catch(error => console.error("Error fetching data:", error));
+        });
+    });
+});
+
+
+// get the Id from the data-id attribute
+$('#edit-units').on('show.bs.modal', function (event) {
+    const button = $(event.relatedTarget); // Button that triggered the modal
+    const purchaseId = button.data('id'); // Extract info from data-* attributes
+
+    const form = $(this).find('form');
+    form.attr('data-id', purchaseId); // Set the purchase ID to the form's data-id attribute
+});
+
+// Ajax to update purchase details
+document.querySelector("#edit-units form").addEventListener("submit", function(e) {
+    e.preventDefault(); // Prevent default form submission
+
+    const purchaseId = this.getAttribute("data-id"); // Get the ID from the form's data-id attribute
+    const formData = new FormData(this);
+    formData.append("id", purchaseId); // Append the ID to the FormData
+
+    // Log data to the console
+    console.log("Purchase ID:", purchaseId);
+    formData.forEach((value, key) => console.log(`${key}: ${value}`)); // Log each form data item
+
+    // Send the AJAX request
+    fetch("update_purchase.php", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log("Server response:", data); // Log server response
+
+        if (data.trim() === "success") {
+            Swal.fire("Updated!", "Record updated successfully!", "success")
+            .then(() => location.reload()); // Refresh the page to show updated data
+        } else {
+            Swal.fire("Error!", "There was an issue updating the record.", "error");
+        }
+    })
+    .catch(error => console.error("Error:", error));
+});
+
 </script>
 </body>
 </html>
