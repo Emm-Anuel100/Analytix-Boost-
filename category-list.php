@@ -130,8 +130,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['name'])) {
 								</tr>
 							</thead>
 							<?php
+							$user_email = $_SESSION['email']; // user's email
+							
 							// Assuming you already have a connection to the database in $conn
-							$query = "SELECT name, slug, timestamp, status FROM categories";
+							$query = "SELECT name, slug, timestamp, status FROM categories WHERE user_email = '$user_email'";
 							$result = $conn->query($query);
 
 							if ($result->num_rows > 0) {
@@ -176,7 +178,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['name'])) {
 							echo '</tbody>';
 						} else {
 							// If no data found
-							// echo '<p>No categories found.</p>';
+							echo '<tr>
+								<td>
+									<label class="checkboxs">
+											<input type="checkbox">
+											<span class="checkmarks"></span>
+									</label>
+								</td>
+								<td>demo name</td>
+								<td>demo slug</td>
+								<td>date</td>
+								<td>Active</td>
+								<td class="action-table-data">
+									<div class="edit-delete-action">
+											<a class="me-2 p-2" href="#" data-bs-toggle="modal" data-bs-target="#edit-cat">
+												<i data-feather="edit" class="feather-edit"></i>
+											</a>
+											<a class="confirm-te p-2" href="javascript:void(0);">
+												<i data-feather="trash-2" class="feather-trash-2"></i>
+											</a>
+									</div>
+								</td>
+							</tr>';
 						}
 						?>
 						</table>
