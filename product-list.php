@@ -35,10 +35,10 @@ $conn = connectMainDB();
 						</div>
 						<ul class="table-top-head">
 							<li>
-								<a href="export-product-PDF.php" data-bs-toggle="tooltip" data-bs-placement="top" title="Pdf"><img src="assets/img/icons/pdf.svg" alt="img"></a>
+								<a href="export-product-pdf.php" data-bs-toggle="tooltip" data-bs-placement="top" title="Pdf"><img src="assets/img/icons/pdf.svg" alt="img"></a>
 							</li>
 							<li>
-								<a href="export-product-CSV.php" data-bs-toggle="tooltip" data-bs-placement="top" title="Csv"><img src="assets/img/icons/excel.svg" alt="img"></a>
+								<a href="export-product-csv.php" data-bs-toggle="tooltip" data-bs-placement="top" title="Csv"><img src="assets/img/icons/excel.svg" alt="img"></a>
 							</li>
 							<li>
 								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Refresh" class="refresh"><i data-feather="rotate-ccw" class="feather-rotate-ccw"></i></a>
@@ -67,15 +67,15 @@ $conn = connectMainDB();
 								</div>
 							 
 								<div class="form-sort">
-								<form method="GET" action="">
+								<form method="POST" action="">
 									<i data-feather="sliders" class="info-img"></i>
 									 <?php
 										// Check if a sort order is set, otherwise default to 'newest'
-										$sortOrder = isset($_GET['sort']) ? $_GET['sort'] : 'newest';
+										$sortOrder = isset($_POST['sort']) ? $_POST['sort'] : 'newest';
 									 ?>
 									<select name="sort" class="select" onchange="this.form.submit()">
-											<option value="newest" <?php echo ($sortOrder == 'newest') ? 'selected' : ''; ?>>Newest</option>
-											<option value="oldest" <?php echo ($sortOrder == 'oldest') ? 'selected' : ''; ?>>Oldest</option>
+										<option value="newest" <?php echo ($sortOrder == 'newest') ? 'selected' : ''; ?>>Newest</option>
+										<option value="oldest" <?php echo ($sortOrder == 'oldest') ? 'selected' : ''; ?>>Oldest</option>
 									</select>
 								</form>
 							</div>
@@ -116,7 +116,7 @@ $conn = connectMainDB();
 										<th>Warehouse</th>
 										<th>Category</th>
 										<th>Selling Type</th>
-										<th>Price</th>
+										<th>Price (₦)</th>
 										<th>Unit</th>
 										<th>Qty</th>
 										<th>Expiry</th>

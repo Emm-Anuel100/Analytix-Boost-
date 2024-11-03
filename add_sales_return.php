@@ -191,9 +191,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $insertReturnQuery->close();
     $selectQuery->close();
 
-} else {
+    } else {
     echo json_encode(['success' => false, 'message' => 'Invalid request.']);
-}
+    }
 
 // Close the database connection
 $conn->close();

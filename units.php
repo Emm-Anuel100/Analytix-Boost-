@@ -158,11 +158,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unit_id'])) {
 								</div>
 								<?php
 			                     // Check if a sort option is selected
-						         $sort_option = isset($_GET['sort']) ? $_GET['sort'] : 'newest';
+						         $sort_option = isset($_POST['sort']) ? $_POST['sort'] : 'newest';
 								 ?>
 								<div class="form-sort">
 									<i data-feather="sliders" class="info-img"></i>
-									<form method="GET" action="">
+									<form method="POST" action="">
 									<select name="sort" class="select" onchange="this.form.submit()">
 										<option value="newest" <?php echo $sort_option === 'newest' ? 'selected' : ''; ?>>Newest</option>
 										<option value="oldest" <?php echo $sort_option === 'oldest' ? 'selected' : ''; ?>>Oldest</option>
