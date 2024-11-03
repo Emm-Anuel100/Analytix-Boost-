@@ -61,7 +61,139 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !
 
     $stmt->close(); // close the statement
 }
+
+
+// Script to insert uploaded purchase CSV file into the database
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Check if a file was uploaded
+    if (isset($_FILES['csv_file']) && $_FILES['csv_file']['error'] == UPLOAD_ERR_OK) {
+        $fileTmpPath = $_FILES['csv_file']['tmp_name'];
+        $fileName = $_FILES['csv_file']['name'];
+
+        // Check if the file is a CSV
+        if (pathinfo($fileName, PATHINFO_EXTENSION) !== 'csv') {
+            header("Location: purchase-list.php?error=not_csv");
+            exit;
+        }
+
+        // Open the file for reading
+        if (($handle = fopen($fileTmpPath, 'r')) !== false) {
+            // Get database connection
+            $conn = connectMainDB();
+            $rowCount = 0;
+
+            // Skip header row
+            fgetcsv($handle);
+
+            while (($data = fgetcsv($handle)) !== false) {
+                // Validate data
+                if (count($data) < 14) { // Ensure you have all required columns
+                    fclose($handle);
+                    $conn->close();
+                    header("Location: purchase-list.php?error=incomplete_row&row=" . ($rowCount + 2));
+                    exit;
+                }
+
+                // Prepare data for insertion
+                $user_email = htmlspecialchars(trim($data[0]));
+                $supplier_name = htmlspecialchars(trim($data[1]));
+                $purchase_date = date("Y-m-d", strtotime(trim($data[2])));
+                $product_name = htmlspecialchars(trim($data[3]));
+                $cost_per_unit = floatval(str_replace(',', '', trim($data[4])));
+                $pack_quantity = intval(trim($data[5]));
+                $items_per_pack = intval(trim($data[6]));
+                $status = htmlspecialchars(trim($data[7]));
+                $order_tax = floatval(str_replace(',', '', trim($data[8])));
+                $amount_paid = floatval(str_replace(',', '', trim($data[9])));
+                $amount_due = floatval(str_replace(',', '', trim($data[10])));
+                $notes = htmlspecialchars(trim($data[11]));
+                $grand_total = floatval(str_replace(',', '', trim($data[12])));
+                $reference = htmlspecialchars(trim($data[13]));
+
+                // Insert data into the database
+                $query = "INSERT INTO purchases (user_email, supplier_name, purchase_date, product_name, cost_per_unit, pack_quantity, items_per_pack, status, order_tax, amount_paid, amount_due, notes, grand_total, reference) 
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                $stmt = $conn->prepare($query);
+                $stmt->bind_param("ssssdisdssdsds", $user_email, $supplier_name, $purchase_date, $product_name, $cost_per_unit, $pack_quantity, $items_per_pack, $status, $order_tax, $amount_paid, $amount_due, $notes, $grand_total, $reference);
+
+                if (!$stmt->execute()) {
+                    fclose($handle);
+                    $conn->close();
+                    header("Location: purchase-list.php?error=insert_failed&row=" . ($rowCount + 2));
+                    exit;
+                }
+
+                $rowCount++;
+            }
+
+            fclose($handle);
+            $conn->close();
+            header("Location: purchase-list.php?success=$rowCount"); // Redirect on success
+            exit;  // Stop further execution after redirecting
+        }
+    } 
+}
+
+
+// Get the parameters passed to check the status of the uploaded file
+if (isset($_GET['success'])): ?>
+	<?php if (isset($_GET['success'])): ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const successCount = <?php echo intval($_GET['success']); ?>;
+            const message = successCount === 1 
+                ? '1 record imported successfully.' 
+                : successCount + ' records imported successfully.';
+            
+            Swal.fire({
+                title: 'Success!',
+                text: message,
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        });
+    </script>
+   <?php endif; ?>
+	<?php elseif (isset($_GET['error'])): ?>
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			<?php if ($_GET['error'] == 'not_csv'): ?>
+				Swal.fire({
+					title: 'Error!',
+					text: 'Uploaded file is not a CSV file.',
+					icon: 'error',
+					confirmButtonText: 'OK',
+					allowOutsideClick: true
+				}).then(() => {
+					window.location.href = 'purchase-list.php';
+				});
+			<?php elseif ($_GET['error'] == 'incomplete_row'): ?>
+				Swal.fire({
+					title: 'Error!',
+					text: 'Some fields are missing in row <?php echo htmlspecialchars($_GET['row']); ?>. Please check the CSV file.',
+					icon: 'error',
+					confirmButtonText: 'OK',
+					allowOutsideClick: true
+				}).then(() => {
+					window.location.href = 'purchase-list.php';
+				});
+			<?php elseif ($_GET['error'] == 'insert_failed'): ?>
+				Swal.fire({
+					title: 'Error!',
+					text: 'Failed to insert data for row <?php echo htmlspecialchars($_GET['row']); ?>. Please try again.',
+					icon: 'error',
+					confirmButtonText: 'OK',
+					allowOutsideClick: true
+				}).then(() => {
+					window.location.href = 'purchase-list.php';
+				});
+			<?php endif; ?>
+		});
+	</script>
+	<?php endif;	
+
 ?>
+
 
 
 <!DOCTYPE html>
@@ -584,7 +716,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !
 							</button>
 						</div>
 						<div class="modal-body custom-modal-body">
-							<form action="purchase-list.php">
+							<form action="purchase-list.php" method="POST" enctype="multipart/form-data">
 								<div class="row">
 									<div class="col-lg-12 col-sm-6 col-12">
 										<div class="row">
@@ -599,7 +731,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !
 										<div class="input-blocks image-upload-down">
 											<label>	Upload CSV File</label>
 											<div class="image-upload download">
-												<input type="file">
+												<input type="file" name="csv_file" required>
 												<div class="image-uploads">
 													<img src="assets/img/download-img.png" alt="img">
 													<h4>Drag and drop a <span>file to upload</span></h4>
@@ -666,7 +798,7 @@ document.addEventListener("DOMContentLoaded", function() {
             // SweetAlert confirmation dialog
             Swal.fire({
                 title: "Are you sure?",
-                text: "This action cannot be undone!",
+                text: "This action can't be undone!",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#d33",
