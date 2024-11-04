@@ -21,12 +21,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !
     $amountDue = $_POST['amount_due'];
     $notes = $_POST['notes'];
     $grandTotal = $_POST['grand_total']; // Retrieve the hidden grand total field
-    $user_email = $_SESSION['email']; // user's email
+    $user_email = htmlspecialchars($_SESSION['email']); // User's email
 
     // Generate a 10-digit alphanumeric reference code
     $referenceCode = substr(str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 10);
 
-    // Insert into the database
+    // Insert into the purchases table
     $query = "INSERT INTO purchases (user_email, supplier_name, purchase_date, product_name, cost_per_unit, pack_quantity, items_per_pack, status, order_tax, amount_paid, amount_due, notes, grand_total, reference)
               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -34,19 +34,63 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !
     $stmt->bind_param("ssssiissiiisds", $user_email, $supplierName, $purchaseDate, $productName, $costPerUnit, $packQuantity, $itemsPerPack, $status, $orderTax, $amountPaid, $amountDue, $notes, $grandTotal, $referenceCode);
 
     if ($stmt->execute()) {
-        // Success message using SweetAlert
-        echo "<script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Purchase added successfully!',
-                    // text: 'Reference Code: {$referenceCode}',
-                    confirmButtonText: 'OK'
+        // Only update the products table if the status is "Received"
+        if ($status === 'Received') {
+            // Calculate total items to add to stock
+            $newQuantity = $packQuantity * $itemsPerPack;
+
+			$user_email = $_SESSION['email']; // user's email
+
+            // Update quantity in the products table based on product name
+            $updateQuery = "UPDATE products SET quantity = quantity + ? WHERE product_name = ? AND email = '$user_email'";
+            $updateStmt = $conn->prepare($updateQuery);
+            $updateStmt->bind_param("is", $newQuantity, $productName);
+
+            if ($updateStmt->execute()) {
+                echo "<script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Purchase added successfully!',
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = 'purchase-list.php';
+                            }
+                        });
+                    });
+                </script>";
+            } else {
+                echo "<script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error updating product quantity',
+                            text: '{$updateStmt->error}',
+                            confirmButtonText: 'OK'
+                        });
+                    });
+                </script>";
+            }
+
+            $updateStmt->close(); // Close the update statement
+        } else {
+            // If the status is not "Received", show a success message without updating the product quantity
+            echo "<script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Purchase added successfully!',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = 'purchase-list.php';
+                        }
+                    });
                 });
-            });
-        </script>";
+            </script>";
+        }
     } else {
-        // Error message using SweetAlert
         echo "<script>
             document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
@@ -59,8 +103,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !
         </script>";
     }
 
-    $stmt->close(); // close the statement
+    $stmt->close(); // Close the insert statement
 }
+
 
 
 // Script to insert uploaded purchase CSV file into the database
@@ -110,7 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $grand_total = floatval(str_replace(',', '', trim($data[12])));
                 $reference = htmlspecialchars(trim($data[13]));
 
-                // Insert data into the database
+                // Insert data into the purchases table
                 $query = "INSERT INTO purchases (user_email, supplier_name, purchase_date, product_name, cost_per_unit, pack_quantity, items_per_pack, status, order_tax, amount_paid, amount_due, notes, grand_total, reference) 
                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 $stmt = $conn->prepare($query);
@@ -121,6 +166,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $conn->close();
                     header("Location: purchase-list.php?error=insert_failed&row=" . ($rowCount + 2));
                     exit;
+                }
+
+                // Calculate total quantity to add to stock
+                $newQuantity = $pack_quantity * $items_per_pack;
+
+				$user_email = htmlspecialchars($_SESSION['email']); // user's email
+
+                // Update the products table based on product name only if status is "Received"
+                if ($status === 'Received') {
+                    $updateQuery = "UPDATE products SET quantity = quantity + ? WHERE product_name = ? AND email = ?";
+                    $updateStmt = $conn->prepare($updateQuery);
+                    $updateStmt->bind_param("iss", $newQuantity, $product_name, $user_email);
+
+                    if (!$updateStmt->execute()) {
+                        fclose($handle);
+                        $conn->close();
+                        header("Location: purchase-list.php?error=update_failed&row=" . ($rowCount + 2));
+                        exit;
+                    }
+                    $updateStmt->close(); // Close the update statement
                 }
 
                 $rowCount++;
@@ -150,12 +215,14 @@ if (isset($_GET['success'])): ?>
                 text: message,
                 icon: 'success',
                 confirmButtonText: 'OK'
-            });
+            }).then(() => {
+					window.location.href = 'purchase-list.php';
+				});
         });
     </script>
-   <?php endif; ?>
+	<?php endif; ?>
 	<?php elseif (isset($_GET['error'])): ?>
-	<script>
+		<script>
 		document.addEventListener('DOMContentLoaded', function() {
 			<?php if ($_GET['error'] == 'not_csv'): ?>
 				Swal.fire({
@@ -187,12 +254,21 @@ if (isset($_GET['success'])): ?>
 				}).then(() => {
 					window.location.href = 'purchase-list.php';
 				});
+			<?php elseif ($_GET['error'] == 'update_failed'): ?>
+				Swal.fire({
+					title: 'Error!',
+					text: 'Failed to update product quantity for row <?php echo htmlspecialchars($_GET['row']); ?>. Please check the product data.',
+					icon: 'error',
+					confirmButtonText: 'OK',
+					allowOutsideClick: true
+				}).then(() => {
+					window.location.href = 'purchase-list.php';
+				});
 			<?php endif; ?>
+			
 		});
 	</script>
-	<?php endif;	
-
-?>
+<?php endif; ?>
 
 
 
@@ -602,7 +678,7 @@ if (isset($_GET['success'])): ?>
 											<label>Product Name</label>
 											<select name="product_name_" class="select" required>
 												<?php
-												$user_email = $_SESSION['email']; // user's email
+												$user_email = htmlspecialchars($_SESSION['email']); // user's email
 
 												// Fetch products from the products table
 												$productQuery = "SELECT product_name FROM products
@@ -635,7 +711,7 @@ if (isset($_GET['success'])): ?>
 									<div class="col-lg-3 col-md-6 col-sm-12">
 											<div class="input-blocks">
 												<label>Pack Quantity</label>
-												<input type="text" name="pack_quantity_" id="pack_quantity" placeholder="1" value="1" required>
+												<input type="text" name="pack_quantity_" id="pack_quantity_" placeholder="1" required>
 											</div>
 										</div>
 										<div class="col-lg-3 col-md-6 col-sm-12">
@@ -847,7 +923,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 // Populate modal form fields with data
                 document.querySelector("#purchase_date").value = data.purchase_date;
                 document.querySelector("#cost_per_unit_").value = data.cost_per_unit;
-                document.querySelector("#pack_quantity").value = data.pack_quantity;
+                document.querySelector("#pack_quantity_").value = data.pack_quantity;
                 document.querySelector("#items_per_pack_").value = data.items_per_pack;
                 document.querySelector("#amount_paid").value = data.amount_paid;
                 document.querySelector("#amount_due").value = data.amount_due;

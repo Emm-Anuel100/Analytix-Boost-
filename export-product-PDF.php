@@ -1,6 +1,5 @@
 <?php
-
-session_start();
+include("./layouts/session.php"); // include session
 // Set the timezone to Africa/Lagos
 date_default_timezone_set('Africa/Lagos');
 

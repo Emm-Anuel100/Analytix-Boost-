@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     foreach ($products_returned as $returned_product) {
-        $user_email = $_SESSION['email']; // user's email
+        $user_email = htmlspecialchars($_SESSION['email']); // user's email
 
         // Fetch the existing product quantity from the products table
         $fetchProductQuery = $conn->prepare("SELECT quantity FROM products WHERE product_name = ? AND email = '$user_email'");

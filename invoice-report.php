@@ -28,7 +28,7 @@ $conn = connectMainDB();
 						<div class="add-item d-flex">
 							<div class="page-title">
 								<h4>Invoice Report	</h4>
-								<h6>Manage Your Invoice Report</h6>
+								<h6>Manage Your Sales Invoice Report</h6>
 							</div>
 						</div>
 						<ul class="table-top-head">
