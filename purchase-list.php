@@ -1,8 +1,7 @@
 <?php 
-// Start output buffering
-ob_start();
+ob_start(); // Start output buffering
 
-include("./layouts/session.php");
+include("./layouts/session.php"); // include session
 
 include 'conn.php'; // Include database connection
 
