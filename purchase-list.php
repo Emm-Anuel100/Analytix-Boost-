@@ -337,7 +337,6 @@ if (isset($_GET['success'])): ?>
 									data-feather="download" class="me-2"></i>Import Purchase</a>
 						</div>
 					</div>
-					
 				</div>
 
 				<!-- /product list -->
