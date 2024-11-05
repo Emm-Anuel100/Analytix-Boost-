@@ -72,7 +72,7 @@ if (!empty($productNames)) {
     $stmt->close();
 }
 
-// Now display the top 4 selling products as before
+// Display the top 4 selling products 
 $topProducts = array_slice($productCounts, 0, 4, true);
 ?>
 
