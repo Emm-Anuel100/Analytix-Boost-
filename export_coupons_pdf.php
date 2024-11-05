@@ -7,7 +7,7 @@ $conn = connectMainDB();
 
 require('fpdf/fpdf.php');
 
-$user_email = $_SESSION['email']; // Retrieve the user email
+$user_email = htmlspecialchars($_SESSION['email']); // Retrieve the user email
 
 // Prepare the query
 $couponQuery = "

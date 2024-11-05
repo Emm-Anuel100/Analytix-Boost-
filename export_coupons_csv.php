@@ -5,7 +5,7 @@ include 'conn.php'; // Include database connection
 // Establish the connection
 $conn = connectMainDB();
 
-$user_email = $_SESSION['email']; // Retrieve the user email
+$user_email = htmlspecialchars($_SESSION['email']); // Retrieve the user email
 
 // Prepare the query
 $couponQuery = "
