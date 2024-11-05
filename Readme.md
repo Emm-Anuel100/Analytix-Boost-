@@ -37,3 +37,4 @@ This document provides an overview of the POS (Point of Sale) Solution, a compre
    ```bash
    git clone https://github.com/your-repo/pos-solution.git
    cd pos-solution
+   ```
