@@ -7,10 +7,25 @@ $conn = connectMainDB(); // Establish the connection to the database
 
 $userEmail = htmlspecialchars($_SESSION['email']); // User's email
 
-// Get frequently bought products
-$salesQuery = "SELECT products FROM sales WHERE user_email = ?"; // Query to fetch sales data for the user
+// Capture the selected start and end dates (if provided by the form)
+$startDate = $_POST['startDate'] ?? null;
+$endDate = $_POST['endDate'] ?? null;
+
+// Prepare the base query to fetch sales data for the user with optional date range filtering
+$salesQuery = "SELECT products FROM sales WHERE user_email = ?";
+$params = [$userEmail];
+$paramTypes = "s";
+
+// Add date range condition to the query if dates are provided
+if ($startDate && $endDate) {
+    $salesQuery .= " AND timestamp BETWEEN ? AND ?";
+    $params[] = $startDate;
+    $params[] = $endDate;
+    $paramTypes .= "ss";
+}
+
 $stmt = $conn->prepare($salesQuery);
-$stmt->bind_param("s", $userEmail);
+$stmt->bind_param($paramTypes, ...$params);
 $stmt->execute();
 $salesResult = $stmt->get_result();
 
@@ -20,35 +35,28 @@ $productCounts = [];
 while ($row = $salesResult->fetch_assoc()) {
     $products = explode(";", $row['products']);
     foreach ($products as $productEntry) {
-        // Extract product name and quantity from the string format
         if (preg_match('/^(\w+)\s+\(.*quantity:\s+(\d+)/', trim($productEntry), $matches)) {
             $productName = $matches[1];
             $quantity = (int)$matches[2];
 
-            // Increment the count for each product
-            if (isset($productCounts[$productName])) {
-                $productCounts[$productName] += $quantity;
-            } else {
-                $productCounts[$productName] = $quantity;
-            }
+            $productCounts[$productName] = ($productCounts[$productName] ?? 0) + $quantity;
         }
     }
 }
 
 $stmt->close();
 
-// Sort products by quantity sold in descending order
+// Sort and fetch product details as before
 arsort($productCounts);
 
-// Fetch product prices and images from the products table for top-selling products
 $productNames = array_keys($productCounts);
 $productDetails = [];
 
+// Fetch product prices and images for top-selling products
 if (!empty($productNames)) {
-    $productNamesPlaceholder = implode(',', array_fill(0, count($productNames), '?'));
-    $priceQuery = "SELECT product_name, price, image FROM products WHERE product_name IN
-	 ($productNamesPlaceholder)";
-
+    $placeholders = implode(',', array_fill(0, count($productNames), '?'));
+    $priceQuery = "SELECT product_name, price, image FROM products WHERE product_name IN ($placeholders)";
+    
     $stmt = $conn->prepare($priceQuery);
     $stmt->bind_param(str_repeat('s', count($productNames)), ...$productNames);
     $stmt->execute();
@@ -64,7 +72,7 @@ if (!empty($productNames)) {
     $stmt->close();
 }
 
-// Now display the top 4 selling products
+// Now display the top 4 selling products as before
 $topProducts = array_slice($productCounts, 0, 4, true);
 ?>
 
@@ -382,7 +390,7 @@ $topProducts = array_slice($productCounts, 0, 4, true);
 												</td>
 												<td>
 													<p class="head-text">Sales</p>
-													12
+													10
 												</td>
 											</tr>
 											<?php endif; ?>
