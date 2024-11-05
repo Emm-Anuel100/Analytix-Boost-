@@ -6,8 +6,6 @@ include 'conn.php'; // Include database connection
 // Establish the connection to the user's database
 $conn = connectMainDB();
 
-
-
 ?>
 
 
@@ -40,16 +38,13 @@ $conn = connectMainDB();
 							</div>
 							<ul class="table-top-head">
 								<li>
-									<a data-bs-toggle="tooltip" data-bs-placement="top" title="Pdf"><img src="assets/img/icons/pdf.svg" alt="img"></a>
+									<a data-bs-toggle="tooltip" data-bs-placement="top" title="Pdf" href="export-purchase-order-report_pdf.php" target="_blank"><img src="assets/img/icons/pdf.svg" alt="img"></a>
 								</li>
 								<li>
-									<a data-bs-toggle="tooltip" data-bs-placement="top" title="Excel"><img src="assets/img/icons/excel.svg" alt="img"></a>
+									<a data-bs-toggle="tooltip" data-bs-placement="top" title="Csv" href="export-purchase-order-report_csv.php" target="_blank"><img src="assets/img/icons/excel.svg" alt="img"></a>
 								</li>
 								<li>
-									<a data-bs-toggle="tooltip" data-bs-placement="top" title="Print"><i data-feather="printer" class="feather-rotate-ccw"></i></a>
-								</li>
-								<li>
-									<a data-bs-toggle="tooltip" data-bs-placement="top" title="Refresh"><i data-feather="rotate-ccw" class="feather-rotate-ccw"></i></a>
+									<a data-bs-toggle="tooltip" data-bs-placement="top" title="Refresh" class="refresh"><i data-feather="rotate-ccw" class="feather-rotate-ccw"></i></a>
 								</li>
 								<li>
 									<a data-bs-toggle="tooltip" data-bs-placement="top" title="Collapse" id="collapse-header"><i data-feather="chevron-up" class="feather-chevron-up"></i></a>
@@ -66,127 +61,86 @@ $conn = connectMainDB();
 											<a href="" class="btn btn-searchset"><i data-feather="search" class="feather-search"></i></a>
 										</div>
 									</div>
-									<div class="search-path">
-										<a class="btn btn-filter" id="filter_search">
-											<i data-feather="filter" class="filter-icon"></i>
-											<span><img src="assets/img/icons/closes.svg" alt="img"></span>
-										</a>
-									</div>	
+									
 									<div class="form-sort">
 										<i data-feather="sliders" class="info-img"></i>
-										<select class="select">
-											<option>Sort by Date</option>
-											<option>Newest</option>
-											<option>Oldest</option>
-										</select>
+										<?php 
+											 $order = isset($_POST['sort_order']) && $_POST['sort_order'] === 'Oldest' ? 'ASC' : 'DESC';
+											?>
+											<form action="" method="post">
+											<select name="sort_order" class="select" onchange="this.form.submit()">
+												<option value="Newest" <?php if ($order === 'DESC') echo 'selected'; ?>>Newest</option>
+												<option value="Oldest" <?php if ($order === 'ASC') echo 'selected'; ?>>Oldest</option>
+											</select>
+										</form>
 									</div>								
 								</div>
-								<!-- /Filter -->
-								<div class="card" id="filter_inputs">
-									<div class="card-body pb-0">
-										<div class="row">
-											<div class="col-lg-3 col-sm-6 col-12">
-												<div class="input-blocks">
-													<i data-feather="calendar" class="info-img"></i>
-													<div class="input-groupicon">
-														<input type="text" class="datetimepicker" placeholder="From Date" >
-													</div>
-												</div>
-											</div>
-											<div class="col-lg-3 col-sm-6 col-12">
-												<div class="input-blocks">
-													<i data-feather="calendar" class="info-img"></i>
-													<div class="input-groupicon">
-														<input type="text" class="datetimepicker" placeholder="Due Date" >
-													</div>
-												</div>
-											</div>
-											<div class="col-lg-3 col-sm-6 col-12">
-												<div class="input-blocks">
-													<i data-feather="stop-circle" class="info-img"></i>
-													<select class="select">
-														<option>Choose Supplier</option>
-														<option>Suppliers</option>
-													</select>
-												</div>
-											</div>
-											<div class="col-lg-3 col-sm-6 col-12 ms-auto">
-												<div class="input-blocks">
-													<a class="btn btn-filters ms-auto"> <i data-feather="search" class="feather-search"></i> Search </a>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-								<!-- /Filter -->
+								
 								<div class="table-responsive">
-									<table class="table datanew">
-										<thead>
-											<tr>
-												<th class="no-sort">
-													<label class="checkboxs">
-														<input type="checkbox" id="select-all">
-														<span class="checkmarks"></span>
-													</label>
-												</th>
-												<th>Product Name</th>
-												<th>Purchased amount</th>
-												<th>Purchased QTY</th>
-												<th>Instock QTY</th>
-											</tr>
-										</thead>
-										<tbody>
-											<tr>
-												<td>
-													<label class="checkboxs">
-														<input type="checkbox">
-														<span class="checkmarks"></span>
-													</label>
-												</td>
-												<td class="productimgname">
-													<a class="product-img">
-														<img src="assets/img/products/product1.jpg" alt="product">
-													</a>
-													<a href="javascript:void(0);">Macbook pro</a>
-												</td>
-												<td>38698.00</td>
-												<td>1248</td>
-												<td>1356</td>
-											</tr>
-											<tr>
-												<td>
-													<label class="checkboxs">
-														<input type="checkbox">
-														<span class="checkmarks"></span>
-													</label>
-												</td>
-												<td class="productimgname">
-													<a class="product-img">
-														<img src="assets/img/products/product2.jpg" alt="product">
-													</a>
-													<a href="javascript:void(0);">Orange</a>
-												</td>
-												<td>36080.00</td>
-												<td>110</td>
-												<td>131</td>
-											</tr>
-											<tr>
-												<td>
-													<label class="checkboxs">
-														<input type="checkbox">
-														<span class="checkmarks"></span>
-													</label>
-												</td>
-												<td class="productimgname">
-													<a class="product-img">
-														<img src="assets/img/products/product3.jpg" alt="product">
-													</a>
-													<a href="javascript:void(0);">Pineapple</a>
-												</td>
-												<td>21000.00</td>
-												<td>106</td>
-												<td>131</td>
-											</tr>
+								<?php
+								// Check if the user selected a sorting order; default to 'Newest'
+							    $order = isset($_POST['sort_order']) && $_POST['sort_order'] === 'Oldest' ? 'ASC' : 'DESC';
+
+								// Fetch data from purchases and products tables
+								$query = "
+									SELECT 
+										p.product_name,
+										p.grand_total AS purchased_amount,
+										p.pack_quantity * p.items_per_pack AS purchased_qty,
+										pr.quantity AS instock_qty,
+										pr.image AS product_image
+									FROM 
+										purchases AS p
+									JOIN 
+										products AS pr ON p.product_name = pr.product_name AND p.user_email = pr.email
+									WHERE 
+										p.user_email = ? ORDER BY p.id $order
+								";
+
+								$stmt = $conn->prepare($query);
+								$stmt->bind_param("s", $_SESSION['email']);
+								$stmt->execute();
+								$result = $stmt->get_result();
+								?>
+
+								<table class="table datanew">
+									<thead>
+										<tr>
+											<th class="no-sort">
+												<label class="checkboxs">
+													<input type="checkbox" id="select-all">
+													<span class="checkmarks"></span>
+												</label>
+											</th>
+											<th>Product</th>
+											<th>Purchased Amount (₦)</th>
+											<th>Purchased QTY</th>
+											<th>Instock QTY</th>
+										</tr>
+									</thead>
+									<tbody>
+										<?php if ($result->num_rows > 0): ?>
+											<?php while ($row = $result->fetch_assoc()) { ?>
+												<tr>
+													<td>
+														<label class="checkboxs">
+															<input type="checkbox">
+															<span class="checkmarks"></span>
+														</label>
+													</td>
+													<td class="productimgname">
+														<a class="product-img">
+															<img src="uploads/<?php echo htmlspecialchars($row['product_image']); ?>" alt="product image">
+														</a>
+														<a href="javascript:void(0);"><?php echo htmlspecialchars($row['product_name']); ?></a>
+													</td>
+													<td><?php echo number_format($row['purchased_amount'], 2); ?></td>
+													<td><?php echo intval($row['purchased_qty']); ?></td>
+													<td><?php echo intval($row['instock_qty']); ?></td>
+												</tr>
+											<?php } ?>
+										<?php else: ?>
+											<!-- Demo data when no records are found -->
 											<tr>
 												<td>
 													<label class="checkboxs">
@@ -196,143 +150,31 @@ $conn = connectMainDB();
 												</td>
 												<td class="productimgname">
 													<a class="product-img">
-														<img src="assets/img/products/product4.jpg" alt="product">
+														<img src="assets/img/products/product1.jpg" alt="product image">
 													</a>
-													<a href="javascript:void(0);">Strawberry</a>
-												</td>
-												<td>11000.00</td>
-												<td>105</td>
-												<td>100</td>
-											</tr>
-											<tr>
-												<td>
-													<label class="checkboxs">
-														<input type="checkbox">
-														<span class="checkmarks"></span>
-													</label>
-												</td>
-												<td class="productimgname">
-													<a class="product-img">
-														<img src="assets/img/products/product5.jpg" alt="product">
-													</a>
-													<a href="javascript:void(0);">Sunglasses</a>
-												</td>
-												<td>10600.00</td>
-												<td>105</td>
-												<td>100</td>
-											</tr>
-											<tr>
-												<td>
-													<label class="checkboxs">
-														<input type="checkbox">
-														<span class="checkmarks"></span>
-													</label>
-												</td>
-												<td class="productimgname">
-													<a class="product-img">
-														<img src="assets/img/products/product6.jpg" alt="product">
-													</a>
-													<a href="javascript:void(0);">Unpaired gray</a>
-												</td>
-												<td>9984.00</td>
-												<td>50</td>
-												<td>50</td>
-											</tr>
-											<tr>
-												<td>
-													<label class="checkboxs">
-														<input type="checkbox">
-														<span class="checkmarks"></span>
-													</label>
-												</td>
-												<td class="productimgname">
-													<a class="product-img">
-														<img src="assets/img/products/product7.jpg" alt="product">
-													</a>
-													<a href="javascript:void(0);">Avocat</a>
-												</td>
-												<td>4500.00	</td>
-												<td>41</td>
-												<td>29</td>
-											</tr>
-											<tr>
-												<td>
-													<label class="checkboxs">
-														<input type="checkbox">
-														<span class="checkmarks"></span>
-													</label>
-												</td>
-												<td class="productimgname">
-													<a class="product-img">
-														<img src="assets/img/products/product8.jpg" alt="product">
-													</a>
-													<a href="javascript:void(0);">Banana</a>
-												</td>
-												<td>900.00	</td>
-												<td>28</td>
-												<td>24</td>
-											</tr>
-											<tr>
-												<td>
-													<label class="checkboxs">
-														<input type="checkbox">
-														<span class="checkmarks"></span>
-													</label>
-												</td>
-												<td class="productimgname">
-													<a class="product-img">
-														<img src="assets/img/products/product9.jpg" alt="product">
-													</a>
-													<a href="javascript:void(0);">Earphones</a>
+													<a href="javascript:void(0);">Demo Product</a>
 												</td>
 												<td>500.00</td>
-												<td>20</td>
-												<td>11</td>
+												<td>100</td>
+												<td>200</td>
 											</tr>
-											<tr>
-												<td>
-													<label class="checkboxs">
-														<input type="checkbox">
-														<span class="checkmarks"></span>
-													</label>
-												</td>
-												<td class="productimgname">
-													<a class="product-img">
-														<img src="assets/img/products/product8.jpg" alt="product">
-													</a>
-													<a href="javascript:void(0);">Banana</a>
-												</td>
-												<td>900.00	</td>
-												<td>28</td>
-												<td>24</td>
-											</tr>
-											<tr>
-												<td>
-													<label class="checkboxs">
-														<input type="checkbox">
-														<span class="checkmarks"></span>
-													</label>
-												</td>
-												<td class="productimgname">
-													<a class="product-img">
-														<img src="assets/img/products/product9.jpg" alt="product">
-													</a>
-													<a href="javascript:void(0);">Earphones</a>
-												</td>
-												<td>500.00</td>
-												<td>20</td>
-												<td>11</td>
-											</tr>
+											<?php endif; ?>
 										</tbody>
 									</table>
+
+									<?php
+									$stmt->close(); // Close the statement
+									?>
 								</div>
 							</div>
 						</div>
 						<!-- /product list -->
 					</div>
 				</div>
+
+
 				<!-- /Main Wrapper -->
-				<div class="searchpart">
+				<!-- <div class="searchpart">
 					<div class="searchcontent">
 						<div class="searchhead">
 							<h3>Search </h3>
@@ -363,9 +205,17 @@ $conn = connectMainDB();
 						</div>
 					</div>
 				</div>
-			</div>
+			</div> -->
 			<?php include 'layouts/customizer.php'; ?>
 			<?php include 'layouts/vendor-scripts.php'; ?>
+
+
+<script src="assets/js/refresh.js"></script>
+<script>
+$.fn.dataTable.ext.errMode = 'none'; // Disable all error alerts globally in DataTable
+
+
+</script>
 	
-		</body>
-	</html>
+</body>
+</html>

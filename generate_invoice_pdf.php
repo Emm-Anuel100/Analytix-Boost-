@@ -33,7 +33,7 @@ $result = $stmt->get_result();
 $pdf = new FPDF('L', 'mm', 'A4');
 $pdf->AddPage();
 $pdf->SetFont('Arial', 'B', 18);
-$pdf->Cell(270, 10, 'Invoice List', 0, 1, 'C');
+$pdf->Cell(270, 10, 'Sales Invoice List', 0, 1, 'C');
 
 // Add timestamp
 $pdf->SetFont('Arial', '', 12);

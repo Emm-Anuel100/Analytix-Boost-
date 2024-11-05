@@ -8,6 +8,7 @@ $user_email = $_SESSION['email'];
 
 // Fetch the data
 $conn = connectMainDB();
+
 $sql = "SELECT * FROM units WHERE user_email = '$user_email' ORDER BY name";
 $result = $conn->query($sql);
 
