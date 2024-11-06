@@ -1,5 +1,7 @@
 <?php 
-include("./layouts/session.php");
+ob_start(); // Start output buffering
+
+include("./layouts/session.php"); // include session
 
 include 'conn.php'; // Include database connection
 
@@ -60,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !
                         });
                     });
                 </script>";
-            } else {
+                } else {
                 echo "<script>
                     document.addEventListener('DOMContentLoaded', function() {
                         Swal.fire({
@@ -74,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !
             }
 
             $updateStmt->close(); // Close the update statement
-        } else {
+          } else {
             // If the status is not "Received", show a success message without updating the product quantity
             echo "<script>
                 document.addEventListener('DOMContentLoaded', function() {
@@ -90,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !
                 });
             </script>";
         }
-    } else {
+      } else {
         echo "<script>
             document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
@@ -107,9 +109,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !
 }
 
 
-
 // Script to insert uploaded purchase CSV file into the database
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Check if a file was uploaded
     if (isset($_FILES['csv_file']) && $_FILES['csv_file']['error'] == UPLOAD_ERR_OK) {
         $fileTmpPath = $_FILES['csv_file']['tmp_name'];
@@ -118,6 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Check if the file is a CSV
         if (pathinfo($fileName, PATHINFO_EXTENSION) !== 'csv') {
             header("Location: purchase-list.php?error=not_csv");
+			ob_end_flush(); // Flush the output buffer and send headers
             exit;
         }
 
@@ -136,6 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     fclose($handle);
                     $conn->close();
                     header("Location: purchase-list.php?error=incomplete_row&row=" . ($rowCount + 2));
+					ob_end_flush(); // Flush the output buffer and send headers
                     exit;
                 }
 
@@ -165,6 +168,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     fclose($handle);
                     $conn->close();
                     header("Location: purchase-list.php?error=insert_failed&row=" . ($rowCount + 2));
+					ob_end_flush(); // Flush the output buffer and send headers
                     exit;
                 }
 
@@ -183,6 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         fclose($handle);
                         $conn->close();
                         header("Location: purchase-list.php?error=update_failed&row=" . ($rowCount + 2));
+						ob_end_flush(); // Flush the output buffer and send headers
                         exit;
                     }
                     $updateStmt->close(); // Close the update statement
@@ -194,10 +199,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             fclose($handle);
             $conn->close();
             header("Location: purchase-list.php?success=$rowCount"); // Redirect on success
+			ob_end_flush(); // Flush the output buffer and send headers
             exit;  // Stop further execution after redirecting
         }
     } 
 }
+// Flush the output buffer if no redirect occurred
+ob_end_flush();
 
 
 // Get the parameters passed to check the status of the uploaded file
@@ -329,7 +337,6 @@ if (isset($_GET['success'])): ?>
 									data-feather="download" class="me-2"></i>Import Purchase</a>
 						</div>
 					</div>
-					
 				</div>
 
 				<!-- /product list -->

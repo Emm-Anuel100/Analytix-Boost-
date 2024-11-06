@@ -7,7 +7,6 @@ include 'conn.php'; // Include database connection
 $conn = connectMainDB();
 
 
-
 ?>
 
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 27, 2024 at 06:06 PM
+-- Generation Time: Nov 04, 2024 at 05:36 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -41,12 +41,7 @@ CREATE TABLE `brands` (
 --
 
 INSERT INTO `brands` (`id`, `user_email`, `name`, `image`, `status`, `timestamp`) VALUES
-(1, 'emmanuelodel75@gmail.com', 'amazon', 'img_66f48617bbcc87.00493448.png', 'active', '2024-09-25 21:52:23'),
-(2, 'emmanuelodel75@gmail.com', 'lenovo', 'img_66f486c6e13114.49354735.png', 'active', '2024-09-25 21:55:18'),
-(3, 'emmanuelodel75@gmail.com', 'lenovo', 'img_66f486cb6b5d93.22051768.png', 'active', '2024-09-25 21:55:23'),
-(4, 'emmanuelodel75@gmail.com', 'lenovo', 'img_66f486cfac1148.32926314.png', 'active', '2024-09-25 21:55:27'),
-(5, 'emmanuelodel75@gmail.com', 'excgvbhnm', 'img_66f4893f7b14d2.78545823.png', 'inactive', '2024-09-25 22:05:51'),
-(6, 'emmanuelodel75@gmail.com', 'lenovcfvgbhn', 'img_66f4896fd5c4a8.09072229.png', 'inactive', '2024-09-25 22:06:39');
+(9, 'emmanuelodel75@gmail.com', 'amazon', 'img_672519094b3637.86438455.png', 'Active', '2024-11-01 18:08:09');
 
 -- --------------------------------------------------------
 
@@ -68,9 +63,36 @@ CREATE TABLE `categories` (
 --
 
 INSERT INTO `categories` (`id`, `user_email`, `name`, `slug`, `status`, `timestamp`) VALUES
-(2, 'emmanuelodel75@gmail.com', 'Emmanuel', '45678', 'active', '2024-09-25 17:50:11'),
-(3, 'emmanuelodel75@gmail.com', 'Brenda', '44', 'inactive', '2024-09-25 20:49:26'),
-(4, 'emmanuelodel75@gmail.com', 'emma', 'reftgyh', 'active', '2024-09-25 20:50:28');
+(6, 'emmanuelodel75@gmail.com', 'DWS', 'watch', 'active', '2024-11-01 10:59:38'),
+(7, 'emmanuelodel75@gmail.com', 'emma', 'watch', 'inactive', '2024-11-01 10:59:46');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `coupons`
+--
+
+CREATE TABLE `coupons` (
+  `id` int(255) NOT NULL,
+  `user_email` varchar(100) NOT NULL COMMENT 'User''s email',
+  `name` varchar(100) NOT NULL,
+  `code` varchar(100) NOT NULL,
+  `type` varchar(100) NOT NULL,
+  `discount_value` varchar(100) NOT NULL,
+  `coupon_limit` int(100) NOT NULL,
+  `start_date` varchar(100) NOT NULL,
+  `end_date` varchar(100) NOT NULL,
+  `product_name` varchar(100) NOT NULL,
+  `status` varchar(50) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `coupons`
+--
+
+INSERT INTO `coupons` (`id`, `user_email`, `name`, `code`, `type`, `discount_value`, `coupon_limit`, `start_date`, `end_date`, `product_name`, `status`, `timestamp`) VALUES
+(8, 'emmanuelodel75@gmail.com', 'coupon12', 'rar', 'Fixed', '300', 20, '01-11-2024', '01-11-2024', 'Banana', 'Active', '2024-11-01 14:05:46');
 
 -- --------------------------------------------------------
 
@@ -96,9 +118,7 @@ CREATE TABLE `expired_products` (
 --
 
 INSERT INTO `expired_products` (`id`, `email`, `product_name`, `product_id`, `store`, `image`, `sku`, `manufactured_date`, `expiry_date`, `timestamp`) VALUES
-(23, 'emmanuelodel75@gmail.com', 'watch', 8, 'ggggg', 'img_66f3e944575e23.06930400.png', '3e4rf5g6h', '03-10-2024', '25-10-2024', '2024-10-19 15:20:39'),
-(24, 'emmanuelodel75@gmail.com', 'Banana', 11, 'ade', 'img_671397f1593798.18310246.png', '74yryr', '20-10-2024', '01-11-2024', '2024-10-19 15:20:39'),
-(25, 'emmanuelodel75@gmail.com', 'Burger', 12, 'gracia', 'img_6713c69fb0a0b4.63247596.png', '3e4rf5g6h', '19-10-2024', '26-10-2024', '2024-10-19 15:20:40');
+(28, 'emmanuelodel75@gmail.com', 'Banana', 11, 'ade', 'img_671397f1593798.18310246.png', '74yryr', '20-10-2024', '1-12-2024', '2024-11-01 10:41:33');
 
 -- --------------------------------------------------------
 
@@ -137,10 +157,72 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `email`, `store`, `warehouse`, `sku`, `product_name`, `slug`, `category`, `selling_type`, `brand`, `unit`, `barcode_symbology`, `product_barcode`, `description`, `quantity`, `price`, `tax_value`, `discount_type`, `discount_value`, `manufactured_date`, `expiry_on`, `image`, `created_at`) VALUES
-(8, 'emmanuelodel75@gmail.com', 'ggggg', 'Emmanuel Brendan', '3e4rf5g6h', 'watch', '45678', 'Electronics', 'Transactional selling', 'Nike', 'Pc', 'Code34', '3sd4f5gyuh', 'dftyunmi', 4567, 4567, 50, 'Percentage', 30, '03-10-2024', '25-10-2024', 'img_66f3e944575e23.06930400.png', '2024-09-25 10:43:16'),
-(10, 'emmanuelodel75@gmail.com', 'gracia', 'Sincere', 'hed', 'headset', 'h35', 'emma', 'Up-Selling', 'amazon', 'sdrf', 'EAN-13', 'sedrftvbnm', 'yfufuhfyguhuhih', 2344, 45000, 0, 'Cash', 200, '27-09-2024', '16-01-2025', 'img_66f5708ed736e3.58629982.png', '2024-09-26 14:32:46'),
-(11, 'emmanuelodel75@gmail.com', 'ade', 'Emmanuel Brendan', '74yryr', 'Banana', 'reftgyh', 'Emmanuel', 'Transactional selling', 'amazon', 'kg', 'EAN-13', '3sd4f5gyuhe', 'banana', 2143, 21, 21, 'Cash', 22, '20-10-2024', '01-11-2024', 'img_671397f1593798.18310246.png', '2024-10-19 11:28:49'),
-(12, 'emmanuelodel75@gmail.com', 'gracia', 'Emmanuel Brendan', '3e4rf5g6h', 'Burger', 'watch', 'Emmanuel', 'Transactional selling', 'amazon', 'kg', 'Code 128', '456y8yhgra', 'eeee', 621, 33, 33, 'Cash', 30, '19-10-2024', '26-10-2024', 'img_6713c69fb0a0b4.63247596.png', '2024-10-19 14:47:59');
+(8, 'emmanuelodel75@gmail.com', 'ggggg', 'Emmanuel Brendan', '3e4rf5g6h', 'watch', '45678', 'Electronics', 'Transactional selling', 'Nike', 'Pc', 'Code34', '3sd4f5gyuh', 'dftyunmi', 4564, 4567, 50, 'Percentage', 30, '03-10-2024', '25-10-2024', 'img_66f3e944575e23.06930400.png', '2024-09-25 10:43:16'),
+(10, 'emmanuelodel75@gmail.com', 'gracia', 'Sincere', 'hed', 'headset', 'h35', 'emma', 'Up-Selling', 'amazon', 'sdrf', 'EAN-13', 'sedrftvbnm', 'yfufuhfyguhuhih', 2340, 45000, 0, 'Cash', 200, '27-09-2024', '16-01-2025', 'img_66f5708ed736e3.58629982.png', '2024-09-26 14:32:46'),
+(11, 'emmanuelodel75@gmail.com', 'ade', 'Emmanuel Brendan', '74yryr', 'Banana', 'reftgyh', 'Emmanuel', 'Transactional selling', 'amazon', 'kg', 'EAN-13', '3sd4f5gyuhe', 'banana', 2030, 21, 21, 'Cash', 22, '20-10-2024', '1-12-2024', 'img_671397f1593798.18310246.png', '2024-10-19 11:28:49'),
+(12, 'emmanuelodel75@gmail.com', 'gracia', 'Emmanuel Brendan', '3e4rf5g6h', 'Burger', 'watch', 'Emmanuel', 'Transactional selling', 'amazon', 'kg', 'Code 128', '456y8yhgra', 'eeee', 631, 33, 33, 'Cash', 30, '19-10-2024', '26-10-2024', 'img_6713c69fb0a0b4.63247596.png', '2024-10-19 14:47:59');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `purchases`
+--
+
+CREATE TABLE `purchases` (
+  `id` int(255) NOT NULL,
+  `user_email` varchar(100) NOT NULL COMMENT 'User''s email',
+  `supplier_name` varchar(100) NOT NULL,
+  `reference` varchar(100) NOT NULL,
+  `purchase_date` varchar(100) NOT NULL,
+  `product_name` text NOT NULL,
+  `cost_per_unit` double NOT NULL,
+  `pack_quantity` int(100) NOT NULL,
+  `items_per_pack` int(100) NOT NULL,
+  `status` varchar(50) NOT NULL,
+  `order_tax` double NOT NULL,
+  `amount_paid` double NOT NULL,
+  `amount_due` double NOT NULL,
+  `notes` text NOT NULL,
+  `grand_total` double NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `purchases`
+--
+
+INSERT INTO `purchases` (`id`, `user_email`, `supplier_name`, `reference`, `purchase_date`, `product_name`, `cost_per_unit`, `pack_quantity`, `items_per_pack`, `status`, `order_tax`, `amount_paid`, `amount_due`, `notes`, `grand_total`, `timestamp`) VALUES
+(77, 'emmanuelodel75@gmail.com', 'Demo supplier', 'TMG8VY6Q3Z', '04-11-2024', 'Banana', 500, 3, 10, 'Received', 300, 5000, 444, 'hello world', 15000, '2024-11-04 10:44:43'),
+(78, 'emmanuelodel75@gmail.com', 'Demo supplier', 'YQ0WKFLV6N', '2024-11-02', 'headset', 500, 2, 10, 'Received', 20, 2344, 2222, 'hello', 10000, '2024-11-04 13:13:31');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `quotation`
+--
+
+CREATE TABLE `quotation` (
+  `id` int(255) NOT NULL,
+  `user_email` varchar(100) NOT NULL COMMENT 'User''s email',
+  `product_name` varchar(100) NOT NULL,
+  `order_tax` int(100) NOT NULL,
+  `discount` int(100) NOT NULL,
+  `shipping` int(100) NOT NULL,
+  `status` varchar(100) NOT NULL,
+  `description` text NOT NULL,
+  `quotation_date` varchar(50) NOT NULL,
+  `customer_name` varchar(100) NOT NULL,
+  `reference` varchar(50) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `quotation`
+--
+
+INSERT INTO `quotation` (`id`, `user_email`, `product_name`, `order_tax`, `discount`, `shipping`, `status`, `description`, `quotation_date`, `customer_name`, `reference`, `timestamp`) VALUES
+(11, 'emmanuelodel75@gmail.com', 'Burger', 223, 22, 22, 'Pending', 'weee', '01-11-2024', 'Walk-in-customer', 'D5HRXU8L1V', '2024-11-01 11:00:13'),
+(12, 'emmanuelodel75@gmail.com', 'Banana', 223, 4356, 33, 'Approved', 'were', '04-11-2024', 'Walk-in-customer', 'IL1FEKCY0H', '2024-11-01 11:01:24');
 
 -- --------------------------------------------------------
 
@@ -169,13 +251,7 @@ CREATE TABLE `sales` (
 --
 
 INSERT INTO `sales` (`id`, `user_email`, `customer`, `products`, `date`, `status`, `reference`, `payment_by`, `amount_paid`, `amount_due`, `change_element`, `grand_total`, `timestamp`) VALUES
-(23, 'emmanuelodel75@gmail.com', 'Walk-in-customer', 'watch (quantity: 2, price: 4567, image: img_66f3e944575e23.06930400.png, discount type: Percentage, discount value: 30, tax: 50, unit: Pc, total cost: 9134); Banana (quantity: 1, price: 21, image: img_671397f1593798.18310246.png, discount type: Cash, discount value: 22, tax: 21, unit: kg, total cost: 20)', '26-10-2024', 'Completed', 'MqQkWeIVC7', 'Transfer', '1300', '0', '0', 6513.8, '2024-10-26 11:42:12'),
-(25, 'emmanuelodel75@gmail.com', 'Walk-in-customer', 'watch (quantity: 1, price: 4567, image: img_66f3e944575e23.06930400.png, discount type: Percentage, discount value: 30, tax: 50, unit: Pc, total cost: 4567)', '26-10-2024', 'Completed', '4IplRv1pc9', 'Cash', '6500', '200', '2', 3246.9, '2024-10-26 12:55:23'),
-(27, 'emmanuelodel75@gmail.com', 'Walk-in-customer', 'watch (quantity: 2, price: 4567.00, image: img_66f3e944575e23.06930400.png, discount type: Percentage, discount value: 30.00, tax: 50.00, unit: Pc, total cost: 6493.80)', '27-10-2024', 'Completed', 'kMfVppHWvN', 'Transfer', '6500', '0', '100', 6493.8, '2024-10-27 12:30:09'),
-(28, 'emmanuelodel75@gmail.com', 'Walk-in-customer', 'watch (quantity: 2, price: 4567.00, image: img_66f3e944575e23.06930400.png, discount type: Percentage, discount value: 30.00, tax: 50.00, unit: Pc, total cost: 6493.80)', '27-10-2024', 'Completed', 'QHWAVWp5ad', 'Transfer', '6500', '0', '100', 6493.8, '2024-10-27 12:31:16'),
-(29, 'emmanuelodel75@gmail.com', 'Walk-in-customer', 'watch (quantity: 2, price: 4567.00, image: img_66f3e944575e23.06930400.png, discount type: Percentage, discount value: 30.00, tax: 50.00, unit: Pc, total cost: 6493.80)', '27-10-2024', 'Completed', 'jSNvPMzcRd', 'Transfer', '6500', '0', '100', 6493.8, '2024-10-27 12:39:45'),
-(30, 'emmanuelodel75@gmail.com', 'Walk-in-customer', 'watch (quantity: 2, price: 4567.00, image: img_66f3e944575e23.06930400.png, discount type: Percentage, discount value: 30.00, tax: 50.00, unit: Pc, total cost: 6493.80)', '27-10-2024', 'Completed', 'ih5PvivQxF', 'Cash', '6500', '0', '100', 6493.8, '2024-10-27 12:44:29'),
-(31, 'emmanuelodel75@gmail.com', 'Walk-in-customer', 'watch (quantity: 1, price: 4567, image: img_66f3e944575e23.06930400.png, discount type: Percentage, discount value: 30, tax: 50, unit: Pc, total cost: 4567)', '27-10-2024', 'In Progress', 'pGInxwTGVr', 'Card', '6500', '0', '100', 3246.9, '2024-10-27 12:46:15');
+(36, 'emmanuelodel75@gmail.com', 'Walk-in-customer', 'headset (quantity: 4, price: 45000.00, image: img_66f5708ed736e3.58629982.png, discount type: Cash, discount value: 200.00, tax: 0.00, unit: sdrf, total cost: 179200.00)', '04-11-2024', 'Completed', 'KUGOcQAj9y', 'Transfer', '179200', '0', '0', 179200, '2024-11-04 13:40:57');
 
 -- --------------------------------------------------------
 
@@ -196,13 +272,6 @@ CREATE TABLE `sales_return` (
   `return_reason` varchar(255) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `sales_return`
---
-
-INSERT INTO `sales_return` (`id`, `user_email`, `customer`, `products`, `date`, `status`, `reference`, `amount_returned`, `grand_total_returned`, `return_reason`, `timestamp`) VALUES
-(15, 'emmanuelodel75@gmail.com', 'Walk-in-customer', 'Burger (quantity: 1, price: 33.00, image: img_6713c69fb0a0b4.63247596.png, discount type: Cash, discount value: 30.00, tax: 33.00, unit: kg, total cost: 36.00)', '26-10-2024', 'Received', 'C7VwX1fUe6', '0', 36, 'broken', '2024-10-26 12:09:55');
 
 -- --------------------------------------------------------
 
@@ -253,8 +322,8 @@ CREATE TABLE `units` (
 --
 
 INSERT INTO `units` (`id`, `user_email`, `name`, `short_name`, `status`, `timestamp`) VALUES
-(1, 'emmanuelodel75@gmail.com', 'kilogramme', 'kg', 'active', '2024-09-26 12:38:16'),
-(11, 'emmanuelodel75@gmail.com', 'name', 'kf', 'inactive', '2024-10-20 18:30:53');
+(13, 'emmanuelodel75@gmail.com', 'melimeter', 'mm', 'active', '2024-11-01 17:49:43'),
+(14, 'emmanuelodel75@gmail.com', 'centiletrer', 'cl', 'active', '2024-11-01 17:52:19');
 
 -- --------------------------------------------------------
 
@@ -333,6 +402,12 @@ ALTER TABLE `categories`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `coupons`
+--
+ALTER TABLE `coupons`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `expired_products`
 --
 ALTER TABLE `expired_products`
@@ -346,6 +421,18 @@ ALTER TABLE `expired_products`
 ALTER TABLE `products`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `product_name` (`product_name`);
+
+--
+-- Indexes for table `purchases`
+--
+ALTER TABLE `purchases`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `quotation`
+--
+ALTER TABLE `quotation`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `sales`
@@ -391,19 +478,25 @@ ALTER TABLE `warehouse`
 -- AUTO_INCREMENT for table `brands`
 --
 ALTER TABLE `brands`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `coupons`
+--
+ALTER TABLE `coupons`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `expired_products`
 --
 ALTER TABLE `expired_products`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `products`
@@ -412,16 +505,28 @@ ALTER TABLE `products`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
+-- AUTO_INCREMENT for table `purchases`
+--
+ALTER TABLE `purchases`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
+
+--
+-- AUTO_INCREMENT for table `quotation`
+--
+ALTER TABLE `quotation`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
 -- AUTO_INCREMENT for table `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `id` int(25) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` int(25) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `sales_return`
 --
 ALTER TABLE `sales_return`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `store`
@@ -433,7 +538,7 @@ ALTER TABLE `store`
 -- AUTO_INCREMENT for table `units`
 --
 ALTER TABLE `units`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `users`
