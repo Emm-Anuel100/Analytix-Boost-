@@ -36,16 +36,13 @@ $conn = connectMainDB();
 						</div>
 						<ul class="table-top-head">
 							<li>
-								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Pdf"><img src="assets/img/icons/pdf.svg" alt="img"></a>
+								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Pdf" href="export-expense-category_pdf.php" target="_blank"><img src="assets/img/icons/pdf.svg" alt="img"></a>
 							</li>
 							<li>
-								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Excel"><img src="assets/img/icons/excel.svg" alt="img"></a>
+								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Csv" href="export-expense-category_csv.php" target="_blank"><img src="assets/img/icons/excel.svg" alt="img"></a>
 							</li>
 							<li>
-								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Print"><i data-feather="printer" class="feather-rotate-ccw"></i></a>
-							</li>
-							<li>
-								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Refresh"><i data-feather="rotate-ccw" class="feather-rotate-ccw"></i></a>
+								<a  class="refresh" data-bs-toggle="tooltip" data-bs-placement="top" title="Refresh"><i data-feather="rotate-ccw" class="feather-rotate-ccw"></i></a>
 							</li>
 							<li>
 								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Collapse" id="collapse-header"><i data-feather="chevron-up" class="feather-chevron-up"></i></a>
@@ -56,7 +53,6 @@ $conn = connectMainDB();
 						</div>
 					</div>
 					
-
 					<!-- /product list -->
 					<div class="card table-list-card">
 						<div class="card-body">
@@ -66,49 +62,18 @@ $conn = connectMainDB();
 										<a href="" class="btn btn-searchset"><i data-feather="search" class="feather-search"></i></a>
 									</div>
 								</div>
-								<div class="search-path">
-									<div class="d-flex align-items-center">
-										<a class="btn btn-filter" id="filter_search">
-											<i data-feather="filter" class="filter-icon"></i>
-											<span><img src="assets/img/icons/closes.svg" alt="img"></span>
-										</a>
-										
-									</div>
-									
-								</div>
+
 								<div class="form-sort">
 									<i data-feather="sliders" class="info-img"></i>
-									<select class="select">
-										<option>Sort by Date</option>
-										<option>25 9 23</option>
-										<option>12 9 23</option>
-									</select>
+									<form action="" method="post">
+										<select class="select">
+											<option>Newest</option>
+											<option>Oldest</option>
+										</select>
+									</form>
 								</div>
 							</div>
-							<!-- /Filter -->
-							<div class="card" id="filter_inputs">
-								<div class="card-body pb-0">
-									<div class="row">
-										<div class="col-lg-3 col-sm-6 col-12">
-											<div class="input-blocks">
-												<i data-feather="zap" class="info-img"></i>
-												<select class="select">
-													<option>Choose Category</option>
-													<option>Foods & Snacks</option>
-													<option>Petrol</option>
-												</select>
-											</div>
-											
-										</div>
-										<div class="col-lg-9 col-sm-6 col-12">
-											<div class="input-blocks">
-												<a class="btn btn-filters ms-auto"><i data-feather="search" class="feather-search"></i> Search </a>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							<!-- /Filter -->
+							
 							<div class="table-responsive">
 								<table class="table  datanew">
 									<thead>
@@ -139,227 +104,7 @@ $conn = connectMainDB();
 													<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-units">
 														<i data-feather="edit" class="feather-edit"></i>
 													</a>
-													<a class="me-0 confirm-text p-2 mb-0" href="javascript:void(0);">
-														<i data-feather="trash-2" class="feather-trash-2"></i>
-													</a>
-												</div>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<label class="checkboxs">
-													<input type="checkbox">
-													<span class="checkmarks"></span>
-												</label>
-											</td>
-											<td>Foods & Snacks</td>
-											<td>Employee Foods</td>
-											<td class="action-table-data">
-												<div class="edit-delete-action">
-													<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-units">
-														<i data-feather="edit" class="feather-edit"></i>
-													</a>
-													<a class="me-0 confirm-text p-2 mb-0" href="javascript:void(0);">
-														<i data-feather="trash-2" class="feather-trash-2"></i>
-													</a>
-												</div>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<label class="checkboxs">
-													<input type="checkbox">
-													<span class="checkmarks"></span>
-												</label>
-											</td>
-											<td>Entertainment</td>
-											<td>Employee Welfare</td>
-											<td class="action-table-data">
-												<div class="edit-delete-action">
-													<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-units">
-														<i data-feather="edit" class="feather-edit"></i>
-													</a>
-													<a class="me-0 confirm-text p-2 mb-0" href="javascript:void(0);">
-														<i data-feather="trash-2" class="feather-trash-2"></i>
-													</a>
-												</div>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<label class="checkboxs">
-													<input type="checkbox">
-													<span class="checkmarks"></span>
-												</label>
-											</td>
-											<td>Office Expenses & Postage	</td>
-											<td>Postal Expense</td>
-											<td class="action-table-data">
-												<div class="edit-delete-action">
-													<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-units">
-														<i data-feather="edit" class="feather-edit"></i>
-													</a>
-													<a class="me-0 confirm-text p-2 mb-0" href="javascript:void(0);">
-														<i data-feather="trash-2" class="feather-trash-2"></i>
-													</a>
-												</div>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<label class="checkboxs">
-													<input type="checkbox">
-													<span class="checkmarks"></span>
-												</label>
-											</td>
-											<td>Other Expenses</td>
-											<td>Other Expenses</td>
-											<td class="action-table-data">
-												<div class="edit-delete-action">
-													<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-units">
-														<i data-feather="edit" class="feather-edit"></i>
-													</a>
-													<a class="me-0 confirm-text p-2 mb-0" href="javascript:void(0);">
-														<i data-feather="trash-2" class="feather-trash-2"></i>
-													</a>
-												</div>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<label class="checkboxs">
-													<input type="checkbox">
-													<span class="checkmarks"></span>
-												</label>
-											</td>
-											<td>Petrol</td>
-											<td>Employee Cab</td>
-											<td class="action-table-data">
-												<div class="edit-delete-action">
-													<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-units">
-														<i data-feather="edit" class="feather-edit"></i>
-													</a>
-													<a class="me-0 confirm-text p-2 mb-0" href="javascript:void(0);">
-														<i data-feather="trash-2" class="feather-trash-2"></i>
-													</a>
-												</div>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<label class="checkboxs">
-													<input type="checkbox">
-													<span class="checkmarks"></span>
-												</label>
-											</td>
-											<td>Maintenance</td>
-											<td>Office Maintenance</td>
-											<td class="action-table-data">
-												<div class="edit-delete-action">
-													<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-units">
-														<i data-feather="edit" class="feather-edit"></i>
-													</a>
-													<a class="me-0 confirm-text p-2 mb-0" href="javascript:void(0);">
-														<i data-feather="trash-2" class="feather-trash-2"></i>
-													</a>
-												</div>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<label class="checkboxs">
-													<input type="checkbox">
-													<span class="checkmarks"></span>
-												</label>
-											</td>
-											<td>Marketing</td>
-											<td>Advertising Cost</td>
-											<td class="action-table-data">
-												<div class="edit-delete-action">
-													<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-units">
-														<i data-feather="edit" class="feather-edit"></i>
-													</a>
-													<a class="me-0 confirm-text p-2 mb-0" href="javascript:void(0);">
-														<i data-feather="trash-2" class="feather-trash-2"></i>
-													</a>
-												</div>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<label class="checkboxs">
-													<input type="checkbox">
-													<span class="checkmarks"></span>
-												</label>
-											</td>
-											<td>Printing & Stationery</td>
-											<td>Stationery Expense</td>
-											<td class="action-table-data">
-												<div class="edit-delete-action">
-													<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-units">
-														<i data-feather="edit" class="feather-edit"></i>
-													</a>
-													<a class="me-0 confirm-text p-2 mb-0" href="javascript:void(0);">
-														<i data-feather="trash-2" class="feather-trash-2"></i>
-													</a>
-												</div>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<label class="checkboxs">
-													<input type="checkbox">
-													<span class="checkmarks"></span>
-												</label>
-											</td>
-											<td>Telephone Expense</td>
-											<td>Telephone Cost</td>
-											<td class="action-table-data">
-												<div class="edit-delete-action">
-													<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-units">
-														<i data-feather="edit" class="feather-edit"></i>
-													</a>
-													<a class="me-0 confirm-text p-2 mb-0" href="javascript:void(0);">
-														<i data-feather="trash-2" class="feather-trash-2"></i>
-													</a>
-												</div>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<label class="checkboxs">
-													<input type="checkbox">
-													<span class="checkmarks"></span>
-												</label>
-											</td>
-											<td>Entertainment</td>
-											<td>Office Vehicle</td>
-											<td class="action-table-data">
-												<div class="edit-delete-action">
-													<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-units">
-														<i data-feather="edit" class="feather-edit"></i>
-													</a>
-													<a class="me-0 confirm-text p-2 mb-0" href="javascript:void(0);">
-														<i data-feather="trash-2" class="feather-trash-2"></i>
-													</a>
-												</div>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<label class="checkboxs">
-													<input type="checkbox">
-													<span class="checkmarks"></span>
-												</label>
-											</td>
-											<td>Office Expenses & Postage	</td>
-											<td>Employee Foods</td>
-											<td class="action-table-data">
-												<div class="edit-delete-action">
-													<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-units">
-														<i data-feather="edit" class="feather-edit"></i>
-													</a>
-													<a class="me-0 confirm-text p-2 mb-0" href="javascript:void(0);">
+													<a class="me-0 confirm-tex p-2 mb-0" href="javascript:void(0);">
 														<i data-feather="trash-2" class="feather-trash-2"></i>
 													</a>
 												</div>
@@ -373,6 +118,7 @@ $conn = connectMainDB();
 					<!-- /product list -->
 				</div>
 			</div>
+
 			<!-- Add Expense Category-->
 			<div class="modal fade" id="add-units">
 				<div class="modal-dialog modal-dialog-centered custom-modal-two">
@@ -388,12 +134,12 @@ $conn = connectMainDB();
 									</button>
 								</div>
 								<div class="modal-body custom-modal-body">
-									<form action="expense-category.php">
+									<form action="expense-category.php" method="POST">
 										<div class="row">
 											<div class="col-lg-12">
 												<div class="mb-3">
-													<label class="form-label">Expense Name</label>
-													<input type="text" class="form-control">
+													<label class="form-label">Category Name</label>
+													<input type="text" class="form-control" required>
 												</div>
 												
 											</div>								
@@ -405,9 +151,9 @@ $conn = connectMainDB();
 				
 													</div>
 													<div class="card-body-list input-blocks mb-0">
-														<textarea class="form-control"></textarea>
+														<textarea class="form-control" maxlength="60" required></textarea>
 													</div>
-													<p>Maximum 600 Characters</p>
+													<p>Maximum 60 Characters</p>
 												</div>
 											</div>
 											<!-- /Editor -->
@@ -423,12 +169,13 @@ $conn = connectMainDB();
 					</div>
 				</div>
 			</div>
-			<!-- /Add Expense Category-->
+			<!--/ Add Expense Category-->
 
     </div>
-<!-- end main Wrapper-->
-<!-- Edit Expense Category-->
-<div class="modal fade" id="edit-units">
+	<!-- end main Wrapper-->
+
+	<!-- Edit Expense Category-->
+	<div class="modal fade" id="edit-units">
 			<div class="modal-dialog modal-dialog-centered custom-modal-two">
 				<div class="modal-content">
 					<div class="page-wrapper-new p-0">
@@ -442,32 +189,35 @@ $conn = connectMainDB();
 								</button>
 							</div>
 							<div class="modal-body custom-modal-body">
-								<div class="row">
-									<div class="col-lg-12">
-										<div class="mb-3">
-											<label class="form-label">Expense Name</label>
-											<input type="text" value="Employee Benefits" class="form-control">
-										</div>
-										
-									</div>							
-									<!-- Editor -->
-									<div class="col-md-12">
-										<div class="edit-add card">
-											<div class="edit-add">
-												<label class="form-label">Description</label>
+								<form action="expense-category.php" method="POST">
+									<div class="row">
+										<div class="col-lg-12">
+											<div class="mb-3">
+												<label class="form-label">Category Name</label>
+												<input type="text" class="form-control" required>
 											</div>
-											<div class="card-body-list input-blocks mb-0">
-												<textarea class="form-control">Employee Vehicle</textarea>
+											
+										</div>							
+										<!-- Editor -->
+										<div class="col-md-12">
+											<div class="edit-add card">
+												<div class="edit-add">
+													<label class="form-label">Description</label>
+												</div>
+												<div class="card-body-list input-blocks mb-0">
+													<textarea class="form-control" maxlength="60" required></textarea>
+												</div>
+												<p>Maximum 60 Characters</p>
 											</div>
-											<p>Maximum 600 Characters</p>
 										</div>
+										<!--/ Editor -->
+									</div>		
+		
+									<div class="modal-footer-btn">
+										<a href="javascript:void(0);" class="btn btn-cancel me-2" data-bs-dismiss="modal">Cancel</a>
+										<button type="submit" class="btn btn-submit">Submit</button>
 									</div>
-									<!-- /Editor -->
-								</div>						
-								<div class="modal-footer-btn">
-									<a href="javascript:void(0);" class="btn btn-cancel me-2" data-bs-dismiss="modal">Cancel</a>
-									<a href="expense-category.php" class="btn btn-submit">Save Changes</a>
-								</div>
+								</form>		
 							</div>
 						</div>
 					</div>
@@ -475,8 +225,16 @@ $conn = connectMainDB();
 			</div>
 		</div>
 		<!-- /Edit Expense -->
+
 <?php include 'layouts/customizer.php'; ?>
 <!-- JAVASCRIPT -->
 <?php include 'layouts/vendor-scripts.php'; ?>
+
+<script src="assets/js/refresh.js"></script>
+<script>
+	$.fn.dataTable.ext.errMode = 'none'; // Disable all error alerts globally in DataTable
+
+	
+</script>
 </body>
 </html>

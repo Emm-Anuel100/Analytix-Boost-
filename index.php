@@ -1,19 +1,12 @@
 <?php
-
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-session_start();
+include("./layouts/session.php"); // Include session
 
 // Include connection 
 include 'conn.php';
-
-// Check if the user is authenticated
-if (!isset($_SESSION['authenticated']) || !$_SESSION['authenticated']) {
-    header("Location: signin.php");
-    exit();
-}
 
 // Establish the connection to the database
 $conn = connectMainDB();
@@ -400,5 +393,12 @@ $conn = connectMainDB();
 <?php include 'layouts/customizer.php'; ?>
 <!-- JAVASCRIPT -->
 <?php include 'layouts/vendor-scripts.php'; ?>
+
+<script src="assets/js/refresh.js"></script>
+<script>
+	$.fn.dataTable.ext.errMode = 'none'; // Disable all error alerts globally in DataTable
+
+	
+</script>
 </body>
 </html>
