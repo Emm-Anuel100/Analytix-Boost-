@@ -814,7 +814,7 @@ if (isset($_GET['success'])): ?>
 										<div class="input-blocks image-upload-down">
 											<label>	Upload CSV File</label>
 											<div class="image-upload download">
-												<input type="file" name="csv_file" required>
+												<input type="file" name="csv_file" accept=".csv" required>
 												<div class="image-uploads">
 													<img src="assets/img/download-img.png" alt="img">
 													<h4>Drag and drop a <span>file to upload</span></h4>

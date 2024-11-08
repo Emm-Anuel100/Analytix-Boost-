@@ -103,4 +103,3 @@ while ($row = $result->fetch_assoc()) {
 // Output PDF to browser
 $pdf->Output('I', 'product-list.pdf'); // 'I' for inline
 
-?>

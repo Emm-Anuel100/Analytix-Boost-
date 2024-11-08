@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
 
     if ($stmt->execute()) {
         // Check if status is "Received" and if pack_quantity or items_per_pack values have changed
-        if ($status === 'Received') {
+        if ($status == 'Received') {
             // Calculate the quantity change based on the differences
             $pack_quantity_difference = $pack_quantity - $current_pack_quantity;
             $items_per_pack_difference = $items_per_pack - $current_items_per_pack;
