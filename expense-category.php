@@ -3,11 +3,60 @@ include("./layouts/session.php");
 
 include 'conn.php'; // Include database connection
 
-// Establish the connection to the user's database
-$conn = connectMainDB();
+$conn = connectMainDB(); // Establish the connection to the user's database
 
+$user_email = htmlspecialchars($_SESSION['email']); // User's email
 
+// If value is posted and categoiry name is not empty
+if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['category_name'])) {
+    $category_name = $_POST['category_name'];
+    $description = $_POST['description'];
 
+    $sql = "INSERT INTO expense_category (user_email, category_name, description) VALUES (?, ?, ?)";
+
+    if ($stmt = $conn->prepare($sql)) {
+        $stmt->bind_param("sss",$user_email, $category_name, $description);
+
+        if ($stmt->execute()) {
+            // Success message using SweetAlert within DOMContentLoaded
+            echo "<script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Expense category added successfully!',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            window.location.href = 'expense-category.php'; // Redirect after alert
+                        });
+                    });
+                  </script>";
+        } else {
+            echo "<script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'There was an error adding the category: " . $stmt->error . "',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    });
+                  </script>";
+        }
+        $stmt->close(); // Close the statement
+    } else {
+	echo "<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				Swal.fire({
+					title: 'Error!',
+					text: 'Error preparing statement: " . $conn->error . "',
+					icon: 'error',
+					confirmButtonText: 'OK'
+				});
+			});
+			</script>";
+	}
+}
 ?>
 
 
@@ -36,16 +85,13 @@ $conn = connectMainDB();
 						</div>
 						<ul class="table-top-head">
 							<li>
-								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Pdf"><img src="assets/img/icons/pdf.svg" alt="img"></a>
+								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Pdf" href="export-expense-category_pdf.php" target="_blank"><img src="assets/img/icons/pdf.svg" alt="img"></a>
 							</li>
 							<li>
-								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Excel"><img src="assets/img/icons/excel.svg" alt="img"></a>
+								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Csv" href="export-expense-category_csv.php" target="_blank"><img src="assets/img/icons/excel.svg" alt="img"></a>
 							</li>
 							<li>
-								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Print"><i data-feather="printer" class="feather-rotate-ccw"></i></a>
-							</li>
-							<li>
-								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Refresh"><i data-feather="rotate-ccw" class="feather-rotate-ccw"></i></a>
+								<a  class="refresh" data-bs-toggle="tooltip" data-bs-placement="top" title="Refresh"><i data-feather="rotate-ccw" class="feather-rotate-ccw"></i></a>
 							</li>
 							<li>
 								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Collapse" id="collapse-header"><i data-feather="chevron-up" class="feather-chevron-up"></i></a>
@@ -56,7 +102,6 @@ $conn = connectMainDB();
 						</div>
 					</div>
 					
-
 					<!-- /product list -->
 					<div class="card table-list-card">
 						<div class="card-body">
@@ -66,305 +111,99 @@ $conn = connectMainDB();
 										<a href="" class="btn btn-searchset"><i data-feather="search" class="feather-search"></i></a>
 									</div>
 								</div>
-								<div class="search-path">
-									<div class="d-flex align-items-center">
-										<a class="btn btn-filter" id="filter_search">
-											<i data-feather="filter" class="filter-icon"></i>
-											<span><img src="assets/img/icons/closes.svg" alt="img"></span>
-										</a>
-										
-									</div>
-									
-								</div>
+
 								<div class="form-sort">
 									<i data-feather="sliders" class="info-img"></i>
-									<select class="select">
-										<option>Sort by Date</option>
-										<option>25 9 23</option>
-										<option>12 9 23</option>
+									<form action="" method="post">
+									<select class="select" name="sort_order" onchange="this.form.submit()">
+										<option value="newest" <?php if (isset($_POST['sort_order']) && $_POST['sort_order'] === 'newest') echo 'selected'; ?>>Newest</option>
+										<option value="oldest" <?php if (isset($_POST['sort_order']) && $_POST['sort_order'] === 'oldest') echo 'selected'; ?>>Oldest</option>
 									</select>
+								</form>
 								</div>
 							</div>
-							<!-- /Filter -->
-							<div class="card" id="filter_inputs">
-								<div class="card-body pb-0">
-									<div class="row">
-										<div class="col-lg-3 col-sm-6 col-12">
-											<div class="input-blocks">
-												<i data-feather="zap" class="info-img"></i>
-												<select class="select">
-													<option>Choose Category</option>
-													<option>Foods & Snacks</option>
-													<option>Petrol</option>
-												</select>
-											</div>
-											
-										</div>
-										<div class="col-lg-9 col-sm-6 col-12">
-											<div class="input-blocks">
-												<a class="btn btn-filters ms-auto"><i data-feather="search" class="feather-search"></i> Search </a>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							<!-- /Filter -->
+							
 							<div class="table-responsive">
-								<table class="table  datanew">
-									<thead>
-										<tr>
-											<th class="no-sort">
-												<label class="checkboxs">
-													<input type="checkbox" id="select-all">
-													<span class="checkmarks"></span>
-												</label>
-											</th>
-											<th>Category name</th>
-											<th>Description</th>
-											<th class="no-sort">Action</th>
-										</tr>
-									</thead>
-									<tbody class="Expense-list-blk">
-										<tr >
-											<td>
-												<label class="checkboxs">
-													<input type="checkbox">
-													<span class="checkmarks"></span>
-												</label>
-											</td>
-											<td>Employee Benefits</td>
-											<td>Employee Vehicle</td>
-											<td class="action-table-data">
-												<div class="edit-delete-action">
-													<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-units">
-														<i data-feather="edit" class="feather-edit"></i>
-													</a>
-													<a class="me-0 confirm-text p-2 mb-0" href="javascript:void(0);">
-														<i data-feather="trash-2" class="feather-trash-2"></i>
-													</a>
-												</div>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<label class="checkboxs">
-													<input type="checkbox">
-													<span class="checkmarks"></span>
-												</label>
-											</td>
-											<td>Foods & Snacks</td>
-											<td>Employee Foods</td>
-											<td class="action-table-data">
-												<div class="edit-delete-action">
-													<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-units">
-														<i data-feather="edit" class="feather-edit"></i>
-													</a>
-													<a class="me-0 confirm-text p-2 mb-0" href="javascript:void(0);">
-														<i data-feather="trash-2" class="feather-trash-2"></i>
-													</a>
-												</div>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<label class="checkboxs">
-													<input type="checkbox">
-													<span class="checkmarks"></span>
-												</label>
-											</td>
-											<td>Entertainment</td>
-											<td>Employee Welfare</td>
-											<td class="action-table-data">
-												<div class="edit-delete-action">
-													<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-units">
-														<i data-feather="edit" class="feather-edit"></i>
-													</a>
-													<a class="me-0 confirm-text p-2 mb-0" href="javascript:void(0);">
-														<i data-feather="trash-2" class="feather-trash-2"></i>
-													</a>
-												</div>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<label class="checkboxs">
-													<input type="checkbox">
-													<span class="checkmarks"></span>
-												</label>
-											</td>
-											<td>Office Expenses & Postage	</td>
-											<td>Postal Expense</td>
-											<td class="action-table-data">
-												<div class="edit-delete-action">
-													<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-units">
-														<i data-feather="edit" class="feather-edit"></i>
-													</a>
-													<a class="me-0 confirm-text p-2 mb-0" href="javascript:void(0);">
-														<i data-feather="trash-2" class="feather-trash-2"></i>
-													</a>
-												</div>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<label class="checkboxs">
-													<input type="checkbox">
-													<span class="checkmarks"></span>
-												</label>
-											</td>
-											<td>Other Expenses</td>
-											<td>Other Expenses</td>
-											<td class="action-table-data">
-												<div class="edit-delete-action">
-													<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-units">
-														<i data-feather="edit" class="feather-edit"></i>
-													</a>
-													<a class="me-0 confirm-text p-2 mb-0" href="javascript:void(0);">
-														<i data-feather="trash-2" class="feather-trash-2"></i>
-													</a>
-												</div>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<label class="checkboxs">
-													<input type="checkbox">
-													<span class="checkmarks"></span>
-												</label>
-											</td>
-											<td>Petrol</td>
-											<td>Employee Cab</td>
-											<td class="action-table-data">
-												<div class="edit-delete-action">
-													<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-units">
-														<i data-feather="edit" class="feather-edit"></i>
-													</a>
-													<a class="me-0 confirm-text p-2 mb-0" href="javascript:void(0);">
-														<i data-feather="trash-2" class="feather-trash-2"></i>
-													</a>
-												</div>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<label class="checkboxs">
-													<input type="checkbox">
-													<span class="checkmarks"></span>
-												</label>
-											</td>
-											<td>Maintenance</td>
-											<td>Office Maintenance</td>
-											<td class="action-table-data">
-												<div class="edit-delete-action">
-													<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-units">
-														<i data-feather="edit" class="feather-edit"></i>
-													</a>
-													<a class="me-0 confirm-text p-2 mb-0" href="javascript:void(0);">
-														<i data-feather="trash-2" class="feather-trash-2"></i>
-													</a>
-												</div>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<label class="checkboxs">
-													<input type="checkbox">
-													<span class="checkmarks"></span>
-												</label>
-											</td>
-											<td>Marketing</td>
-											<td>Advertising Cost</td>
-											<td class="action-table-data">
-												<div class="edit-delete-action">
-													<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-units">
-														<i data-feather="edit" class="feather-edit"></i>
-													</a>
-													<a class="me-0 confirm-text p-2 mb-0" href="javascript:void(0);">
-														<i data-feather="trash-2" class="feather-trash-2"></i>
-													</a>
-												</div>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<label class="checkboxs">
-													<input type="checkbox">
-													<span class="checkmarks"></span>
-												</label>
-											</td>
-											<td>Printing & Stationery</td>
-											<td>Stationery Expense</td>
-											<td class="action-table-data">
-												<div class="edit-delete-action">
-													<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-units">
-														<i data-feather="edit" class="feather-edit"></i>
-													</a>
-													<a class="me-0 confirm-text p-2 mb-0" href="javascript:void(0);">
-														<i data-feather="trash-2" class="feather-trash-2"></i>
-													</a>
-												</div>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<label class="checkboxs">
-													<input type="checkbox">
-													<span class="checkmarks"></span>
-												</label>
-											</td>
-											<td>Telephone Expense</td>
-											<td>Telephone Cost</td>
-											<td class="action-table-data">
-												<div class="edit-delete-action">
-													<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-units">
-														<i data-feather="edit" class="feather-edit"></i>
-													</a>
-													<a class="me-0 confirm-text p-2 mb-0" href="javascript:void(0);">
-														<i data-feather="trash-2" class="feather-trash-2"></i>
-													</a>
-												</div>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<label class="checkboxs">
-													<input type="checkbox">
-													<span class="checkmarks"></span>
-												</label>
-											</td>
-											<td>Entertainment</td>
-											<td>Office Vehicle</td>
-											<td class="action-table-data">
-												<div class="edit-delete-action">
-													<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-units">
-														<i data-feather="edit" class="feather-edit"></i>
-													</a>
-													<a class="me-0 confirm-text p-2 mb-0" href="javascript:void(0);">
-														<i data-feather="trash-2" class="feather-trash-2"></i>
-													</a>
-												</div>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<label class="checkboxs">
-													<input type="checkbox">
-													<span class="checkmarks"></span>
-												</label>
-											</td>
-											<td>Office Expenses & Postage	</td>
-											<td>Employee Foods</td>
-											<td class="action-table-data">
-												<div class="edit-delete-action">
-													<a class="me-2 p-2 mb-0" data-bs-toggle="modal" data-bs-target="#edit-units">
-														<i data-feather="edit" class="feather-edit"></i>
-													</a>
-													<a class="me-0 confirm-text p-2 mb-0" href="javascript:void(0);">
-														<i data-feather="trash-2" class="feather-trash-2"></i>
-													</a>
-												</div>
-											</td>
-										</tr>
+							<?php
+							// Set default sort order
+							$sort_order = "DESC"; // Default to "newest" (descending order)
+
+							// Adjust the order based on user's choice
+							if (isset($_POST['sort_order'])) {
+								$sort_order = ($_POST['sort_order'] === 'oldest') ? "ASC" : "DESC";
+							}
+							// Fetch the categories from the database
+							$sql = "SELECT id, category_name, description FROM 
+							expense_category WHERE user_email = '$user_email' ORDER BY id $sort_order";
+
+							$result = $conn->query($sql);
+							?>
+
+							<table class="table datanew">
+								<thead>
+									<tr>
+										<th class="no-sort">
+											<label class="checkboxs">
+												<input type="checkbox" id="select-all">
+												<span class="checkmarks"></span>
+											</label>
+										</th>
+										<th>Category name</th>
+										<th>Description</th>
+										<th class="no-sort">Action</th>
+									</tr>
+								</thead>
+								<tbody class="Expense-list-blk">
+									<?php
+									// Check if we have data
+									if ($result->num_rows > 0) {
+										// Output the data for each row
+										while($row = $result->fetch_assoc()) {
+											echo "<tr>
+													<td>
+														<label class='checkboxs'>
+															<input type='checkbox'>
+															<span class='checkmarks'></span>
+														</label>
+													</td>
+													<td>" . htmlspecialchars($row['category_name']) . "</td>
+													<td>" . htmlspecialchars($row['description']) . "</td>
+													<td class='action-table-data'>
+														<div class='edit-delete-action'>
+															<a class='me-2 p-2 mb-0 edit-btn' data-bs-toggle='modal' data-id='" . $row['id'] . "' data-bs-target='#edit-units'>
+																<i data-feather='edit' class='feather-edit'></i>
+															</a>
+															 <a class='me-0 confirm-tex p-2 mb-0 delete-btn' data-id='" . $row['id'] . "' href='javascript:void(0);'>
+																<i data-feather='trash-2' class='feather-trash-2'></i>
+															</a>
+														</div>
+													</td>
+												</tr>";
+										}
+									} else {
+										// Display a demo row if no data is found
+										echo "<tr>
+												<td>
+													<label class='checkboxs'>
+														<input type='checkbox'>
+														<span class='checkmarks'></span>
+													</label>
+												</td>
+												<td>Employee Benefits</td>
+												<td>Employee Vehicle</td>
+												<td class='action-table-data'>
+													<div class='edit-delete-action'>
+														 <a class='me-2 p-2 mb-0 ' data-bs-toggle='modal' data-bs-target='#edit-modal'>
+															<i data-feather='edit' class='feather-edit'></i>
+														</a>
+														<a class='me-0 confirm-tex p-2 mb-0' href='javascript:void(0);'>
+															<i data-feather='trash-2' class='feather-trash-2'></i>
+														</a>
+													</div>
+												</td>
+											</tr>";
+									}
+									?>
 									</tbody>
 								</table>
 							</div>
@@ -373,6 +212,7 @@ $conn = connectMainDB();
 					<!-- /product list -->
 				</div>
 			</div>
+
 			<!-- Add Expense Category-->
 			<div class="modal fade" id="add-units">
 				<div class="modal-dialog modal-dialog-centered custom-modal-two">
@@ -388,30 +228,27 @@ $conn = connectMainDB();
 									</button>
 								</div>
 								<div class="modal-body custom-modal-body">
-									<form action="expense-category.php">
+								<!-- Expense category form -->
+								<form action="expense-category.php" method="POST">
 										<div class="row">
 											<div class="col-lg-12">
 												<div class="mb-3">
-													<label class="form-label">Expense Name</label>
-													<input type="text" class="form-control">
+													<label class="form-label">Category Name</label>
+													<input type="text" class="form-control" name="category_name" required>
 												</div>
-												
-											</div>								
-											<!-- Editor -->
+											</div>                                
 											<div class="col-md-12">
 												<div class="edit-add card">
 													<div class="edit-add">
 														<label class="form-label">Description</label>
-				
 													</div>
 													<div class="card-body-list input-blocks mb-0">
-														<textarea class="form-control"></textarea>
+														<textarea class="form-control" name="description" maxlength="60" required></textarea>
 													</div>
-													<p>Maximum 600 Characters</p>
+													<p>Maximum 60 Characters</p>
 												</div>
 											</div>
-											<!-- /Editor -->
-										</div>									
+										</div>                                    
 										<div class="modal-footer-btn">
 											<button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Cancel</button>
 											<button type="submit" class="btn btn-submit">Submit</button>
@@ -423,12 +260,13 @@ $conn = connectMainDB();
 					</div>
 				</div>
 			</div>
-			<!-- /Add Expense Category-->
+			<!--/ Add Expense Category-->
 
     </div>
-<!-- end main Wrapper-->
-<!-- Edit Expense Category-->
-<div class="modal fade" id="edit-units">
+	<!-- end main Wrapper-->
+
+	<!-- Edit Expense Category-->
+	<div class="modal fade" id="edit-units">
 			<div class="modal-dialog modal-dialog-centered custom-modal-two">
 				<div class="modal-content">
 					<div class="page-wrapper-new p-0">
@@ -442,41 +280,184 @@ $conn = connectMainDB();
 								</button>
 							</div>
 							<div class="modal-body custom-modal-body">
+							<form id="edit-form" method="POST">
+								<input type="hidden" name="id" id="edit-id">
 								<div class="row">
 									<div class="col-lg-12">
 										<div class="mb-3">
-											<label class="form-label">Expense Name</label>
-											<input type="text" value="Employee Benefits" class="form-control">
+											<label class="form-label">Category Name</label>
+											<input type="text" class="form-control" name="category_name_" id="edit-category-name" required>
 										</div>
-										
-									</div>							
-									<!-- Editor -->
+									</div>                            
 									<div class="col-md-12">
 										<div class="edit-add card">
 											<div class="edit-add">
 												<label class="form-label">Description</label>
 											</div>
 											<div class="card-body-list input-blocks mb-0">
-												<textarea class="form-control">Employee Vehicle</textarea>
+												<textarea class="form-control" name="description" id="edit-description" maxlength="60" required></textarea>
 											</div>
-											<p>Maximum 600 Characters</p>
+											<p>Maximum 60 Characters</p>
 										</div>
 									</div>
-									<!-- /Editor -->
-								</div>						
+								</div>
 								<div class="modal-footer-btn">
 									<a href="javascript:void(0);" class="btn btn-cancel me-2" data-bs-dismiss="modal">Cancel</a>
-									<a href="expense-category.php" class="btn btn-submit">Save Changes</a>
+									<button type="submit" class="btn btn-submit">Submit</button>
 								</div>
-							</div>
+							</form>
+														</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 		<!-- /Edit Expense -->
+
 <?php include 'layouts/customizer.php'; ?>
 <!-- JAVASCRIPT -->
 <?php include 'layouts/vendor-scripts.php'; ?>
+
+<script src="assets/js/refresh.js"></script>
+<script>
+	$.fn.dataTable.ext.errMode = 'none'; // Disable all error alerts globally in DataTable
+
+	 // Handle edit button functionality (already implemented)
+	document.addEventListener("DOMContentLoaded", function () {
+    // Attach click event to edit buttons
+    document.querySelectorAll(".edit-btn").forEach(function (button) {
+        button.addEventListener("click", function () {
+            const categoryId = this.getAttribute("data-id");
+            
+            // Log the category ID to verify if it's correct
+            console.log("Category ID:", categoryId);
+
+            // Fetch data using AJAX
+            fetch(`get_category.php?id=${categoryId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error("Error:", data.error);
+                    } else {
+                        // Populate the modal with the data
+                        document.getElementById("edit-id").value = data.id;
+                        document.getElementById("edit-category-name").value = data.category_name_;
+                        document.getElementById("edit-description").value = data.description;
+                        
+                        // Log the fetched data to verify correct values
+                        console.log("Fetched Data:", data);
+                    }
+                })
+                .catch(error => console.error("Error fetching category data:", error));
+        });
+    });
+
+    // Handle form submission for updating
+    document.getElementById("edit-form").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+
+        // Update data using AJAX
+        fetch("update_expense_category.php", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Success message using SweetAlert
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Category updated successfully.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    location.reload(); // Reload the page to see changes
+                });
+            } else {
+                // Error message using SweetAlert
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Error updating category: ' + data.error,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        })
+        .catch(error => {
+            // Handle AJAX errors using SweetAlert
+            Swal.fire({
+                title: 'Error!',
+                text: 'There was an issue updating the category. Please try again.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            console.error("Error updating category:", error);
+        });
+		});
+	});
+
+
+ // Handle delete button functionality
+ document.querySelectorAll(".delete-btn").forEach(function (button) {
+        button.addEventListener("click", function () {
+            const categoryId = this.getAttribute("data-id");
+
+            // Confirm deletion using SweetAlert
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you want to delete this category?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+				confirmButtonColor: '#d33',
+				cancelButtonColor: '#3085d6',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Send DELETE request via AJAX
+                    fetch("delete_expense_category.php?id=" + categoryId, {
+                        method: "GET"  // Use GET for deletion in this case
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Show success message
+                            Swal.fire({
+                                title: 'Deleted!',
+                                text: 'Category has been deleted.',
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+								console.log('data deleted!'); // log information
+								location.reload(); // Reload the page after successful deletion
+
+                                // Optionally, remove the row from the table without reloading
+                                // document.querySelector(`[data-id='${categoryId}']`).closest("tr").remove();
+                            });
+                        } else {
+                            // Show error message
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'There was an error deleting the category.',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'There was an issue deleting the category. Please try again.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                        console.error("Error deleting category:", error);
+                    });
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>

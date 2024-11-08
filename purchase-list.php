@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['supplier_name_']) && !
             // Calculate total items to add to stock
             $newQuantity = $packQuantity * $itemsPerPack;
 
-			$user_email = $_SESSION['email']; // user's email
+			$user_email = htmlspecialchars($_SESSION['email']); // user's email
 
             // Update quantity in the products table based on product name
             $updateQuery = "UPDATE products SET quantity = quantity + ? WHERE product_name = ? AND email = '$user_email'";
@@ -527,7 +527,7 @@ if (isset($_GET['success'])): ?>
 											<label>Product Name</label>
 											<select name="product_name" class="select" required>
 												<?php
-												$user_email = $_SESSION['email']; // user's email
+												$user_email = htmlspecialchars($_SESSION['email']); // user's email
 
 												// Fetch products from the products table
 												$productQuery = "SELECT product_name FROM products
@@ -596,7 +596,7 @@ if (isset($_GET['success'])): ?>
 												<label>Status</label>
 												<select class="select" name="status">
 													<option>Received</option>
-													<option>Pending</option>
+													<!-- <option>Pending</option> -->
 												</select>
 											</div>
 										</div>
@@ -670,7 +670,7 @@ if (isset($_GET['success'])): ?>
 											</div>
 										</div>
 									</div>
-									<div class="col-lg-3 col-md-6 col-sm-12">
+									<div class="col-lg-6 col-md-6 col-sm-12">
 										<div class="input-blocks">
 											<label>Purchase Date</label>
 
@@ -678,32 +678,6 @@ if (isset($_GET['success'])): ?>
 												<i data-feather="calendar" class="info-img"></i>
 												<input type="text" name="purchase_date_" class="datetimepicker" placeholder="Choose" required id="purchase_date">
 											</div>
-										</div>
-									</div>
-									<div class="col-lg-3 col-md-6 col-sm-12">
-										<div class="input-blocks">
-											<label>Product Name</label>
-											<select name="product_name_" class="select" required>
-												<?php
-												$user_email = htmlspecialchars($_SESSION['email']); // user's email
-
-												// Fetch products from the products table
-												$productQuery = "SELECT product_name FROM products
-													WHERE email = '$user_email' ORDER BY product_name ASC"; // Sorts product in alphabetical order
-
-												$result = $conn->query($productQuery);
-
-												// Check if there are products available
-												if ($result->num_rows > 0) {
-													while ($product = $result->fetch_assoc()) {
-														// Display each product name and set the id as the value
-														echo "<option value='" . $product['product_name'] . "'>" . htmlspecialchars($product['product_name']) . "</option>";
-													}
-												} else {
-													echo "<option value=''>No products available</option>";
-												}
-												?>
-											</select>
 										</div>
 									</div>
 									<div class="col-lg-3 col-md-6 col-sm-12">
@@ -732,7 +706,7 @@ if (isset($_GET['success'])): ?>
 												<label>Status</label>
 												<select class="select" name="status_">
 													<option>Received</option>
-													<option>Pending</option>
+													<!-- <option>Pending</option> -->
 												</select>
 											</div>
 										</div>
@@ -814,7 +788,7 @@ if (isset($_GET['success'])): ?>
 										<div class="input-blocks image-upload-down">
 											<label>	Upload CSV File</label>
 											<div class="image-upload download">
-												<input type="file" name="csv_file" required>
+												<input type="file" name="csv_file" accept=".csv" required>
 												<div class="image-uploads">
 													<img src="assets/img/download-img.png" alt="img">
 													<h4>Drag and drop a <span>file to upload</span></h4>

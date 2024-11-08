@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     // Retrieve form data
     $supplier_name = $_POST['supplier_name'];
     $purchase_date = $_POST['purchase_date_'];
-    $product_name = $_POST['product_name_'];
+    // $product_name = $_POST['product_name_'];
     $cost_per_unit = $_POST['cost_per_unit_'];
     $pack_quantity = $_POST['pack_quantity_'];
     $items_per_pack = $_POST['items_per_pack_'];
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     $order_tax = $_POST['tax_'];
     $notes = $_POST['notes_'];
 
-    // Calculate grand total as the product of cost_per_unit, pack_quantity, and items_per_pack
+    // Calculate grand total of the product (cost_per_unit, pack_quantity, and items_per_pack)
     $grand_total = $cost_per_unit * $pack_quantity * $items_per_pack;
 
     // Retrieve the current values of pack_quantity and items_per_pack from the database
@@ -35,11 +35,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     $currentValuesStmt->close();
 
     // Prepare and execute the update statement for purchases table
-    $stmt = $conn->prepare("UPDATE purchases SET supplier_name = ?, purchase_date = ?, product_name = ?, 
+    $stmt = $conn->prepare("UPDATE purchases SET supplier_name = ?, purchase_date = ?,
                             cost_per_unit = ?, pack_quantity = ?, items_per_pack = ?, status = ?, amount_paid = ?, 
                             amount_due = ?, grand_total = ?, order_tax = ?, notes = ? WHERE id = ? AND user_email = ?");
                             
-    $stmt->bind_param("sssdiisddidsis", $supplier_name, $purchase_date, $product_name, $cost_per_unit, 
+    $stmt->bind_param("ssdiisddidsis", $supplier_name, $purchase_date, $cost_per_unit, 
                       $pack_quantity, $items_per_pack, $status, $amount_paid, $amount_due, $grand_total, 
                       $order_tax, $notes, $purchaseId, $email);
 
@@ -83,5 +83,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     $stmt->close(); // Close the purchases update statement
     $conn->close(); // Close the connection
 }
-
 
