@@ -1,6 +1,6 @@
 <?php
-include './layouts/session.php';
-require 'fpdf/fpdf.php';
+include './layouts/session.php'; // Include session
+require 'fpdf/fpdf.php'; // Include fpdf library
 
 // Create instance of FPDF
 $pdf = new FPDF('P', 'mm', array(58, 100)); // POS paper size (width 58mm, length 100mm)
@@ -10,13 +10,15 @@ $pdf->AddPage();
 
 // Store Information (for simplicity)
 $pdf->SetFont('Arial', '', 6);
-$pdf->Image('assets/img/store/store-04.png', 2, 2, 10, 10);
+$pdf->Image('assets/img/store/store-04.png', 2, 1, 10, 10);
 
 // Set Y position to allow space for the image and store details
-$pdf->SetY(12);
+$pdf->SetY(10);
 
 // Store information
 $pdf->SetX(3);
+$pdf->SetFont('Arial', '', 5);
+
 $pdf->Cell(40, 4, 'Grace stores', 0, 1, 'L'); // Store name
 $pdf->SetX(3);
 $pdf->Cell(40, 4, 'St, Cityville, 101 Ibadan, Nigeria.', 0, 1, 'L'); // Address
@@ -26,12 +28,12 @@ $pdf->Cell(40, 4, '+234 456 7890 6765', 0, 1, 'L'); // Phone number
 $pdf->Ln(2);
 
 // Title
-$pdf->SetFont('Arial', 'B', 7);
+$pdf->SetFont('Arial', 'B', 6);
 $pdf->Cell(38, 6, 'Product Details', 0, 1, 'C');
 $pdf->Ln(1);
 
 // Add table headers
-$pdf->SetFont('Arial', 'B', 6);
+$pdf->SetFont('Arial', 'B', 5);
 $pdf->SetX(1.5);
 $pdf->Cell(17, 6, 'Product Name', 'TB');
 $pdf->Cell(7, 6, 'Qty', 'TB');
@@ -55,7 +57,7 @@ $id = $_POST['id'] ?? '';
 $productsArray = explode(";", $productsString);
 
 // Add product data to the table
-$pdf->SetFont('Arial', '', 6);
+$pdf->SetFont('Arial', '', 5);
 foreach ($productsArray as $product) {
     preg_match('/(.*?)\s\(quantity:\s(\d+),\sprice:\s([\d.]+),\simage:\s.*,\sdiscount\stype:\s.*,\sdiscount\svalue:\s.*,\stax:\s([\d.]+),\sunit:\s.*,\stotal\scost:\s([\d.]+)\)/', $product, $matches);
     if ($matches) {
@@ -95,11 +97,11 @@ foreach ($productsArray as $product) {
 }
 
 // Add a line break
-$pdf->Ln(7);
+$pdf->Ln(6);
 
 // Add additional sales details at the bottom
 $pdf->SetX(4);
-$pdf->SetFont('Arial', 'B', 6);
+$pdf->SetFont('Arial', 'B', 5);
 $pdf->Cell(40, 4, 'Sales Summary', 0, 1, 'L');
 $pdf->SetFont('Arial', '', 6);
 
@@ -127,7 +129,7 @@ $pdf->Cell(15, 4, 'Grand Total:', 0, 0);
 $pdf->Cell(30, 4, $grandTotal, 0, 1); // Format grand total
 
 // Add a thank you message
-$pdf->Ln(5);
+$pdf->Ln(3);
 $pdf->SetX(4);
 $pdf->Cell(0, 4, 'Thank you for your purchase!', 0, 1, 'L');
 

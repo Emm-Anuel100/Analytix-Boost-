@@ -515,36 +515,11 @@ $conn = connectMainDB();
 							<div class="modal-body custom-modal-body">
 								<form action="product-list.php">
 									<div class="row">
-										<div class="col-lg-4 col-sm-6 col-12">
-											<div class="input-blocks">
-												<label>Product</label>
-												<select class="select">
-													<option>Choose</option>
-												</select>
-											</div>
-										</div>
-										<div class="col-lg-4 col-sm-6 col-12">
-											<div class="input-blocks">
-												<label>Category</label>
-												<select class="select">
-													<option>Choose</option>
-												</select>
-											</div>
-										</div>
-										<div class="col-lg-4 col-sm-6 col-12">
-											<div class="input-blocks">
-												<label>Status</label>
-												<select class="select">
-													<option>Active</option>
-													<option>Inactive</option>
-												</select>
-											</div>
-										</div>
 										<div class="col-lg-12 col-sm-6 col-12">
 											<div class="row">
 												<div>
 													<div class="modal-footer-btn download-file">
-														<a href="javascript:void(0)" class="btn btn-submit">Download Sample File</a>
+														<a href="javascript:void(0)" download="" class="btn btn-submit">Download Sample File</a>
 													</div>
 												</div>
 											</div>
@@ -553,7 +528,7 @@ $conn = connectMainDB();
 											<div class="input-blocks image-upload-down">
 												<label>	Upload CSV File</label>
 												<div class="image-upload download">
-													<input type="file">
+													<input type="file" accept=".csv">
 													<div class="image-uploads">
 														<img src="assets/img/download-img.png" alt="img">
 														<h4>Drag and drop a <span>file to upload</span></h4>
@@ -561,20 +536,6 @@ $conn = connectMainDB();
 												</div>
 											</div>
 										</div>
-										<div class="col-lg-12 col-sm-6 col-12">
-											<div class="mb-3">
-												<label class="form-label">Created by</label>
-												<input type="text" class="form-control">
-											</div>
-										</div>
-									</div>
-									<div class="col-lg-12">
-										<div class="mb-3 input-blocks">
-											<label class="form-label">Description</label>
-											<textarea class="form-control"></textarea>
-											<p class="mt-1">Maximum 60 Characters</p>
-										</div>
-									</div>
 									<div class="col-lg-12">
 										<div class="modal-footer-btn">
 											<button type="button" class="btn btn-cancel me-2" data-bs-dismiss="modal">Cancel</button>

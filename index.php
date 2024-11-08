@@ -137,7 +137,7 @@ $conn = connectMainDB();
 											<span>Purchase</span>
 										</li>
 									</ul>
-									<div class="dropdown dropdown-wraper">
+									<!-- <div class="dropdown dropdown-wraper">
 										<button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
 											2023
 										</button>
@@ -152,7 +152,7 @@ $conn = connectMainDB();
 												<a href="javascript:void(0);" class="dropdown-item">2021</a>
 											</li>
 										</ul>
-									</div>
+									</div> -->
 								</div>
 							</div>
 							<div class="card-body">
@@ -228,7 +228,7 @@ $conn = connectMainDB();
 						</div>
 					</div>
 				</div>
-				<div class="card">
+				<!-- <div class="card">
 					<div class="card-header">
 						<h4 class="card-title">Expired Products</h4>
 					</div>
@@ -385,11 +385,12 @@ $conn = connectMainDB();
 							</table>
 						</div>
 					</div>
-				</div>
+				</div> -->
 			</div>
 		</div>
     </div>
 <!-- end main Wrapper-->
+ 
 <?php include 'layouts/customizer.php'; ?>
 <!-- JAVASCRIPT -->
 <?php include 'layouts/vendor-scripts.php'; ?>

@@ -189,8 +189,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['category_name'])) {
 														<span class='checkmarks'></span>
 													</label>
 												</td>
-												<td>Employee Benefits</td>
-												<td>Employee Vehicle</td>
+												<td>Demo name</td>
+												<td>Demo description</td>
 												<td class='action-table-data'>
 													<div class='edit-delete-action'>
 														 <a class='me-2 p-2 mb-0 ' data-bs-toggle='modal' data-bs-target='#edit-modal'>
