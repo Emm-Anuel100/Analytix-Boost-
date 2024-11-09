@@ -96,7 +96,7 @@ $conn = connectMainDB();
 											<th>Store</th>
 											<th>SKU</th>
 											<th>Manufactured Date</th>
-											<th>Expired Date</th>
+											<th>Expiry Date</th>
 										</tr>
 									</thead>
 									<?php
@@ -215,14 +215,9 @@ $conn = connectMainDB();
 <!-- JAVASCRIPT -->
 <?php include 'layouts/vendor-scripts.php'; ?>
 
-<!-- script to refresh page -->
+<script src="assets/js/refresh.js"></script>
 <script>
 	$.fn.dataTable.ext.errMode = 'none'; // Disable all error alerts globally in DataTable
-
-	document.querySelector('.refresh').addEventListener('click', () =>{
-		window.location.reload();
-	});
-
 
 	// FPDF export to pdf 
     const generatePdfBtn = document.getElementById('generatePdfBtn');
@@ -269,17 +264,17 @@ $conn = connectMainDB();
 							swal.fire({
 								toast: true,
 								position: 'top-end', // Position at the top right
-								title: ' ',
+								title: '',
 								text: response.message,
 								icon: 'success',
 								confirmButtonText: false,
 								timer: 3000 // Auto-close after 3 seconds
 							});
-						} else {
+						  } else {
 							swal.fire({
 								toast: true,
 								position: 'top-end', // Position at the top right
-								title: ' ',
+								title: '',
 								text: response.message,
 								icon: 'info',
 								showConfirmButton: false,
@@ -291,7 +286,7 @@ $conn = connectMainDB();
 						swal.fire({
 							toast: true,
 							position: 'top-end', // Position at the top right
-							title: ' ',
+							title: '',
 							text: 'An error occurred: ' + error,
 							icon: 'error',
 							showConfirmButton: false,
