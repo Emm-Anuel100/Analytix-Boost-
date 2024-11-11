@@ -35,6 +35,6 @@ This document provides an overview of the POS (Point of Sale) Solution, a compre
 
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/your-repo/pos-solution.git
-   cd pos-solution
+   git clone https://github.com/Emm-Anuel100/Analytix-Boost-.git
+   cd Analytix-Boost-
    ```

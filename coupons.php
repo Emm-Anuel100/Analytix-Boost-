@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['coupon_name_insert'])
 	}
 
 
-	// Script to updating Coupons
+	// Script to update Coupons
 	if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id']) && !empty($_POST['coupon_name'])) {
 		$id = $_POST['id'];
 		$name = $_POST['coupon_name'];
@@ -159,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['coupon_name_insert'])
 									</select>
 								</form>
 								</div>
-							</div>
+							  </div>
 
 								<?php
 								// Default sorting order
