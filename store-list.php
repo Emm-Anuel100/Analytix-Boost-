@@ -430,8 +430,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['store_id']) && !empty(
         text: "You won't be able to revert this!",
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
         confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
         if (result.isConfirmed) {
@@ -442,7 +442,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['store_id']) && !empty(
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4) {
                     // Log the response from the server
-                    console.log(xhr.responseText); // <- Add this line here for debugging
+                    console.log(xhr.responseText); // added for debugging purpose
 
                     if (xhr.status === 200) {
                         Swal.fire(
@@ -460,8 +460,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['store_id']) && !empty(
                         );
                     }
                 }
-						};
-						xhr.send('id=' + storeId); // Send the store ID to the server for deletion
+					};
+					xhr.send('id=' + storeId); // Send the store ID to the server for deletion
 				}
 			});
 		}

@@ -406,7 +406,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['category_name'])) {
             // Confirm deletion using SweetAlert
             Swal.fire({
                 title: 'Are you sure?',
-                text: 'Do you want to delete this category?',
+                text: `You won't be able to revert this!`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Yes, delete it!',
