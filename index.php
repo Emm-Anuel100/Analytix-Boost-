@@ -220,7 +220,7 @@ $user_email = htmlspecialchars($_SESSION['email']); // User's email
 														<td>1</td>
 														<td class='productimgname'>
 															<a href='product-list.php' class='product-img'>
-																<img src='assets/img/products/stock-img-01.png' alt='product'>
+																<img src='assets/img/space-upgrade.jpg' alt='product'>
 															</a>
 															<a href='product-list.php'>Demo Product</a>
 														</td>
