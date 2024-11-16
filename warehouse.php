@@ -602,9 +602,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['name']) && !empty($_PO
 
 		// Function to delete individual warehouse data
 		document.addEventListener('DOMContentLoaded', function () {
-    const deleteButtons = document.querySelectorAll('.delete-btn');
+		const deleteButtons = document.querySelectorAll('.delete-btn');
 
-    deleteButtons.forEach(button => {
+		deleteButtons.forEach(button => {
         button.addEventListener('click', function () {
             const warehouseId = this.getAttribute('data-id');
             

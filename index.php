@@ -10,7 +10,6 @@ include 'conn.php';
 
 // Establish the connection to the database
 $conn = connectMainDB();
-
 ?>
 
 
@@ -38,7 +37,7 @@ $conn = connectMainDB();
 								<span><img src="assets/img/icons/dash1.svg" alt="img"></span>
 							</div>
 							<div class="dash-widgetcontent">
-								<h5>&#8358;<span class="counters" data-count="307144.00">$307,144.00</span></h5>
+								<h5>&#8358;<span class="counters" data-count="0.00"> </span></h5>
 								<h6>Total Purchase Due</h6>
 							</div>
 						</div>
@@ -49,7 +48,7 @@ $conn = connectMainDB();
 								<span><img src="assets/img/icons/dash2.svg" alt="img"></span>
 							</div>
 							<div class="dash-widgetcontent">
-								<h5>&#8358;<span class="counters" data-count="4385.00">$4,385.00</span></h5>
+								<h5>&#8358;<span class="counters" data-count="0.00"> </span></h5>
 								<h6>Total Sales Due</h6>
 							</div>
 						</div>
@@ -60,7 +59,7 @@ $conn = connectMainDB();
 								<span><img src="assets/img/icons/dash3.svg" alt="img"></span>
 							</div>
 							<div class="dash-widgetcontent">
-								<h5>&#8358;<span class="counters" data-count="385656.50">$385,656.50</span></h5>
+								<h5>&#8358;<span class="counters" data-count="0.00"> </span></h5>
 								<h6>Total Sale Amount</h6>
 							</div>
 						</div>
@@ -71,7 +70,7 @@ $conn = connectMainDB();
 								<span><img src="assets/img/icons/dash4.svg" alt="img"></span>
 							</div>
 							<div class="dash-widgetcontent">
-								<h5>&#8358;<span class="counters" data-count="40000.00">$400.00</span></h5>
+								<h5>&#8358;<span class="counters" data-count="0.00"> </span></h5>
 								<h6>Total Expense Amount</h6>
 							</div>
 						</div>
@@ -79,7 +78,7 @@ $conn = connectMainDB();
 					<div class="col-xl-3 col-sm-6 col-12 d-flex">
 						<div class="dash-count">
 							<div class="dash-counts">
-								<h4>100</h4>
+								<h4>0</h4>
 								<h5>Customers</h5>
 							</div>
 							<div class="dash-imgs">
@@ -90,7 +89,7 @@ $conn = connectMainDB();
 					<div class="col-xl-3 col-sm-6 col-12 d-flex">
 						<div class="dash-count das1">
 							<div class="dash-counts">
-								<h4>110</h4>
+								<h4>0</h4>
 								<h5>Suppliers</h5>
 							</div>
 							<div class="dash-imgs">
@@ -101,7 +100,7 @@ $conn = connectMainDB();
 					<div class="col-xl-3 col-sm-6 col-12 d-flex">
 						<div class="dash-count das2">
 							<div class="dash-counts">
-								<h4>150</h4>
+								<h4>0</h4>
 								<h5>Purchase Invoice</h5>
 							</div>
 							<div class="dash-imgs">
@@ -112,7 +111,7 @@ $conn = connectMainDB();
 					<div class="col-xl-3 col-sm-6 col-12 d-flex">
 						<div class="dash-count das3">
 							<div class="dash-counts">
-								<h4>170</h4>
+								<h4>0</h4>
 								<h5>Sales Invoice</h5>
 							</div>
 							<div class="dash-imgs">
@@ -172,6 +171,7 @@ $conn = connectMainDB();
 							</div>
 							<div class="card-body">
 								<div class="table-responsive dataview">
+									<!-- HTML Table to Display Products -->
 									<table class="table dashboard-recent-products">
 										<thead>
 											<tr>
@@ -181,46 +181,50 @@ $conn = connectMainDB();
 											</tr>
 										</thead>
 										<tbody>
-											<tr>
-												<td>1</td>
-												<td class="productimgname">
-													<a href="product-list.php" class="product-img">
-														<img src="assets/img/products/stock-img-01.png" alt="product">
-													</a>
-													<a href="product-list.php">Lenevo 3rd Generation</a>
-												</td>
-												<td>&#8358;12500</td>
-											</tr>
-											<tr>
-												<td>2</td>
-												<td class="productimgname">
-													<a href="product-list.php" class="product-img">
-														<img src="assets/img/products/stock-img-06.png" alt="product">
-													</a>
-													<a href="product-list.php">Bold V3.2</a>
-												</td>
-												<td>&#8358;1600</td>
-											</tr>
-											<tr>
-												<td>3</td>
-												<td class="productimgname">
-													<a href="product-list.php" class="product-img">
-														<img src="assets/img/products/stock-img-02.png" alt="product">
-													</a>
-													<a href="product-list.php">Nike Jordan</a>
-												</td>
-												<td>&#8358;2000</td>
-											</tr>
-											<tr>
-												<td>4</td>
-												<td class="productimgname">
-													<a href="product-list.php" class="product-img">
-														<img src="assets/img/products/stock-img-03.png" alt="product">
-													</a>
-													<a href="product-list.php">Apple Series 5 Watch</a>
-												</td>
-												<td>&#8358;800</td>
-											</tr>
+											<?php
+											// Fetch products from the database
+											$query = "SELECT id, product_name, price, image FROM products
+											ORDER BY id DESC LIMIT 4"; // Limit 4 products and show the most recent
+
+											$result = mysqli_query($conn, $query);
+
+											// Check if any products were found
+											$products = mysqli_num_rows($result) > 0 ? $result : null;
+
+											if ($products) {
+												$counter = 1;
+												while ($row = mysqli_fetch_assoc($products)) {
+													$product_id = $row['id'];
+													$product_name = htmlspecialchars($row['product_name']); // Using htmlspecialchars for security
+													$product_price = number_format($row['price'], 2); // Format price
+													$product_image = "uploads/" . $row['image']; // product image
+
+													echo "<tr>
+															<td>$counter</td>
+															<td class='productimgname'>
+																<a href='product-list.php' class='product-img'>
+																	<img src='$product_image' alt='product'>
+																</a>
+																<a href='product-list.php'>$product_name</a>
+															</td>
+															<td>&#8358;$product_price</td>
+														</tr>";
+													$counter++;
+												}
+											} else {
+												// If no products, show a demo row
+												echo "<tr>
+														<td>1</td>
+														<td class='productimgname'>
+															<a href='product-list.php' class='product-img'>
+																<img src='assets/img/products/stock-img-01.png' alt='product'>
+															</a>
+															<a href='product-list.php'>Demo Product</a>
+														</td>
+														<td>&#8358;500</td>
+													</tr>";
+											}
+											?>
 										</tbody>
 									</table>
 								</div>
@@ -228,164 +232,8 @@ $conn = connectMainDB();
 						</div>
 					</div>
 				</div>
-				<!-- <div class="card">
-					<div class="card-header">
-						<h4 class="card-title">Expired Products</h4>
-					</div>
-					<div class="card-body">
-						<div class="table-responsive dataview">
-							<table class="table dashboard-expired-products">
-								<thead>
-									<tr>
-										<th class="no-sort">
-											<label class="checkboxs">
-												<input type="checkbox" id="select-all">
-												<span class="checkmarks"></span>
-											</label>
-										</th>
-										<th>Product</th>
-										<th>SKU</th>
-										<th>Manufactured Date</th>
-										<th>Expired Date</th>
-										<th class="no-sort">Action</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr>
-										<td>
-											<label class="checkboxs">
-												<input type="checkbox">
-												<span class="checkmarks"></span>
-											</label>
-										</td>
-										<td>
-											<div class="productimgname">
-												<a href="javascript:void(0);" class="product-img stock-img">
-													<img src="assets/img/products/expire-product-01.png" alt="product">
-												</a>
-												<a href="javascript:void(0);">Red Premium Handy </a>
-											</div>
-										</td>
-										<td><a href="javascript:void(0);">PT006</a></td>
-										<td>17 Jan 2023</td>
-										<td>29 Mar 2023</td>
-										<td class="action-table-data">
-											<div class="edit-delete-action">
-												<a class=" confirm-text p-2" href="javascript:void(0);">
-													<i data-feather="trash-2" class="feather-trash-2"></i>
-												</a>
-											</div>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<label class="checkboxs">
-												<input type="checkbox">
-												<span class="checkmarks"></span>
-											</label>
-										</td>
-										<td>
-											<div class="productimgname">
-												<a href="javascript:void(0);" class="product-img stock-img">
-													<img src="assets/img/products/expire-product-02.png" alt="product">
-												</a>
-												<a href="javascript:void(0);">Iphone 14 Pro</a>
-											</div>
-										</td>
-										<td><a href="javascript:void(0);">PT007</a></td>
-										<td>22 Feb 2023</td>
-										<td>04 Apr 2023</td>
-										<td class="action-table-data">
-											<div class="edit-delete-action">
-												<a class="confirm-text p-2" href="javascript:void(0);">
-													<i data-feather="trash-2" class="feather-trash-2"></i>
-												</a>
-											</div>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<label class="checkboxs">
-												<input type="checkbox">
-												<span class="checkmarks"></span>
-											</label>
-										</td>
-										<td>
-											<div class="productimgname">
-												<a href="javascript:void(0);" class="product-img stock-img">
-													<img src="assets/img/products/expire-product-03.png" alt="product">
-												</a>
-												<a href="javascript:void(0);">Black Slim 200 </a>
-											</div>
-										</td>
-										<td><a href="javascript:void(0);">PT008</a></td>
-										<td>18 Mar 2023</td>
-										<td>13 May 2023</td>
-										<td class="action-table-data">
-											<div class="edit-delete-action">
-												<a class=" confirm-text p-2" href="javascript:void(0);">
-													<i data-feather="trash-2" class="feather-trash-2"></i>
-												</a>
-											</div>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<label class="checkboxs">
-												<input type="checkbox">
-												<span class="checkmarks"></span>
-											</label>
-										</td>
-										<td>
-											<div class="productimgname">
-												<a href="javascript:void(0);" class="product-img stock-img">
-													<img src="assets/img/products/expire-product-04.png" alt="product">
-												</a>
-												<a href="javascript:void(0);">Woodcraft Sandal</a>
-											</div>
-										</td>
-										<td><a href="javascript:void(0);">PT009</a></td>
-										<td>29 Mar 2023</td>
-										<td>27 May 2023</td>
-										<td class="action-table-data">
-											<div class="edit-delete-action">
-												<a class=" confirm-text p-2" href="javascript:void(0);">
-													<i data-feather="trash-2" class="feather-trash-2"></i>
-												</a>
-											</div>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<label class="checkboxs">
-												<input type="checkbox">
-												<span class="checkmarks"></span>
-											</label>
-										</td>
-										<td>
-											<div class="productimgname">
-												<a href="javascript:void(0);" class="product-img stock-img">
-													<img src="assets/img/products/stock-img-03.png" alt="product">
-												</a>
-												<a href="javascript:void(0);">Apple Series 5 Watch </a>
-											</div>
-										</td>
-										<td><a href="javascript:void(0);">PT010</a></td>
-										<td>24 Mar 2023</td>
-										<td>26 May 2023</td>
-										<td class="action-table-data">
-											<div class="edit-delete-action">
-												<a class=" confirm-text p-2" href="javascript:void(0);">
-													<i data-feather="trash-2" class="feather-trash-2"></i>
-												</a>
-											</div>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-					</div>
-				</div> -->
+				
+
 			</div>
 		</div>
     </div>
