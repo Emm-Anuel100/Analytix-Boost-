@@ -58,7 +58,75 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['name']) && !empty($_PO
 		 // Close the statement
 		 $stmt->close();
 		}
-?>
+
+
+		// Script to update warehouse information
+		if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name_']) && !empty($_POST['name_'])) {
+
+			// Sanitize inputs using htmlspecialchars
+			$id = htmlspecialchars($_POST['id_']);
+			$name = htmlspecialchars($_POST['name_']);
+			$contact = htmlspecialchars($_POST['contact_']);
+			$phone = htmlspecialchars($_POST['phone_']);
+			$email = htmlspecialchars($_POST['email_']);
+			$address_1 = htmlspecialchars($_POST['address_1_']);
+			$address_2 = htmlspecialchars($_POST['address_2_']);
+			$country = htmlspecialchars($_POST['country_']);
+			$state = htmlspecialchars($_POST['state_']);
+			$city = htmlspecialchars($_POST['city_']);
+			$zipcode = htmlspecialchars($_POST['zipcode_']);
+		
+			// Update query
+			$sql = "UPDATE warehouse SET 
+					name = ?, 
+					contact_person = ?, 
+					phone = ?, 
+					email = ?, 
+					address_1 = ?, 
+					address_2 = ?, 
+					country = ?, 
+					state = ?, 
+					city = ?, 
+					zip_code = ?
+					WHERE id = ? AND user_email = '$user_email'";
+		
+			$stmt = $conn->prepare($sql);
+			$stmt->bind_param(
+				"ssssssssssi", 
+				$name, $contact, $phone, $email, 
+				$address_1, $address_2, $country, 
+				$state, $city, $zipcode, $id
+			);
+		
+			if ($stmt->execute()) {
+				echo '<script>
+						document.addEventListener("DOMContentLoaded", function() {
+							Swal.fire({
+								icon: "success",
+								title: "Success",
+								text: "Warehouse information updated successfully.",
+								confirmButtonText: "OK"
+							}).then(() => {
+								window.location = "warehouse.php";
+							});
+						});
+					  </script>';
+			} else {
+				echo '<script>
+						document.addEventListener("DOMContentLoaded", function() {
+							Swal.fire({
+								icon: "error",
+								title: "Error",
+								text: "Failed to update warehouse information. Please try again.",
+								confirmButtonText: "OK"
+							});
+						});
+					  </script>';
+			}
+		
+			$stmt->close(); // Close the statement
+		}
+?>	
 
 
 
@@ -239,13 +307,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['name']) && !empty($_PO
 								while ($row = $result->fetch_assoc()) {
 								// Count the total products for each warehouse
 								$warehouse_name = $row['name'];  // Get the 'name' 
-								$user_email = $_SESSION['email']; // Get the user's email
+								$user_email = htmlspecialchars($_SESSION['email']); // Get the user's email
 								$product_count_sql = "SELECT COUNT(*) as total_products FROM products 
 								WHERE warehouse = '$warehouse_name' AND email = '$user_email'";
 
 								$product_count_result = $conn->query($product_count_sql);
 								$product_count_row = $product_count_result->fetch_assoc();
 								$total_products = $product_count_row['total_products'];
+
+								$warehouse_id = $row['id']; // Warehouse ID
 
 								echo "<tr>";
 								echo "<td><label class='checkboxs'><input type='checkbox'><span class='checkmarks'></span></label></td>";
@@ -262,8 +332,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['name']) && !empty($_PO
 								echo "<td><span class='badge badge-linesuccess'>{$row['status']}</span></td>";
 								echo "<td class='action-table-data'>";
 								echo "<div class='edit-delete-action'>";
-								echo "<a class='me-2 p-2' href='#' data-bs-toggle='modal' data-bs-target='#edit-units'><i data-feather='edit' class='feather-edit'></i></a>";
-								echo "<a class='confirm-tex p-2' href='javascript:void(0);'><i data-feather='trash-2' class='feather-trash-2'></i></a>";
+								echo "<a class='me-2 p-2 edit-btn' href='#' data-bs-toggle='modal' data-id='{$warehouse_id}' data-bs-target='#edit-units'><i data-feather='edit' class='feather-edit'></i></a>";
+								echo "<a class='confirm-tex p-2 delete-btn' href='javascript:void(0);' data-id='{$warehouse_id}'><i data-feather='trash-2' class='feather-trash-2'></i></a>";
 								echo "</div></td>";
 								echo "</tr>";
 								}
@@ -403,6 +473,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['name']) && !empty($_PO
 							<div class="modal-body custom-modal-body">
 								<!-- Form to update warehouse information -->
 								<form action="warehouse.php" method="POST">
+									<input type="hidden" name="id_" value=""> <!-- Hidden field for ID -->
 									<div class="modal-title-head">
 										<h6><span><i data-feather="info" class="feather-edit"></i></span>Warehouse Info</h6>
 									</div>
@@ -501,7 +572,91 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['name']) && !empty($_PO
 		<script src="./assets/js/refresh.js"></script>
 		<script>
 			$.fn.dataTable.ext.errMode = 'none'; // Disable all error alerts globally in DataTable
+			
+		document.addEventListener('DOMContentLoaded', function () {
+		// Event listener for edit buttons
+		document.querySelectorAll('.edit-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const warehouseId = this.getAttribute('data-id');
 
-		</script>
+            // Fetch warehouse data with AJAX (assuming you have a PHP file for this)
+            fetch(`get_warehouse_data.php?id=${warehouseId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Populate modal fields with the fetched data
+					document.querySelector("input[name='id_']").value = data.id;	
+                    document.querySelector("input[name='name_']").value = data.name;
+                    document.querySelector("input[name='contact_']").value = data.contact_person;
+                    document.querySelector("input[name='phone_']").value = data.phone;
+                    document.querySelector("input[name='email_']").value = data.email;
+                    document.querySelector("input[name='address_1_']").value = data.address_1;
+                    document.querySelector("input[name='address_2_']").value = data.address_2;
+                    document.querySelector("input[name='state_']").value = data.state;
+                    document.querySelector("input[name='city_']").value = data.city;
+                    document.querySelector("input[name='zipcode_']").value = data.zip_code;
+                });
+				});
+			});
+		});
+
+
+		// Function to delete individual warehouse data
+		document.addEventListener('DOMContentLoaded', function () {
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const warehouseId = this.getAttribute('data-id');
+            
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Use AJAX to delete the warehouse data
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', 'delete_warehouse.php', true);
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+                    xhr.onload = function() {
+                        if (xhr.status === 200) {
+                            const response = JSON.parse(xhr.responseText);
+                            if (response.success) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    'The warehouse has been deleted.',
+                                    'success'
+                                ).then(() => {
+                                    // Optionally remove the row from the table
+                                    document.querySelector(`[data-id="${warehouseId}"]`).closest('tr').remove();
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Error!',
+                                    'There was an error deleting the warehouse.',
+                                    'error'
+                                );
+                            }
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                'There was an error with the request.',
+                                'error'
+                            );
+                        }
+                    };
+
+                    xhr.send('id=' + warehouseId); // Send warehouse ID to delete_warehouse.php
+                }
+				});
+			});
+		});
+	});	
+	</script>
     </body>
 </html>

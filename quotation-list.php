@@ -6,6 +6,7 @@ include 'conn.php'; // Include database connection
 // Establish the connection
 $conn = connectMainDB();
 
+$user_email = htmlspecialchars(($_SESSION['email'])) // User's email
 
 ?>
 
@@ -102,8 +103,6 @@ $conn = connectMainDB();
 								// Determine the ORDER BY clause based on selected option
 								$order_by = ($sort_order === 'oldest') ? 'ASC' : 'DESC';
 
-								$user_email = $_SESSION['email']; // Get user email from session
-
 								// Fetch quotation and product details with JOIN on product name, filtered by user email
 								$query = "
 									SELECT q.id, q.product_name, q.customer_name, q.description, q.status, q.reference, p.image
@@ -127,7 +126,7 @@ $conn = connectMainDB();
 										$imagePath = $row['image'] ? 'uploads/' . $row['image'] : '';
 										
 										// Define the status and badge class
-										$status = $row['status']; // Assuming 'status' comes from your database
+										$status = $row['status']; 
 										$badgeClass = '';
 								
 										// Determine the badge class based on status
@@ -240,7 +239,27 @@ $conn = connectMainDB();
 												<div class="row">
 													<div class="col-lg-10 col-sm-10 col-10">
 														<select name="customer_name" class="select" required>
-															<option value="Walk-in-customer">Walk-in-customer</option>
+															<?php
+															// Fetch customer names
+															$stmt = $conn->prepare("SELECT name FROM customers WHERE user_email = ?");
+															$stmt->bind_param("s", $user_email);
+															$stmt->execute();
+															$result = $stmt->get_result();
+
+															// Check if there are any customers
+															if ($result->num_rows > 0) {
+																// Output each customer as an option in the dropdown
+																while ($row = $result->fetch_assoc()) {
+																	echo "<option value='" . htmlspecialchars($row['name']) . "'>" . htmlspecialchars($row['name']) . "</option>";
+																}
+															} 
+
+															// Add "Walk-in-customer" as the last option
+															echo "<option value='Walk-in-customer'>Walk-in-customer</option>";
+
+															// Close the statement
+															$stmt->close();
+															?>	
 														</select>
 													</div>
 												</div>
@@ -264,8 +283,6 @@ $conn = connectMainDB();
 												<label>Product Name</label>
 												<select name="product_name" class="select" required>
 													<?php
-													$user_email = $_SESSION['email']; // user's email
-
 													// Fetch products from the products table
 													$productQuery = "SELECT product_name FROM products
 													 WHERE email = '$user_email' ORDER BY product_name ASC"; // Sorts product in alphabetical order
@@ -373,7 +390,27 @@ $conn = connectMainDB();
 													<div class="row">
 														<div class="col-lg-10 col-sm-10 col-10">
 														    <select name="customer_name" class="select">
-																<option>Walk-in-customer</option>
+															<?php
+																// Fetch customer names
+																$stmt = $conn->prepare("SELECT name FROM customers WHERE user_email = ?");
+																$stmt->bind_param("s", $user_email);
+																$stmt->execute();
+																$result = $stmt->get_result();
+
+																// Check if there are any customers
+																if ($result->num_rows > 0) {
+																	// Output each customer as an option in the dropdown
+																	while ($row = $result->fetch_assoc()) {
+																		echo "<option value='" . htmlspecialchars($row['name']) . "'>" . htmlspecialchars($row['name']) . "</option>";
+																	}
+																} 
+
+																// Add "Walk-in-customer" as the last option
+																echo "<option value='Walk-in-customer'>Walk-in-customer</option>";
+
+																// Close the statement
+																$stmt->close();
+																?>
 															</select>
 														</div>
 														<div class="col-lg-2 col-sm-2 col-2 ps-0">
