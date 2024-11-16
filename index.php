@@ -10,6 +10,9 @@ include 'conn.php';
 
 // Establish the connection to the database
 $conn = connectMainDB();
+
+$user_email = htmlspecialchars($_SESSION['email']); // User's email
+
 ?>
 
 
@@ -183,7 +186,7 @@ $conn = connectMainDB();
 										<tbody>
 											<?php
 											// Fetch products from the database
-											$query = "SELECT id, product_name, price, image FROM products
+											$query = "SELECT id, product_name, price, image FROM products WHERE email = '$user_email'
 											ORDER BY id DESC LIMIT 4"; // Limit 4 products and show the most recent
 
 											$result = mysqli_query($conn, $query);
