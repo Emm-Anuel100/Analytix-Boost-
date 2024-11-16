@@ -5,25 +5,30 @@ include('./conn.php');
 // Establish the connection to the user's database
 $conn = connectMainDB();
 
+// User's email
+$user_email = htmlspecialchars( $_SESSION['email']); 
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['name']) && isset($_POST['contact'])) {
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['name']) && !empty($_POST['contact'])) {
 
-		 // Set parameters
-		 $name = $_POST['name'];
-		 $contact = $_POST['contact'];
-		 $phone_1 = $_POST['phone_1'];
-		 $email = $_POST['email'];
-		 $address_1 = $_POST['address_1'];
-		 $address_2 = $_POST['address_2'];
-		 $country = $_POST['country'];
-		 $state = $_POST['state'];
-		 $city = $_POST['city'];
-		 $zipcode = $_POST['zipcode'];
-		 $user_email = $_SESSION['email'];
+		// Set parameters with htmlspecialchars to sanitize inputs
+		$name = htmlspecialchars($_POST['name']);
+		$contact = htmlspecialchars($_POST['contact']);
+		$phone_1 = htmlspecialchars($_POST['phone_1']);
+		$email = htmlspecialchars($_POST['email']);
+		$address_1 = htmlspecialchars($_POST['address_1']);
+		$address_2 = htmlspecialchars($_POST['address_2']);
+		$country = htmlspecialchars($_POST['country']);
+		$state = htmlspecialchars($_POST['state']);
+		$city = htmlspecialchars($_POST['city']);
+		$zipcode = htmlspecialchars($_POST['zipcode']);
+		$user_email = htmlspecialchars($_SESSION['email']); // User's email
 
 		// Prepare and bind parameters
-		$stmt = $conn->prepare("INSERT INTO warehouse (user_email, name, contact_person, phone, email, address_1, address_2, country, state, city, zip_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-		$stmt->bind_param("sssssssssss", $user_email, $name, $contact, $phone_1, $email, $address_1, $address_2, $country, $state, $city, $zipcode);
+		$stmt = $conn->prepare("INSERT INTO warehouse (user_email, name, contact_person, phone,
+		 email, address_1, address_2, country, state, city, zip_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+		$stmt->bind_param("sssssssssss", $user_email, $name, $contact, $phone_1, $email,
+		 $address_1, $address_2, $country, $state, $city, $zipcode);
 
 		 // Execute statement
 		 if ($stmt->execute()) {
@@ -50,11 +55,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['name']) && isset($_POS
 					</script>";
 		    }
 
-		 // Close connections
+		 // Close the statement
 		 $stmt->close();
-		//  $conn->close();
-}
-
+		}
 ?>
 
 
@@ -114,10 +117,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['name']) && isset($_POS
 								</div>
 								<div class="search-path">
 									<div class="d-flex align-items-center">
-										<!-- <a class="btn btn-filter" id="filter_search">
-											<i data-feather="filter" class="filter-icon"></i>
-											<span><img src="assets/img/icons/closes.svg" alt="img"></span>
-										</a> -->
 										<div class="layout-hide-box">
 											<a href="javascript:void(0);" class="me-3 layout-box"><i data-feather="layout" class="feather-search"></i></a>
 											<div class="layout-drop-item card">
@@ -189,18 +188,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['name']) && isset($_POS
 								</div>
 								<div class="form-sort">
 									<i data-feather="sliders" class="info-img"></i>
-									<select class="select">
-										<option value="newest">Newest</option>
-										<option value="oldest">Oldest</option>
-									</select>
+									<form action="" method="post">
+										<select class="select" name="sort_option" onchange="this.form.submit()">
+											<option value="newest" <?= (isset($_POST['sort_option']) && $_POST['sort_option'] === 'newest') ? 'selected' : '' ?>>Newest</option>
+											<option value="oldest" <?= (isset($_POST['sort_option']) && $_POST['sort_option'] === 'oldest') ? 'selected' : '' ?>>Oldest</option>
+										</select>
+								</form>
 								</div>
 							</div>
 
 				   <div class="table-responsive">
 					<?php
+					// Get the sorting option from the POST data, defaulting to 'newest' if not set
+					$sort_option = isset($_POST['sort_option']) ? $_POST['sort_option'] : 'newest';
+
+					// Determine the SQL order based on the selected option
+					$order = ($sort_option === 'oldest') ? 'ASC' : 'DESC';
+
 						// Fetch data from the warehouses table
-						$user_email = $_SESSION['email'];
-						$sql = "SELECT * FROM warehouse WHERE user_email = '$user_email'";
+						$sql = "SELECT * FROM warehouse WHERE user_email = '$user_email' ORDER BY id $order";
 						$result = $conn->query($sql);
 						?>
 
@@ -234,7 +240,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['name']) && isset($_POS
 								// Count the total products for each warehouse
 								$warehouse_name = $row['name'];  // Get the 'name' 
 								$user_email = $_SESSION['email']; // Get the user's email
-								$product_count_sql = "SELECT COUNT(*) as total_products FROM products WHERE warehouse = '$warehouse_name' AND email = '$user_email'";
+								$product_count_sql = "SELECT COUNT(*) as total_products FROM products 
+								WHERE warehouse = '$warehouse_name' AND email = '$user_email'";
+
 								$product_count_result = $conn->query($product_count_sql);
 								$product_count_row = $product_count_result->fetch_assoc();
 								$total_products = $product_count_row['total_products'];
@@ -337,60 +345,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['name']) && isset($_POS
 											<div class="input-blocks">
 												<label>Country</label>
 												<select class="select" required name="country">
-												<option value="Algeria">Algeria</option>
-												<option value="Angola">Angola</option>
-												<option value="Benin">Benin</option>
-												<option value="Botswana">Botswana</option>
-												<option value="Burkina Faso">Burkina Faso</option>
-												<option value="Burundi">Burundi</option>
-												<option value="Cabo Verde">Cabo Verde</option>
-												<option value="Cameroon">Cameroon</option>
-												<option value="Central African Republic">Central African Republic</option>
-												<option value="Chad">Chad</option>
-												<option value="Comoros">Comoros</option>
-												<option value="Democratic Replublic of the Congo">Democratic Replublic of the Congo</option>
-												<option value="Republic of the Congo">Republic of the Congo</option>
-												<option value="Djibouti">Djibouti</option>
-												<option value="Egypt">Egypt</option>
-												<option value="Equatorial Guinea">Equatorial Guinea</option>
-												<option value="Eritrea">Eritrea</option>
-												<option value="Eswatini">Eswatini</option>
-												<option value="Ethiopia">Ethiopia</option>
-												<option value="Gabon">Gabon</option>
-												<option value="Gambia">Gambia</option>
 												<option value="Ghana">Ghana</option>
-												<option value="Guinea">Guinea</option>
-												<option value="Guinea-Bissau">Guinea-Bissau</option>
-												<option value="Ivory Coast">Ivory Coast</option>
-												<option value="Kenya">Kenya</option>
-												<option value="Lesotho">Lesotho</option>
-												<option value="Liberia">Liberia</option>
-												<option value="Libya">Libya</option>
-												<option value="Madagascar">Madagascar</option>
-												<option value="Malawi">Malawi</option>
-												<option value="Mali">Mali</option>
-												<option value="Mauritania">Mauritania</option>
-												<option value="Mauritius">Mauritius</option>
-												<option value="Morocco">Morocco</option>
-												<option value="Mozambique">Mozambique</option>
-												<option value="Namibia">Namibia</option>
-												<option value="Niger">Niger</option>
-												<option value="Nigeria">Nigeria</option>
-												<option value="Rwanda">Rwanda</option>
-												<option value="Sao Tome and Principe">Sao Tome and Principe</option>
-												<option value="Senegal">Senegal</option>
-												<option value="Seychelles">Seychelles</option>
-												<option value="Sierra Leone">Sierra Leone</option>
-												<option value="Somalia">Somalia</option>
-												<option value="South Africa">South Africa</option>
-												<option value="South Sudan">South Sudan</option>
-												<option value="Sudan">Sudan</option>
-												<option value="Tanzania">Tanzania</option>
-												<option value="Togo">Togo</option>
-												<option value="Tunisia">Tunisia</option>
-												<option value="Uganda">Uganda</option>
-												<option value="Zambia">Zambia</option>
-												<option value="Zimbabwe">Zimbabwe</option>
+													<option value="Nigeria">Nigeria</option>
+													<option value="Senegal">Senegal</option>
+													<option value="Sierra Leone">Sierra Leone</option>
+													<option value="South Africa">South Africa</option>
 											</select>
 											</div>
 										</div>
@@ -442,6 +401,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['name']) && isset($_POS
 								</button>
 							</div>
 							<div class="modal-body custom-modal-body">
+								<!-- Form to update warehouse information -->
 								<form action="warehouse.php" method="POST">
 									<div class="modal-title-head">
 										<h6><span><i data-feather="info" class="feather-edit"></i></span>Warehouse Info</h6>
@@ -490,61 +450,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['name']) && isset($_POS
 											<div class="input-blocks">
 												<label>Country</label>
 												<select class="select" required name="country_">
-												<option value="Algeria">Algeria</option>
-												<option value="Angola">Angola</option>
-												<option value="Benin">Benin</option>
-												<option value="Botswana">Botswana</option>
-												<option value="Burkina Faso">Burkina Faso</option>
-												<option value="Burundi">Burundi</option>
-												<option value="Cabo Verde">Cabo Verde</option>
-												<option value="Cameroon">Cameroon</option>
-												<option value="Central African Republic">Central African Republic</option>
-												<option value="Chad">Chad</option>
-												<option value="Comoros">Comoros</option>
-												<option value="Democratic Replublic of the Congo">Democratic Replublic of the Congo</option>
-												<option value="Republic of the Congo">Republic of the Congo</option>
-												<option value="Djibouti">Djibouti</option>
-												<option value="Egypt">Egypt</option>
-												<option value="Equatorial Guinea">Equatorial Guinea</option>
-												<option value="Eritrea">Eritrea</option>
-												<option value="Eswatini">Eswatini</option>
-												<option value="Ethiopia">Ethiopia</option>
-												<option value="Gabon">Gabon</option>
-												<option value="Gambia">Gambia</option>
-												<option value="Ghana">Ghana</option>
-												<option value="Guinea">Guinea</option>
-												<option value="Guinea-Bissau">Guinea-Bissau</option>
-												<option value="Ivory Coast">Ivory Coast</option>
-												<option value="Kenya">Kenya</option>
-												<option value="Lesotho">Lesotho</option>
-												<option value="Liberia">Liberia</option>
-												<option value="Libya">Libya</option>
-												<option value="Madagascar">Madagascar</option>
-												<option value="Malawi">Malawi</option>
-												<option value="Mali">Mali</option>
-												<option value="Mauritania">Mauritania</option>
-												<option value="Mauritius">Mauritius</option>
-												<option value="Morocco">Morocco</option>
-												<option value="Mozambique">Mozambique</option>
-												<option value="Namibia">Namibia</option>
-												<option value="Niger">Niger</option>
-												<option value="Nigeria">Nigeria</option>
-												<option value="Rwanda">Rwanda</option>
-												<option value="Sao Tome and Principe">Sao Tome and Principe</option>
-												<option value="Senegal">Senegal</option>
-												<option value="Seychelles">Seychelles</option>
-												<option value="Sierra Leone">Sierra Leone</option>
-												<option value="Somalia">Somalia</option>
-												<option value="South Africa">South Africa</option>
-												<option value="South Sudan">South Sudan</option>
-												<option value="Sudan">Sudan</option>
-												<option value="Tanzania">Tanzania</option>
-												<option value="Togo">Togo</option>
-												<option value="Tunisia">Tunisia</option>
-												<option value="Uganda">Uganda</option>
-												<option value="Zambia">Zambia</option>
-												<option value="Zimbabwe">Zimbabwe</option>
-											</select>
+													<option value="Ghana">Ghana</option>
+													<option value="Nigeria">Nigeria</option>
+													<option value="Senegal">Senegal</option>
+													<option value="Sierra Leone">Sierra Leone</option>
+													<option value="South Africa">South Africa</option>
+												</select>
 											</div>
 										</div>
 										<div class="col-lg-6">

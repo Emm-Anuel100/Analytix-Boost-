@@ -27,7 +27,7 @@ $pdf->Cell(0, 10, 'Purchase Record', 0, 1, 'C');
 $pdf->Ln(5);
 
 // Generate timestamp
-$generated_at = date("d M Y H:i:s a");
+$generated_at = date("d M Y H:i:s");
 
 // Set font for timestamp to normal (not bold)
 $pdf->SetFont('Arial', '', 10);

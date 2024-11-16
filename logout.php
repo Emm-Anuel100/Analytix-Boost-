@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// Unset  verification session
+// Unset  verification sessions
 unset($_SESSION['authenticated']);
 unset($_SESSION['email']);
 header("Location: signin.php");

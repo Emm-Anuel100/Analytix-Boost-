@@ -27,7 +27,7 @@ $pdf->Ln(5); // Add a line break
 
 // Add timestamp
 $pdf->SetFont('Arial', '', 12); // Set font for timestamp
-$currentTimestamp = date('Y-m-d H:i:s a'); // Format: YYYY-MM-DD HH:MM:SS
+$currentTimestamp = date('Y-m-d H:i:s'); // Format: YYYY-MM-DD HH:MM:SS
 $pdf->Cell(0, 10, 'Generated on: ' . $currentTimestamp, 0, 1, 'C'); // Centered timestamp
 $pdf->Ln(10); // Add a line break before table headers
 

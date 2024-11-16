@@ -37,7 +37,7 @@ $pdf->Cell(270, 10, 'Sales Invoice List', 0, 1, 'C');
 
 // Add timestamp
 $pdf->SetFont('Arial', '', 12);
-$pdf->Cell(270, 10, 'Generated on: ' . date('Y-m-d H:i:s a'), 0, 1, 'R');
+$pdf->Cell(270, 10, 'Generated on: ' . date('Y-m-d H:i:s'), 0, 1, 'R');
 
 // Add table headers
 $pdf->Ln(10);

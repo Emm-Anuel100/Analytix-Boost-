@@ -8,7 +8,7 @@ require 'fpdf/fpdf.php';
 // Establish the connection
 $conn = connectMainDB();
 
-$user_email = $_SESSION['email']; // User's email
+$user_email = htmlspecialchars( $_SESSION['email']); // User's email
 
 // Fetch quotation and product details with JOIN on product name, filtered by user email
 $query = "
@@ -32,7 +32,7 @@ $pdf->Cell(0, 10, 'Quotation List', 0, 1, 'C');
 
 // Add the timestamp at the bottom of the PDF
 $pdf->SetFont('Arial', 'I', 10);
-$pdf->Cell(0, 10, 'Generated on: ' . date('Y-m-d H:i:s a'), 0, 1, 'C');
+$pdf->Cell(0, 10, 'Generated on: ' . date('Y-m-d H:i:s'), 0, 1, 'C');
 $pdf->Ln(10); // Add some space before the timestamp
 
 // Set font for the header

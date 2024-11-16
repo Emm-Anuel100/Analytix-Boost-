@@ -35,10 +35,10 @@ $conn = connectMainDB();
 						</div>
 						<ul class="table-top-head">
 							<li>
-								<a href="export-product-pdf.php" data-bs-toggle="tooltip" data-bs-placement="top" title="Pdf"><img src="assets/img/icons/pdf.svg" alt="img"></a>
+								<a href="export-product-pdf.php" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Pdf"><img src="assets/img/icons/pdf.svg" alt="img"></a>
 							</li>
 							<li>
-								<a href="export-product-csv.php" data-bs-toggle="tooltip" data-bs-placement="top" title="Csv"><img src="assets/img/icons/excel.svg" alt="img"></a>
+								<a href="export-product-csv.php" target="_blank" data-bs-toggle="tooltip" data-bs-placement="top" title="Csv"><img src="assets/img/icons/excel.svg" alt="img"></a>
 							</li>
 							<li>
 								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Refresh" class="refresh"><i data-feather="rotate-ccw" class="feather-rotate-ccw"></i></a>

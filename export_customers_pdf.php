@@ -31,7 +31,7 @@ $pdf->Ln(); // Line break
 
 // Add the "Generated on: Timestamp" below the title
 $pdf->SetFont('Arial', '', 12);
-$pdf->Cell(0, 10, 'Generated on: ' . date('Y-m-d H:i:s a'), 0, 1, 'C');
+$pdf->Cell(0, 10, 'Generated on: ' . date('Y-m-d H:i:s'), 0, 1, 'C');
 
 $pdf->Ln(); // Line break
 

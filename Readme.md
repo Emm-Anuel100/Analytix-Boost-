@@ -38,3 +38,4 @@ This document provides an overview of the POS (Point of Sale) Solution, a compre
    git clone https://github.com/Emm-Anuel100/Analytix-Boost-.git
    cd Analytix-Boost-
    ```
+

@@ -477,6 +477,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['expense_category_']) 
 <script>
 	$.fn.dataTable.ext.errMode = 'none'; // Disable all error alerts globally in DataTable
 
+    // Populate edit form with current data
 	document.addEventListener('DOMContentLoaded', function() {
     const editButtons = document.querySelectorAll('[data-bs-target="#edit-units"]');
     editButtons.forEach(button => {

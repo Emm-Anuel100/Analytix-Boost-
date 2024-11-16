@@ -1,9 +1,9 @@
 <?php 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
 
-include "./layouts/session.php";
+include "./layouts/session.php"; // Include session
 
 include 'conn.php'; // Include database connection
 
@@ -325,7 +325,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['customer_name']) && !e
 													<div class="row">
 														<div class="col-lg-10 col-sm-10 col-10">
 															<select class="select" name="customer_name">
-																<option value="Walk-in-customer">Walk-in-customer</option>
+																<?php
+																// Fetch customer names
+																$stmt = $conn->prepare("SELECT name FROM customers WHERE user_email = ?");
+																$stmt->bind_param("s", $user_email);
+																$stmt->execute();
+																$result = $stmt->get_result();
+
+																// Check if there are any customers
+																if ($result->num_rows > 0) {
+																	// Output each customer as an option in the dropdown
+																	while ($row = $result->fetch_assoc()) {
+																		echo "<option value='" . htmlspecialchars($row['name']) . "'>" . htmlspecialchars($row['name']) . "</option>";
+																	}
+																} 
+
+																// Add "Walk-in-customer" as the last option
+																echo "<option value='Walk-in-customer'>Walk-in-customer</option>";
+
+																// Close the statement
+																$stmt->close();
+																?>
 															</select>
 														</div>
 														<div class="col-lg-2 col-sm-2 col-2 ps-0">
@@ -607,8 +627,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['customer_name']) && !e
 												<div class="row">
 													<div class="col-lg-10 col-sm-10 col-10">
 														<select class="select" name="customer_name" id="customer_name_edit">
-															<option>Walk-in-customer</option>
-															<!-- Add more customers if needed -->
+															<?php
+															// Fetch customer names
+															$stmt = $conn->prepare("SELECT name FROM customers WHERE user_email = ?");
+															$stmt->bind_param("s", $user_email);
+															$stmt->execute();
+															$result = $stmt->get_result();
+
+															// Check if there are any customers
+															if ($result->num_rows > 0) {
+																// Output each customer as an option in the dropdown
+																while ($row = $result->fetch_assoc()) {
+																	echo "<option value='" . htmlspecialchars($row['name']) . "'>" . htmlspecialchars($row['name']) . "</option>";
+																}
+															} 
+
+															// Add "Walk-in-customer" as the last option
+															echo "<option value='Walk-in-customer'>Walk-in-customer</option>";
+
+															// Close the statement
+															$stmt->close();
+															?>
 														</select>
 													</div>
 													<div class="col-lg-2 col-sm-2 col-2 ps-0">
@@ -949,11 +988,11 @@ function populateProductsTable(productsString) {
     const tbody = document.getElementById("modal-products-tbody");
     tbody.innerHTML = ''; // Clear any existing rows
 
-    // Split the productsString into individual product entries (based on how they are delimited)
-    const productsArray = productsString.split(";"); // Assuming ";" separates products
+    // Split the productsString into individual product entries
+    const productsArray = productsString.split(";"); // ";" separates products
 
     productsArray.forEach(product => {
-        // Adjusted regex pattern to include total cost
+        // Regex pattern
         const productDetails = product.match(/(.*)\s\(quantity:\s(\d+),\sprice:\s([\d.]+),\simage:\s(.*),\sdiscount\stype:\s(.*),\sdiscount\svalue:\s([\d.]+),\stax:\s([\d.]+),\sunit:\s(.*),\stotal\scost:\s([\d.]+)\)/);
 
         if (productDetails) {
