@@ -22,7 +22,7 @@ $pdf->Cell(190, 10, 'Units List', 0, 1, 'C');
 
 // Add generated on text with timestamp
 $pdf->SetFont('Arial', '', 12);
-$pdf->Cell(190, 10, 'Generated on: ' . date('d-m-Y H:i:s a'), 0, 1, 'C');
+$pdf->Cell(190, 10, 'Generated on: ' . date('d-m-Y H:i:s'), 0, 1, 'C');
 $pdf->Ln(10); // Add some space before the table
 
 // Set font for the table header (bold and bigger)

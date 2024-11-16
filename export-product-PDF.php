@@ -27,7 +27,7 @@ $pdf->Cell(0, 10, $title, 0, 1, 'C');
 
 // Set font for the date and time
 $pdf->SetFont('Arial', '', 12);
-$dateTime = "Generated on: " . date('Y-m-d H:i:s a'); // Get current date and time
+$dateTime = "Generated on: " . date('Y-m-d H:i:s'); // Get current date and time
 
 // Calculate the width of the date/time string
 $dateTimeWidth = $pdf->GetStringWidth($dateTime);

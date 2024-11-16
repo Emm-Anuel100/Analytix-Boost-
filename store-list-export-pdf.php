@@ -1,6 +1,8 @@
 <?php
-require('./layouts/session.php'); 
-require('./fpdf/fpdf.php');
+require('./layouts/session.php'); // Include session
+
+require('./fpdf/fpdf.php'); // Include Fpdf file
+
 // Set the timezone to Africa/Lagos
 date_default_timezone_set('Africa/Lagos'); 
 
@@ -20,7 +22,7 @@ $pdf->Cell(0, 10, 'Store List', 0, 1, 'C');
 
 // Add timestamp
 $pdf->SetFont('Arial', 'I', 12); // Italic font for the timestamp
-$pdf->Cell(0, 10, 'Generated on: ' . date('Y-m-d H:i:s a'), 0, 1, 'C'); // Timestamp
+$pdf->Cell(0, 10, 'Generated on: ' . date('Y-m-d H:i:s'), 0, 1, 'C'); // Timestamp
 $pdf->Ln(10); // Add space after the timestamp
 
 // Add column headers

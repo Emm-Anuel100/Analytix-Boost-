@@ -21,7 +21,7 @@ $pdf->Ln(5);
 
 // Add generated timestamp
 $pdf->SetFont('Arial', 'I', 10);
-$pdf->Cell(0, 10, 'Generated at: ' . date('Y-m-d H:i:s a'), 0, 1, 'C');
+$pdf->Cell(0, 10, 'Generated at: ' . date('Y-m-d H:i:s'), 0, 1, 'C');
 $pdf->Ln(10);
 
 // Set up table header

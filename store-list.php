@@ -5,7 +5,7 @@ include 'conn.php'; // Include db connection
 // Establish the connection
 $conn = connectMainDB();
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['store_name'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['store_name']) && !empty($_POST['store_name'])) {
 	// Sanitize and validate input data
 	$user_email = $_SESSION['email'];
 	$store_name = htmlspecialchars(trim($_POST['store_name']));
@@ -149,10 +149,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['store_id']) && !empty(
 						</div>
 						<ul class="table-top-head">
 							<li>
-								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Pdf" href="./store-list-export-pdf.php"><img src="assets/img/icons/pdf.svg" alt="img"></a>
+								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Pdf" href="store-list-export-pdf.php" target="_blank"><img src="assets/img/icons/pdf.svg" alt="img"></a>
 							</li>
 							<li>
-								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Csv" href="./store-list-export-csv.php"><img src="assets/img/icons/excel.svg" alt="img"></a>
+								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Csv" href="store-list-export-csv.php" target="_blank"><img src="assets/img/icons/excel.svg" alt="img"></a>
 							</li>
 							<li>
 								<a data-bs-toggle="tooltip" data-bs-placement="top" title="Refresh" class="refresh"><i data-feather="rotate-ccw" class="feather-rotate-ccw"></i></a>
@@ -195,7 +195,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['store_id']) && !empty(
 							$orderBy = ($order === 'oldest') ? 'timestamp ASC' : 'timestamp DESC';
 
 							// Prepare your SQL statement
-							$stmt = $conn->prepare("SELECT id, store_name, user_name, phone, email, status FROM store WHERE user_email = ? ORDER BY $orderBy");
+							$stmt = $conn->prepare("SELECT id, store_name, user_name, phone, email, 
+							status FROM store WHERE user_email = ? ORDER BY $orderBy");
 
 							// Bind the parameter
 							$stmt->bind_param('s', $user_email);
@@ -246,10 +247,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['store_id']) && !empty(
 											   </td>
 												<td class="action-table-data">
 														<div class="edit-delete-action">
-														<a class="me-2 p-2" href="#" data-id="<?php echo htmlspecialchars($row['id']); ?>" data-bs-toggle="modal" data-bs-target="#edit-stores" onclick="setStoreId(this)">
+														<a class="me-2 p-2" href="#" data-id="<?= htmlspecialchars($row['id']); ?>" data-bs-toggle="modal" data-bs-target="#edit-stores" onclick="setStoreId(this)">
 															<i data-feather="edit" class="feather-edit"></i>
 														</a>
-														<a class="confirm-tex p-2" href="#" data-id="<?php echo htmlspecialchars($row['id']); ?>" onclick="confirmDelete(this)">
+														<a class="confirm-tex p-2" href="#" data-id="<?= htmlspecialchars($row['id']); ?>" onclick="confirmDelete(this)">
 															<i data-feather="trash-2" class="feather-trash-2"></i>
 														</a>
 														</div>
@@ -349,32 +350,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['store_id']) && !empty(
 									<span aria-hidden="true">&times;</span>
 								</button>
 							</div>
+
 							<div class="modal-body custom-modal-body">
 								<form action="store-list.php" method="POST">
 									<!-- Hidden input to hold the store ID -->
-    								<input type="hidden" name="store_id" id="store_id" required value="<?php echo htmlspecialchars($row['id']); ?>">
+    								<input type="hidden" name="store_id" id="store_id" required value="<?= htmlspecialchars($row['id']); ?>">
 									<div class="mb-3">
 										<label class="form-label">Store Name</label>
-										<input type="text" name="store_name_" class="form-control" required placeholder="Fred john ">
+										<input type="text" name="store_name_" class="form-control" required>
 									</div>
 									<div class="mb-3">
 										<label class="form-label">User Name</label>
-										<input type="text" name="user_name_" class="form-control" required placeholder="FredJ25">
+										<input type="text" name="user_name_" class="form-control" required>
 									</div>
 									<div class="input-blocks mb-3">
 										<label>Password</label>
 										<div class="pass-group">
-											<input type="password" name="password_" class="pass-input" required placeholder="...">
+											<input type="password" name="password_" class="pass-input" required>
 											<span class="fas toggle-password fa-eye-slash"></span>
 										</div>
 									</div>
 									<div class="mb-3">
 										<label class="form-label">Phone</label>
-										<input type="text" name="phone_" class="form-control" required placeholder="+23416358690">
+										<input type="text" name="phone_" class="form-control" required>
 									</div>
 									<div class="mb-3">
 										<label class="form-label">Email</label>
-										<input type="email"name="email_" class="form-control" required placeholder="john@mail.com">
+										<input type="email"name="email_" class="form-control" required>
 									</div>
 									<div class="mb-0">
 										<div class="status-toggle modal-status d-flex justify-content-between align-items-center">

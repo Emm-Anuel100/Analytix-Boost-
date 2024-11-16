@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $barcode = $input['barcode'];
     // Get the email from the session
-    $email = $_SESSION['email'];
+    $email = htmlspecialchars($_SESSION['email']);
 
     // Query to fetch product details by barcode
     $query = $conn->prepare(

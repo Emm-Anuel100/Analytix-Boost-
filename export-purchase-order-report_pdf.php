@@ -44,7 +44,7 @@ $pdf->Ln(10); // Line break before the table
 
 // Add generated timestamp
 $pdf->SetFont('Arial', '', 10);
-$pdf->Cell(0, 10, 'Generated at: ' . date("Y-m-d H:i:s a"), 0, 1, 'C'); // Centered timestamp
+$pdf->Cell(0, 10, 'Generated at: ' . date("Y-m-d H:i:s"), 0, 1, 'C'); // Centered timestamp
 
 $pdf->Ln(10); // Line break before the table
 

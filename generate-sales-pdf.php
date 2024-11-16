@@ -10,7 +10,7 @@ require 'fpdf/fpdf.php';  // Include FPDF library
 
 // Assuming the user email is stored in session
 if (isset($_SESSION['email'])) {
-    $userEmail = $_SESSION['email'];
+    $userEmail = htmlspecialchars($_SESSION['email']);
 
     // Query to fetch sales data for the logged-in user
     $sql = "SELECT * FROM sales WHERE user_email = ?";
@@ -29,7 +29,7 @@ if (isset($_SESSION['email'])) {
 
     // Generate timestamp on the top right
     $pdf->SetFont('Arial', '', 12);
-    $pdf->Cell(250, 10, 'Generated on: ' . date('Y-m-d H:i:s a'), 0, 1, 'R'); // Right-aligned timestamp
+    $pdf->Cell(250, 10, 'Generated on: ' . date('Y-m-d H:i:s'), 0, 1, 'R'); // Right-aligned timestamp
 
     $pdf->Ln();
     $pdf->SetX(32);
